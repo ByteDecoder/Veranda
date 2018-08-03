@@ -1,38 +1,25 @@
-# Sleipnir
-A graph editor framework leveraging the unity asset store asset [Odin](http://sirenix.net/odininspector "Odin")
+﻿![Example](Example.png)
 
-(pronounced “SLAYP-neer”; “The Sliding One”)
+# Modifications
 
-![Gif of the graph editor](example.gif "")
+* Removed any kind of data binding - graphs are no longer scriptable objects and there is no base data structure that you have to follow, though you have to implement more interfaces. This way graphs can be both in-scene-oriented and assets-oriented which enables more generic usage.
+* Multiple knobs for nodes.
+* Colors, knobs descriptions.
+* Connections can hold values.
+* Nodes only show their content.
 
-THIS PROJECT IS STILL WIP
-The main reason I created this was to have a visual way to build and modify graph hierarchies
-and still use the power of Odin inspectors within my graph editor.
+# TODO
 
-# Install
-
-* Make sure you have Odin installed into your unity project
-* Copy the Sleipnir folder to your Assets folder, and wait for unity to compile
-* Right click in the project listing inside unity and choose Sleipnir -> Graph
-* This will generate a scriptable object that acts as the data source for a graph
-* Double click the asset that was created and a graph editor will open up
-* Happy graph editing
-
-# Customization
-
-Sleipnir defines an interface for plugging Data into each node in the graph
-
-You will need to define a C# script that inherits from this interface and then you will beable to
-fill the data porition of a node with a instance of that object.
+* Visual styling upgrades to feel any polish :).
+* Proper object right click context menu position when over node rect and zoomed out.
+* Bringing back horizontal node scaling. I'm stupid sometimes.
+* Solving height calculation problem to avoid lag.
+* Attribute based collection wrapper class for default implementation.
+* Solving random collection expands bug.
+* Node equality.
+* Removing interactions with graph from node rect.
+* More sensible README.
 
 
-# TODO / Outstanding Features
-
-* Horizontal + Vertical graph layout types
-* Node unlocking status and hierarchial based unlocking
-* Functions for easily laying out a real-time graph based on the data
-* Visual styling upgrades to feel more polished
-
-If you would like to help out please submit PR's and or reach out in the DevDog discord where Odin is discussed
 
 
