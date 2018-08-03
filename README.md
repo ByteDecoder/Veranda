@@ -2,7 +2,7 @@
 
 # Modifications
 
-* Removed any kind of data binding - graphs are no longer scriptable objects and there is no base data structure that you have to follow, though you have to implement more interfaces. This way graphs can be both in-scene-oriented and assets-oriented which enables more generic usage.
+* Removed any kind of data binding - graphs are no longer scriptable objects and there is no base data structure that you have to follow, though you have to implement more interfaces. This way graphs can be both in-scene-oriented and assets-oriented.
 * Multiple knobs for nodes.
 * Colors, knobs descriptions.
 * Connections can hold values.
