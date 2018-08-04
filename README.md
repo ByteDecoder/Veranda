@@ -15,7 +15,7 @@
 - [ ] Bringing back horizontal node scaling. I'm stupid sometimes.
 - [ ] Solving height calculation problem to avoid lag.
 - [x] Attribute based collection wrapper class for default implementation.
-- [ ] Some deper wrapper testing.
+- [ ] Some deeper wrapper testing.
 - [ ] Solving random collection expands bug.
 - [ ] Node equality.
 - [ ] Removing interactions with graph from node rect.
