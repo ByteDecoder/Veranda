@@ -10,7 +10,7 @@ namespace Sleipnir
         Vector2 Position { get; set; }
 
         IEnumerable<INode> NodesInDrawingOrder();
-        IEnumerable<string> AvaibleNodes();
+        IEnumerable<string> AvailableNodes();
         INode AddNode(string nodeId);
         bool RemoveNode(INode node);
         void MoveNodeToFront(INode node);

@@ -89,7 +89,7 @@ namespace Sleipnir
             private object _value;
 
             [OdinSerialize]
-            private readonly IList<IKnob> _knobs = new List<IKnob>
+            private readonly IReadOnlyList<IKnob> _knobs = new List<IKnob>
             {
                 new TestKnob(KnobType.Output, "1st out", Color.cyan),
                 new TestKnob(KnobType.Output, "2nd out", Color.blue),
@@ -111,7 +111,7 @@ namespace Sleipnir
                 set { _value = value; }
             }
             
-            public IList<IKnob> Knobs => _knobs;
+            public IReadOnlyList<IKnob> Knobs => _knobs;
 
             public Vector2 Position
             {
@@ -138,7 +138,7 @@ namespace Sleipnir
             return Nodes;
         }
 
-        public IEnumerable<string> AvaibleNodes()
+        public IEnumerable<string> AvailableNodes()
         {
             return new[] {"Test/Test"};
         }

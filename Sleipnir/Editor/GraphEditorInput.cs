@@ -155,7 +155,7 @@ namespace Sleipnir.Editor
                 }
 
             if (!onNode)
-                foreach (var node in _graph.AvaibleNodes())
+                foreach (var node in _graph.AvailableNodes())
                     menu.AddItem(new GUIContent("Create Node/" + node), false,
                         () => { CreateNode(node, currentPosition); });
 

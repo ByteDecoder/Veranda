@@ -10,15 +10,16 @@
 
 # TODO
 
-* Visual styling upgrades to feel any polish :).
-* Proper object right click context menu position when over node rect and zoomed out.
-* Bringing back horizontal node scaling. I'm stupid sometimes.
-* Solving height calculation problem to avoid lag.
-* Attribute based collection wrapper class for default implementation.
-* Solving random collection expands bug.
-* Node equality.
-* Removing interactions with graph from node rect.
-* More sensible README.
+- [ ] Visual styling upgrades to feel any polish :).
+- [ ] Proper object right click context menu position when over node rect and zoomed out.
+- [ ] Bringing back horizontal node scaling. I'm stupid sometimes.
+- [ ] Solving height calculation problem to avoid lag.
+- [x] Attribute based collection wrapper class for default implementation.
+- [ ] Some deper wrapper testing.
+- [ ] Solving random collection expands bug.
+- [ ] Node equality.
+- [ ] Removing interactions with graph from node rect.
+- [ ] More sensible README.
 
 
 

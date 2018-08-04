@@ -7,7 +7,7 @@ namespace Sleipnir
     public interface INode
     {
         object Value { get; set; }
-        IList<IKnob> Knobs { get; }
+        IReadOnlyList<IKnob> Knobs { get; }
         Vector2 Position { get; set; }
         float Width { get; }
     }
