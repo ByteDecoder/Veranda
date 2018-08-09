@@ -19,8 +19,6 @@
 - [ ] Solving random collection expands bug.
 - [ ] Node equality.
 - [ ] Removing interactions with graph from node rect.
+- [ ] Adding collection based knobs.
+- [ ] Adding ability to order connections.
 - [ ] More sensible README.
-
-
-
-
