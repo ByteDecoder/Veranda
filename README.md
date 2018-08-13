@@ -21,4 +21,5 @@
 - [ ] Removing interactions with graph from node rect.
 - [ ] Adding collection based knobs.
 - [ ] Adding ability to order connections.
+- [ ] Adding ability to highlight nodes and connections.
 - [ ] More sensible README.
