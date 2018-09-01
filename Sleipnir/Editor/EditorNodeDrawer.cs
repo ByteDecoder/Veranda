@@ -38,7 +38,10 @@ namespace Sleipnir.Editor
                     content.LabelWidth, 0, content.NodeWidth - SliderMaxOffset);
             }
             GUIHelper.PopColor();
-            GUI.Label(headerRect, content.HeaderTitle, GraphEditor.NodeHeaderTitleGUIStyle.Value);
+
+            var titleGUIStyle = new GUIStyle(GraphEditor.NodeHeaderTitleGUIStyle.Value)
+                                      { normal = { textColor = content.TitleColor } };
+            GUI.Label(headerRect, content.HeaderTitle, titleGUIStyle);
 
             // Draw content
             GUILayout.BeginArea(value.Editor.GridToGuiDrawRect(content.ContentRect));

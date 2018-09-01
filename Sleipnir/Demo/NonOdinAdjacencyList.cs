@@ -84,6 +84,7 @@ namespace Sleipnir.Demo
                 Position = position,
                 NodeWidth = 200,
                 HeaderColor = new Color(0.1f, 0.4f, 0.6f),
+                TitleColor = new Color(1, 1, 1),
                 Knobs = new List<Knob>
                 {
                     new Knob(50, KnobType.Input)

@@ -6,7 +6,7 @@ namespace Sleipnir.Editor
     public partial class GraphEditor
     {
         private const float ConnectionLineWidth = 5f;
-        private const float ConnectionTangentMultiplier = 100f;
+        private const float ConnectionTangentMultiplier = 300f;
         public static readonly Vector2 KnobLabelOffset = new Vector2(2, 2);
         public static readonly Vector2 KnobSize = new Vector2(12, 12);
         public static readonly float KnobHorizontalOffset = 4f;

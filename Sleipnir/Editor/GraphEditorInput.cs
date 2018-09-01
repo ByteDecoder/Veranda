@@ -177,7 +177,7 @@ namespace Sleipnir.Editor
         {
             var menu = new GenericMenu();
             menu.AddItem(new GUIContent("Delete connection"), false,
-                () => { _graph.RemoveConnection(connection); });
+                () => _graph.RemoveConnection(connection));
             menu.ShowAsContext();
         }
 
@@ -195,18 +195,6 @@ namespace Sleipnir.Editor
             menu.ShowAsContext();
         }
         
-        private bool IsPointInBezierRange(Vector2 point, Connection connection)
-        {
-            var startGridPosition = GridToGuiPositionNoClip(connection.OutputKnob.Rect.center);
-            var endGridPosition = GridToGuiPositionNoClip(connection.InputKnob.Rect.center);
-            return HandleUtility.DistancePointBezier(
-                       GridToGuiPositionNoClip(point),
-                       startGridPosition,
-                       endGridPosition,
-                       startGridPosition + Vector2.right * ConnectionTangentMultiplier,
-                       endGridPosition + Vector2.left * ConnectionTangentMultiplier) < ConnectionLineWidth;
-        }
-
         private void OnDrag()
         {
             var delta = Event.current.delta * Scale;

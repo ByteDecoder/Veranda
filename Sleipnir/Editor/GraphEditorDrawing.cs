@@ -80,17 +80,43 @@ namespace Sleipnir.Editor
         }
 
         private static void DrawConnection(Vector2 startGridPosition, Vector2 endGridPosition,
-            Color color, float width = ConnectionLineWidth, Texture2D texture = null)
+            Color color, float width = ConnectionLineWidth)
         {
+            var distance = endGridPosition - startGridPosition;
+            var angle = Mathf.Atan2(distance.y, distance.x) / 4;
+            var outputVector = new Vector2(1, Mathf.Sin(angle));
+            var inputVector = Mathf.Abs(Mathf.Atan2(distance.y, distance.x)) * Mathf.Rad2Deg > 150 
+                ? new Vector2(-1, Mathf.Sin(angle)) 
+                : new Vector2(-1, -Mathf.Sin(angle));
+
             Handles.DrawBezier(
                 startGridPosition,
                 endGridPosition,
-                startGridPosition + Vector2.right * ConnectionTangentMultiplier,
-                endGridPosition + Vector2.left * ConnectionTangentMultiplier,
+                startGridPosition + outputVector * ConnectionTangentMultiplier,
+                endGridPosition + inputVector * ConnectionTangentMultiplier,
                 color,
-                texture,
-                width
-            );
+                null,
+                width);
+        }
+
+        private bool IsPointInBezierRange(Vector2 point, Connection connection)
+        {
+            var startGridPosition = GridToGuiPositionNoClip(connection.OutputKnob.Rect.center);
+            var endGridPosition = GridToGuiPositionNoClip(connection.InputKnob.Rect.center);
+
+            var distance = endGridPosition - startGridPosition;
+            var angle = Mathf.Atan2(distance.y, distance.x) / 4;
+            var outputVector = new Vector2(1, Mathf.Sin(angle));
+            var inputVector = Mathf.Abs(Mathf.Atan2(distance.y, distance.x)) * Mathf.Rad2Deg > 150
+                ? new Vector2(-1, Mathf.Sin(angle))
+                : new Vector2(-1, -Mathf.Sin(angle));
+
+            return HandleUtility.DistancePointBezier(
+                       GridToGuiPositionNoClip(point),
+                       startGridPosition,
+                       endGridPosition,
+                       startGridPosition + outputVector * ConnectionTangentMultiplier,
+                       endGridPosition + inputVector * ConnectionTangentMultiplier) < ConnectionLineWidth;
         }
 
         private void DrawConnection(Connection connection)
