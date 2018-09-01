@@ -1,4 +1,5 @@
-﻿using Sirenix.Utilities.Editor;
+﻿using System.Linq;
+using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -50,7 +51,7 @@ namespace Sleipnir.Editor
 
         private void AddHoverCursorZones()
         {
-            if(_resizedNode != null)
+            if (_resizedNode != null)
                 EditorGUIUtility.AddCursorRect(new Rect(0, 0, Screen.width, Screen.height),
                     MouseCursor.ResizeHorizontal);
 
@@ -72,36 +73,42 @@ namespace Sleipnir.Editor
         {
             var mouseGridPosition = GuiToGridPosition(Event.current.mousePosition);
 
-            if (Nodes != null)
-                foreach (var node in Nodes)
+            if (Nodes == null)
+            {
+                _isDragging = true;
+                return;
+            }
+
+            foreach (var node in Nodes)
+            {
+                if (node.Content == null)
+                    continue;
+
+                if (node.Content.RightResizeZone.Contains(mouseGridPosition))
                 {
-                    if (node.Content == null)
-                        continue;
+                    _resizedNode = node.Content;
+                    _resizedZone = NodeResizeSide.Right;
+                    return;
+                }
 
-                    if (node.Content.RightResizeZone.Contains(mouseGridPosition))
-                    {
-                        _resizedNode = node.Content;
-                        _resizedZone = NodeResizeSide.Right;
-                        return;
-                    }
+                if (node.Content.LeftResizeZone.Contains(mouseGridPosition))
+                {
+                    _resizedNode = node.Content;
+                    _resizedZone = NodeResizeSide.Left;
+                    return;
+                }
 
-                    if (node.Content.LeftResizeZone.Contains(mouseGridPosition))
-                    {
-                        _resizedNode = node.Content;
-                        _resizedZone = NodeResizeSide.Left;
-                        return;
-                    }
+                if (node.Content.HeaderRect.Contains(mouseGridPosition))
+                {
+                    _selectedNode = node.Content;
+                    return;
+                }
 
-                    if (node.Content.HeaderRect.Contains(mouseGridPosition))
-                    {
-                        _selectedNode = node.Content;
-                        return;
-                    }
-
-                    if (node.Content.ContentRect.Contains(mouseGridPosition)
-                        || node.Content.SliderRect.Contains(mouseGridPosition))
-                        return;
-                    }
+                if (node.Content.ContentRect.Contains(mouseGridPosition)
+                    || node.Content.SliderRect.Contains(mouseGridPosition)
+                    || node.Content.Knobs.Any(k => k.Rect.Contains(mouseGridPosition)))
+                    return;
+            }
 
             _isDragging = true;
         }
@@ -124,11 +131,8 @@ namespace Sleipnir.Editor
 
             var mouseGridPosition = GuiToGridPosition(Event.current.mousePosition);
             
-            foreach (var node in Nodes)
+            foreach (var node in Nodes.Where(node => node.Content != null))
             {
-                if (node.Content == null)
-                    continue;
-
                 if (node.Content.HeaderRect.Contains(mouseGridPosition))
                 {
                     ShowNodeContextMenu(node.Content);
@@ -139,7 +143,7 @@ namespace Sleipnir.Editor
                     return;
             }
             
-            if(_graph.Connections() != null)
+            if (_graph.Connections() != null)
                 foreach (var connection in _graph.Connections())
                     if (IsPointInBezierRange(mouseGridPosition, connection))
                     {
@@ -164,7 +168,7 @@ namespace Sleipnir.Editor
                     : new GUIContent("Show Label Width Slider");
                 menu.AddItem(content, false, () => node.IsLabelSliderShown = !node.IsLabelSliderShown);
             }
-            menu.AddItem(new GUIContent("Delete Node"), false, () =>  RemoveNode(node));
+            menu.AddItem(new GUIContent("Delete Node"), false, () => _graph.RemoveNode(node));
 
             menu.ShowAsContext();
         }
@@ -173,7 +177,7 @@ namespace Sleipnir.Editor
         {
             var menu = new GenericMenu();
             menu.AddItem(new GUIContent("Delete connection"), false,
-                () => { RemoveConnection(connection); });
+                () => { _graph.RemoveConnection(connection); });
             menu.ShowAsContext();
         }
 
@@ -186,7 +190,7 @@ namespace Sleipnir.Editor
 
             foreach (var nodeName in availableNodes)
                 menu.AddItem(new GUIContent("Create Node/" + nodeName), false,
-                    () => CreateNode(nodeName, mouseGridPosition));
+                    () => _graph.AddNode(nodeName, mouseGridPosition));
 
             menu.ShowAsContext();
         }
@@ -228,9 +232,9 @@ namespace Sleipnir.Editor
             else
             {
                 if (knob.Type == KnobType.Input)
-                    CreateConnection(_selectedKnob, knob);
+                    _graph.AddConnection(_selectedKnob, knob);
                 else
-                    CreateConnection(knob, _selectedKnob);
+                    _graph.AddConnection(knob, _selectedKnob);
                 _selectedKnob = null;
             }
         }

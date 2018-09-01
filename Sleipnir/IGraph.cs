@@ -5,13 +5,13 @@ namespace Sleipnir
 {
     public interface IGraph
     {
-        float Zoom { get; set; }
+        float Scale { get; set; }
         Vector2 Position { get; set; }
 
-        List<Node> Nodes { get; }
+        IList<Node> Nodes { get; }
         IEnumerable<string> AvailableNodes();
-        Node CreateNode(string nodeId, Vector2 position);
-        bool RemoveNode(Node node);
+        void AddNode(string nodeId, Vector2 position);
+        void RemoveNode(Node node);
 
         IEnumerable<Connection> Connections();
         void AddConnection(Knob outputKnob, Knob inputKnob);

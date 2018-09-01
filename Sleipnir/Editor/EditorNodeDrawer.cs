@@ -40,9 +40,9 @@ namespace Sleipnir.Editor
             GUIHelper.PopColor();
             GUI.Label(headerRect, content.HeaderTitle, GraphEditor.NodeHeaderTitleGUIStyle.Value);
 
-            //Draw content
+            // Draw content
             GUILayout.BeginArea(value.Editor.GridToGuiDrawRect(content.ContentRect));
-            var rect = SirenixEditorGUI.BeginBox();
+            var contentBoxRect = SirenixEditorGUI.BeginBox();
             // When label width equals 0 it is drawn with default inspector width.
             // Maximum value makes it nicer.
             var labelWidth = Mathf.Clamp(ValueEntry.SmartValue.Content.NodeWidth, Mathf.Epsilon,
@@ -53,7 +53,7 @@ namespace Sleipnir.Editor
             SirenixEditorGUI.EndBox();
 
             if (Event.current.type == EventType.Repaint)
-                content.Height = rect.height;
+                content.Height = contentBoxRect.height;
 
             GUILayout.EndArea();
 

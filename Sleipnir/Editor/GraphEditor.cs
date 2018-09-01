@@ -10,6 +10,7 @@ namespace Sleipnir.Editor
     public partial class GraphEditor : OdinEditorWindow
     {
         private const float ZoomSpeed = 0.1f;
+        private const float MaxScale = 7f;
 
         private IGraph _graph;
         
@@ -53,13 +54,13 @@ namespace Sleipnir.Editor
         {
             get
             {
-                return _graph == null || _graph.Zoom < 1
+                return _graph == null || _graph.Scale < 1
                     ? 1 
-                    : _graph.Zoom;
+                    : _graph.Scale;
             }
             set
             {
-                _graph.Zoom = Mathf.Clamp(value, 1f, 7f);
+                _graph.Scale = Mathf.Clamp(value, 1f, MaxScale);
                 GUIHelper.RequestRepaint();
             }
         }
@@ -78,7 +79,7 @@ namespace Sleipnir.Editor
         {
             GUI.EndClip();
             GUI.EndClip();
-
+            
             GUIUtility.ScaleAroundPivot(Vector2.one / Scale, position.size * 0.5f);
             GUI.BeginClip(new Rect(-(position.width * Scale - position.width) * 0.5f,
                 -((position.height * Scale - position.height) * 0.5f) + 22 * Scale,

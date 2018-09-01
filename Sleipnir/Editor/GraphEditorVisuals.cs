@@ -16,6 +16,6 @@ namespace Sleipnir.Editor
 
         public static Lazy<GUIStyle> NodeHeaderTitleGUIStyle =>
             new Lazy<GUIStyle>(() => 
-            new GUIStyle(GUI.skin.GetStyle("Label")) {alignment = TextAnchor.MiddleCenter});
+            new GUIStyle(GUI.skin.GetStyle("Label")) { alignment = TextAnchor.MiddleCenter });
     }
 }

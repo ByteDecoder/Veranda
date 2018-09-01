@@ -10,10 +10,7 @@ namespace Sleipnir.Editor
         protected override void DrawEditor(int index)
         {
             if (_graph == null)
-            {
-                DrawGrid();
                 return;
-            }
 
             var matrix = GUI.matrix;
             ProcessInput();
@@ -33,29 +30,29 @@ namespace Sleipnir.Editor
         #region Grid
         private void DrawGrid()
         {
-            var rect = new Rect(Vector2.zero, position.size);
-            var center = rect.size / 2f;
+            var windowRect = new Rect(Vector2.zero, position.size);
+            var center = windowRect.size * 0.5f;
 
             // Offset from origin in tile units
             var xOffset = -(center.x * Scale + Position.x)
                 / GridTexture.Value.width;
-            var yOffset = ((center.y - rect.size.y) * Scale + Position.y)
+            var yOffset = ((center.y - windowRect.size.y) * Scale + Position.y)
                 / GridTexture.Value.height;
 
             var tileOffset = new Vector2(xOffset, yOffset);
 
             // Amount of tiles
-            var tileAmountX = Mathf.Round(rect.size.x * Scale)
+            var tileAmountX = Mathf.Round(windowRect.size.x * Scale)
                 / GridTexture.Value.width;
-            var tileAmountY = Mathf.Round(rect.size.y * Scale)
+            var tileAmountY = Mathf.Round(windowRect.size.y * Scale)
                 / GridTexture.Value.height;
 
             var tileAmount = new Vector2(tileAmountX, tileAmountY);
 
             // Draw tiled background
-            GUI.DrawTextureWithTexCoords(rect, GridTexture.Value,
+            GUI.DrawTextureWithTexCoords(windowRect, GridTexture.Value,
                 new Rect(tileOffset, tileAmount));
-            GUI.DrawTextureWithTexCoords(rect, CrossTexture.Value,
+            GUI.DrawTextureWithTexCoords(windowRect, CrossTexture.Value,
                 new Rect(tileOffset + new Vector2(0.5f, 0.5f), tileAmount));
         }
         #endregion
