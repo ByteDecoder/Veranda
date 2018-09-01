@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Sleipnir
@@ -9,16 +8,13 @@ namespace Sleipnir
         float Zoom { get; set; }
         Vector2 Position { get; set; }
 
-        IEnumerable<INode> NodesInDrawingOrder();
+        List<Node> Nodes { get; }
         IEnumerable<string> AvailableNodes();
-        INode AddNode(string nodeId);
-        bool RemoveNode(INode node);
-        void MoveNodeToFront(INode node);
+        Node CreateNode(string nodeId, Vector2 position);
+        bool RemoveNode(Node node);
 
-        IEnumerable<IConnection> ConnectionsInDrawingOrder();
-        void MoveConnectionToFront(IConnection connection);
-        IConnection AddConnection(IKnob outputKnob, IKnob inputKnob);
-        bool RemoveConnection(IConnection connection);
+        IEnumerable<Connection> Connections();
+        void AddConnection(Knob outputKnob, Knob inputKnob);
+        void RemoveConnection(Connection connection);
     }
 }
-#endif

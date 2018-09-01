@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-namespace Sleipnir
+﻿namespace Sleipnir
 {
     public enum KnobType
     {
@@ -7,4 +6,3 @@ namespace Sleipnir
         Output
     }
 }
-#endif
