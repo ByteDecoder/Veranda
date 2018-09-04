@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using UnityEngine;
@@ -10,7 +10,7 @@ namespace Sleipnir.Editor
         private const float SliderHorizontalSpacing = 8f;
         private const float SliderVerticalOffset = 4f;
         private const float SliderMaxOffset = 12f;
-        
+
         protected override void DrawPropertyLayout(GUIContent label)
         {
             var value = ValueEntry.SmartValue;
@@ -19,9 +19,9 @@ namespace Sleipnir.Editor
             var headerRect = value.Editor.GridToGuiDrawRect(content.HeaderRect);
             var sliderRect = value.Editor.GridToGuiDrawRect(content.SliderRect);
 
-            var topBox = new Rect(headerRect.x, headerRect.y, 
+            var topBox = new Rect(headerRect.x, headerRect.y,
                 headerRect.width, headerRect.height + sliderRect.height);
-            
+
             // Draw top box
             GUIHelper.PushColor(content.HeaderColor);
             GUI.Box(topBox, "");
@@ -40,7 +40,7 @@ namespace Sleipnir.Editor
             GUIHelper.PopColor();
 
             var titleGUIStyle = new GUIStyle(GraphEditor.NodeHeaderTitleGUIStyle.Value)
-                                      { normal = { textColor = content.TitleColor } };
+            { normal = { textColor = content.TitleColor } };
             GUI.Label(headerRect, content.HeaderTitle, titleGUIStyle);
 
             // Draw content
@@ -48,7 +48,7 @@ namespace Sleipnir.Editor
             var contentBoxRect = SirenixEditorGUI.BeginBox();
             // When label width equals 0 it is drawn with default inspector width.
             // Maximum value makes it nicer.
-            var labelWidth = Mathf.Clamp(ValueEntry.SmartValue.Content.NodeWidth, Mathf.Epsilon,
+            var labelWidth = Mathf.Clamp(ValueEntry.SmartValue.Content.LabelWidth, Mathf.Epsilon,
                 ValueEntry.SmartValue.Content.NodeWidth - SliderMaxOffset);
             GUIHelper.PushLabelWidth(labelWidth);
             CallNextDrawer(label);
@@ -66,15 +66,14 @@ namespace Sleipnir.Editor
     }
 
     [DrawerPriority(DrawerPriorityLevel.WrapperPriority)]
-    public class GraphNodeListDrawer<TListType> 
+    public class GraphNodeListDrawer<TListType>
         : OdinValueDrawer<TListType> where TListType : IEnumerable<EditorNode>
     {
         protected override void DrawPropertyLayout(GUIContent label)
         {
             foreach (var propertyChild in ValueEntry.Property.Children)
-                if(((EditorNode)propertyChild.ValueEntry.WeakSmartValue).Content != null)
+                if (((EditorNode)propertyChild.ValueEntry.WeakSmartValue).Content != null)
                     propertyChild.Draw();
         }
     }
 }
- 
