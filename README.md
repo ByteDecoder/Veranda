@@ -7,7 +7,7 @@ Sleipnir is a node based editor for displaying an modyfing data that can be repr
 
 ## Key features
 
-- Almost non existing in runtime.
+- Almost non existing at runtime.
 - Doesn't force any data structure on user - your graphs and nodes don't have to derive from any class.
 - Uses Odin Inspector for displaying data.
 - Editor data can be stored with Unity serialization.
