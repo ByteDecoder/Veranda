@@ -6,6 +6,7 @@ namespace Sleipnir
     [Serializable]
     public class Knob
     {
+#if UNITY_EDITOR
         public float RelativeYPosition;
         public string Description;
         public Color Color = new Color(0.1f, 0.4f, 0.4f);
@@ -19,5 +20,6 @@ namespace Sleipnir
             RelativeYPosition = relativeYPosition;
             Type = type;
         }
+#endif
     }
 }

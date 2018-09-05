@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using UnityEngine;
@@ -39,8 +39,12 @@ namespace Sleipnir.Editor
             }
             GUIHelper.PopColor();
 
-            var titleGUIStyle = new GUIStyle(GraphEditor.NodeHeaderTitleGUIStyle.Value)
-            { normal = { textColor = content.TitleColor } };
+            var titleGUIStyle = new GUIStyle(GUI.skin.GetStyle("Label"))
+                    {
+                        alignment = TextAnchor.MiddleCenter,
+                        normal = { textColor = content.TitleColor}
+                    };
+
             GUI.Label(headerRect, content.HeaderTitle, titleGUIStyle);
 
             // Draw content

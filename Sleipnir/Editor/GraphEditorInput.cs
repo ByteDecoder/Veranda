@@ -61,7 +61,7 @@ namespace Sleipnir.Editor
             foreach (var node in Nodes)
             {
                 if (node.Content == null)
-                    return;
+                    continue;
                 EditorGUIUtility.AddCursorRect(GridToGuiDrawRect(node.Content.RightResizeZone), 
                     MouseCursor.ResizeHorizontal);
                 EditorGUIUtility.AddCursorRect(GridToGuiDrawRect(node.Content.LeftResizeZone),
@@ -168,9 +168,19 @@ namespace Sleipnir.Editor
                     : new GUIContent("Show Label Width Slider");
                 menu.AddItem(content, false, () => node.IsLabelSliderShown = !node.IsLabelSliderShown);
             }
-            menu.AddItem(new GUIContent("Delete Node"), false, () => _graph.RemoveNode(node));
+            menu.AddItem(new GUIContent("Delete Node"), false, () => RemoveNode(node));
 
             menu.ShowAsContext();
+        }
+
+        private void RemoveNode(Node node)
+        {
+            var index = _graph.Nodes.IndexOf(node);
+            if (!_graph.RemoveNode(node))
+                return;
+
+            if (index < _graph.Nodes.Count)
+                _graph.Nodes[index].NumberOfPrecedingDummies++;
         }
 
         private void ShowConnectionContextMenu(Connection connection)

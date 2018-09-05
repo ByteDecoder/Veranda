@@ -37,6 +37,11 @@ namespace Sleipnir.Editor
             OnEditorOpen();
         }
 
+        private void OnInspectorUpdate()
+        {
+            Repaint();
+        }
+
         public Vector2 Position
         {
             get

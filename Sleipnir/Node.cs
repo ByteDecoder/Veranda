@@ -8,6 +8,7 @@ namespace Sleipnir
     [Serializable]
     public class Node
     {
+#if UNITY_EDITOR
         private const float MinNodeWidth = 30f;
         private const float HeaderHeight = 32f;
         private const float SliderHeight = 12f;
@@ -85,5 +86,6 @@ namespace Sleipnir
 
         public Rect LeftResizeZone => new Rect(HeaderRect.position.x - ResizePrecision,
             HeaderRect.y, ResizePrecision * 2, HeaderHeight + SliderHeight);
+#endif
     }
 }

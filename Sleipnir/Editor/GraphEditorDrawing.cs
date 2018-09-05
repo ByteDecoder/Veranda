@@ -30,29 +30,32 @@ namespace Sleipnir.Editor
         #region Grid
         private void DrawGrid()
         {
+            if (_gridTexture == null || _crossTexture == null)
+                return;
+
             var windowRect = new Rect(Vector2.zero, position.size);
             var center = windowRect.size * 0.5f;
 
             // Offset from origin in tile units
             var xOffset = -(center.x * Scale + Position.x)
-                / GridTexture.Value.width;
+                / _gridTexture.width;
             var yOffset = ((center.y - windowRect.size.y) * Scale + Position.y)
-                / GridTexture.Value.height;
+                / _gridTexture.height;
 
             var tileOffset = new Vector2(xOffset, yOffset);
 
             // Amount of tiles
             var tileAmountX = Mathf.Round(windowRect.size.x * Scale)
-                / GridTexture.Value.width;
+                / _gridTexture.width;
             var tileAmountY = Mathf.Round(windowRect.size.y * Scale)
-                / GridTexture.Value.height;
+                / _gridTexture.height;
 
             var tileAmount = new Vector2(tileAmountX, tileAmountY);
 
             // Draw tiled background
-            GUI.DrawTextureWithTexCoords(windowRect, GridTexture.Value,
+            GUI.DrawTextureWithTexCoords(windowRect, _gridTexture,
                 new Rect(tileOffset, tileAmount));
-            GUI.DrawTextureWithTexCoords(windowRect, CrossTexture.Value,
+            GUI.DrawTextureWithTexCoords(windowRect, _crossTexture,
                 new Rect(tileOffset + new Vector2(0.5f, 0.5f), tileAmount));
         }
         #endregion
@@ -92,8 +95,8 @@ namespace Sleipnir.Editor
             Handles.DrawBezier(
                 startGridPosition,
                 endGridPosition,
-                startGridPosition + outputVector * ConnectionTangentMultiplier,
-                endGridPosition + inputVector * ConnectionTangentMultiplier,
+                startGridPosition + outputVector * distance.magnitude,
+                endGridPosition + inputVector * distance.magnitude,
                 color,
                 null,
                 width);
@@ -115,8 +118,8 @@ namespace Sleipnir.Editor
                        GridToGuiPositionNoClip(point),
                        startGridPosition,
                        endGridPosition,
-                       startGridPosition + outputVector * ConnectionTangentMultiplier,
-                       endGridPosition + inputVector * ConnectionTangentMultiplier) < ConnectionLineWidth;
+                       startGridPosition + outputVector * distance.magnitude,
+                       endGridPosition + inputVector * distance.magnitude) < ConnectionLineWidth;
         }
 
         private void DrawConnection(Connection connection)
@@ -143,13 +146,13 @@ namespace Sleipnir.Editor
             if (knob.Description.IsNullOrWhitespace())
                 return;
 
-            var style = KnobLabelGUIStyle.Value;
+            var style = _knobLabelGUIStyle;
             var labelContent = new GUIContent(knob.Description);
             var labelSize = style.CalcSize(labelContent);
 
             var labelPosition = knob.Type == KnobType.Input
-                ? rect.position + new Vector2(-labelSize.x - KnobLabelOffset.x, KnobSize.y + KnobLabelOffset.y)
-                : rect.position + new Vector2(KnobSize.x + KnobLabelOffset.x, -labelSize.y - KnobLabelOffset.y);
+                ? rect.position + new Vector2(-labelSize.x - KnobLabelOffset, 0)
+                : rect.position + new Vector2(KnobSize.x + KnobLabelOffset, 0);
 
             var labelRect = new Rect(labelPosition, labelSize);
             GUI.Label(GridToGuiDrawRect(labelRect), labelContent, style);
