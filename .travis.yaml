@@ -1,0 +1,10 @@
+language: generic
+os: osx
+
+# only run builds on pushes to the master branch
+branches:
+  only:
+  - master
+
+install:
+- ./Scripts/install.sh
