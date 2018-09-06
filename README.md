@@ -4,6 +4,7 @@
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/michalpogodakotwica/Sleipnir/master/LICENSE)
 
 Sleipnir is a graph editor framework leveraging the unity asset [Odin](http://sirenix.net/odininspector "Odin")
+
 (pronounced “SLAYP-neer”; “The Sliding One”)
 
 ## Key features
