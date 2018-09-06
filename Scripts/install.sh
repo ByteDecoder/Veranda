@@ -4,20 +4,35 @@ BASE_URL=https://download.unity3d.com/download_unity
 HASH=f2cce2a5991f
 VERSION=2017.4.10f1
 
-download() {
-  file=$1
-  url="$BASE_URL/$HASH/$package"
+install() {
+	PACKAGE=$1
+	download "$PACKAGE"
+	
+	echo "Installing "`basename "$PACKAGE"`
+	
+}
 
-  echo "Downloading from $url: "
-  curl -o `basename "$package"` "$url"
+
+download() {
+    FILE=$1
+    URL="$BASE_URL/$HASH/$FILE"
+
+    #download package if it does not already exist in cache
+    if [ ! -e $UNITY_DOWNLOAD_CACHE/`basename "$FILE"` ] ; then
+        echo "$FILE does not exist. Downloading from $URL: "
+        curl -o $UNITY_DOWNLOAD_CACHE/`basename "$FILE"` "$URL"
+    else
+        echo "$FILE Exists. Skipping download."
+    fi
 }
 
 install() {
-  package=$1
-  download "$package"
+  PACKAGE=$1
+  download "$PACKAGE"
 
   echo "Installing "`basename "$package"`
-  sudo installer -dumplog -package `basename "$package"` -target /
+  sudo installer -dumplog -package $UNITY_DOWNLOAD_CACHE/`basename "$PACKAGE"` -target /
 }
 
 install "MacEditorInstaller/Unity-$VERSION.pkg"
+install "MacEditorTargetInstaller/UnitySetup-Windows-Support-for-Editor-$VERSION.pkg"
