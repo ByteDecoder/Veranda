@@ -186,7 +186,7 @@ namespace Sleipnir.Editor
         private void ShowConnectionContextMenu(Connection connection)
         {
             var menu = new GenericMenu();
-            menu.AddItem(new GUIContent("Delete connection"), false,
+            menu.AddItem(new GUIContent("Delete Connection"), false,
                 () => _graph.RemoveConnection(connection));
             menu.ShowAsContext();
         }
