@@ -105,8 +105,13 @@ namespace Sleipnir.Editor
                 }
 
                 if (node.Content.ContentRect.Contains(mouseGridPosition)
-                    || node.Content.SliderRect.Contains(mouseGridPosition)
-                    || node.Content.Knobs.Any(k => k.Rect.Contains(mouseGridPosition)))
+                    || node.Content.SliderRect.Contains(mouseGridPosition))
+                {
+                    _selectedKnob = null;
+                    return;
+                }
+
+                if (node.Content.Knobs.Any(k => k.Rect.Contains(mouseGridPosition)))
                     return;
             }
 
