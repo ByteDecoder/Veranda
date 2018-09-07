@@ -3,7 +3,8 @@
 PROJECT_PATH=$(pwd)/$UNITY_PROJECT_PATH
 UNITY_BUILD_DIR=$(pwd)/Build
 LOG_FILE=$UNITY_BUILD_DIR/unity-win.log
-EXPORT_PATH=$(pwd)/$PROJECT_NAME-"$TRAVIS_BUILD_NUMBER".unitypackage
+VERSION_NUMBER=$SLEIPNIR_VERSION."$TRAVIS_BUILD_NUMBER"
+EXPORT_PATH=$(pwd)/$PROJECT_NAME-"$VERSION_NUMBER".unitypackage
 RELEASE_DIRECTORY=./release
 
 
@@ -17,7 +18,7 @@ mkdir $UNITY_BUILD_DIR
   -silent-crashes \
   -logFile \
   -projectPath "$PROJECT_PATH" \
-  -exportPackage "Assets" "$EXPORT_PATH" \
+  -exportPackage "Assets/Sleipnir" "$EXPORT_PATH" \
   -quit \
   | tee "$LOG_FILE"
   
@@ -27,11 +28,11 @@ if [ $? = 0 ] ; then
 	
 	echo "Packaging unity package into release..."
 	#Preprare release unity package by packing into ZIP
-	RELEASE_ZIP_FILE=$RELEASE_DIRECTORY/$PROJECT_NAME-$TRAVIS_BUILD_NUMBER.zip
+	RELEASE_ZIP_FILE=$RELEASE_DIRECTORY/$PROJECT_NAME-$VERSION_NUMBER.zip
 
 	mkdir -p $RELEASE_DIRECTORY
 
-	echo "Preparing release for version: $TRAVIS_BUILD_NUMBER"
+	echo "Preparing release for version: $VERSION_NUMBER"
 	cp "$EXPORT_PATH" "$RELEASE_DIRECTORY/"`basename "$EXPORT_PATH"`
 	cp "./README.md" "$RELEASE_DIRECTORY"
 	cp "./LICENSE" "$RELEASE_DIRECTORY"

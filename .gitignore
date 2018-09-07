@@ -35,3 +35,4 @@ sysinfo.txt
 
 *.meta
 Assets/Plugins/Sirenix/**
+.vscode/settings.json

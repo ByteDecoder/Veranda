@@ -12,7 +12,6 @@ install() {
 	
 }
 
-
 download() {
     FILE=$1
     URL="$BASE_URL/$HASH/$FILE"
