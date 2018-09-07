@@ -105,8 +105,13 @@ namespace Sleipnir.Editor
                 }
 
                 if (node.Content.ContentRect.Contains(mouseGridPosition)
-                    || node.Content.SliderRect.Contains(mouseGridPosition)
-                    || node.Content.Knobs.Any(k => k.Rect.Contains(mouseGridPosition)))
+                    || node.Content.SliderRect.Contains(mouseGridPosition))
+                {
+                    _selectedKnob = null;
+                    return;
+                }
+
+                if (node.Content.Knobs.Any(k => k.Rect.Contains(mouseGridPosition)))
                     return;
             }
 
@@ -186,7 +191,7 @@ namespace Sleipnir.Editor
         private void ShowConnectionContextMenu(Connection connection)
         {
             var menu = new GenericMenu();
-            menu.AddItem(new GUIContent("Delete connection"), false,
+            menu.AddItem(new GUIContent("Delete Connection"), false,
                 () => _graph.RemoveConnection(connection));
             menu.ShowAsContext();
         }

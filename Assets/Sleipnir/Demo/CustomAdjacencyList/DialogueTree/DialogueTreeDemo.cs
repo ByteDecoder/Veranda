@@ -25,7 +25,7 @@ namespace Sleipnir.Demo.CustomAdjacencyList.DialogueTree
                 var nodeIndex = i;
                 node.EditorNode.ContextMenuFunctions = new List<Tuple<string, Action>>
                 {
-                    new Tuple<string, Action>("Set current node", () =>
+                    new Tuple<string, Action>("Set Current Node", () =>
                     {
                         CurrentNode = nodeIndex;
                         UpdateCurrentNode();
