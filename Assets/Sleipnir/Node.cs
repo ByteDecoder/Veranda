@@ -10,7 +10,7 @@ namespace Sleipnir
     {
 #if UNITY_EDITOR
         private const float MinNodeWidth = 30f;
-        private const float HeaderHeight = 32f;
+        public const float HeaderHeight = 32f;
         private const float SliderHeight = 12f;
         private const float ResizePrecision = 5f;
 
@@ -24,12 +24,12 @@ namespace Sleipnir
         public Action<object> ValueSetter;
 
         public Vector2 Position;
-        public List<Knob> Knobs;
+        public List<Knob> Knobs = new List<Knob>();
         public Color HeaderColor = new Color(0.1f, 0.4f, 0.4f);
         public Color TitleColor = new Color(0, 0, 0);
         public string HeaderTitle = "Node";
         public float NodeWidth = 128f;
-        public float LabelWidth = 42f;
+        public float LabelWidth;
         public bool IsLabelSliderShown;
         public bool HasLabelSlider;
 

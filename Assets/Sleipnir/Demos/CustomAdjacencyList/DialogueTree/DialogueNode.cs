@@ -3,5 +3,5 @@
 namespace Sleipnir.Demo.CustomAdjacencyList.DialogueTree
 {
     [Serializable]
-    public class Node : Node<DialogueLine, DialogueConnection, Condition> { }
+    public class DialogueNode : Node<DialogueLine, DialogueConnection, Condition> { }
 }

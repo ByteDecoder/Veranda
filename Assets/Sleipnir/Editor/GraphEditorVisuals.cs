@@ -11,7 +11,7 @@ namespace Sleipnir.Editor
 
         private const float KnobLabelOffset = 5f;
         private const float KnobHorizontalOffset = 4f;
-        private static readonly Vector2 KnobSize = new Vector2(12, 12);
+        public static readonly Vector2 KnobSize = new Vector2(12, 12);
 
         private static readonly Color GridLineColor = new Color(0.24f, 0.24f, 0.24f);
         private static readonly Color CrossColor = new Color(0.36f, 0.36f, 0.36f);
