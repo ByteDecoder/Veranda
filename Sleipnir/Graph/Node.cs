@@ -1,17 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Sirenix.OdinInspector;
-using Sirenix.Utilities;
 using Sleipnir.Graph.Attributes;
-using UnityEngine;
 
 namespace Sleipnir.Graph
 {
     public abstract class BaseNode
     {
-        public abstract Knob[] GetKnobs(string fieldName);
+        public abstract Knob[] GetKnobs(string fieldName, int index);
+        public abstract Tuple<string, int> GetKnobInfo(Knob knob);
+
+        protected Dictionary<Knob, Tuple<string, int>> Knobs;
     }
 
     public abstract class Node<TContent> : BaseNode
@@ -59,12 +61,12 @@ namespace Sleipnir.Graph
                 EditorNode.HasLabelSlider = true;
                 EditorNode.IsLabelSliderShown = labelSlider.IsShown;
             }
-
             LoadKnobs();
         }
 
         public void UpdateKnobs()
         {
+            LoadKnobs();
             foreach (var action in _onKnobUpdate)
                 action?.Invoke();
         }
@@ -72,6 +74,7 @@ namespace Sleipnir.Graph
         public void LoadKnobs()
         {
             EditorNode.Knobs = new List<Knob>();
+            Knobs = new Dictionary<Knob, Tuple<string, int>>();
 
             var objectKnob = (Attributes.Knob)Content.GetType()
                 .GetCustomAttribute(typeof(Attributes.Knob));
@@ -82,11 +85,13 @@ namespace Sleipnir.Graph
                 {
                     var editorKnob = new Knob(18f, Sleipnir.KnobType.Input);
                     EditorNode.Knobs.Add(editorKnob);
+                    Knobs.Add(editorKnob, new Tuple<string, int>(null, -1));
                 }
                 if (objectKnob.Type == KnobType.Output || objectKnob.Type == KnobType.Both)
                 {
                     var editorKnob = new Knob(18f, Sleipnir.KnobType.Output);
                     EditorNode.Knobs.Add(editorKnob);
+                    Knobs.Add(editorKnob, new Tuple<string, int>(null, -1));
                 }
             }
 
@@ -95,21 +100,49 @@ namespace Sleipnir.Graph
                 .Where(m => m.GetCustomAttributes(typeof(Attributes.Knob)).Any())
                 .Select(k => new Tuple<FieldInfo, Attributes.Knob>(k,
                     (Attributes.Knob)k.GetCustomAttribute(typeof(Attributes.Knob), true)));
-
-            var inHeight = 50;
-            var outHeight = 50;
+            
             foreach (var knob in fieldsKnobs)
             {
                 if (knob.Item2.Type == KnobType.Input || knob.Item2.Type == KnobType.Both)
                 {
-                    EditorNode.Knobs.Add(new Knob(inHeight, Sleipnir.KnobType.Input));
-                    inHeight += 24;
+                    var editorKnob = new Knob(0, Sleipnir.KnobType.Input);
+                    EditorNode.Knobs.Add(editorKnob);
+                    Knobs.Add(editorKnob, new Tuple<string, int>(knob.Item1.Name, -1));
                 }
+
                 if (knob.Item2.Type == KnobType.Output || knob.Item2.Type == KnobType.Both)
                 {
-                    outHeight += 24;
-                    EditorNode.Knobs.Add(new Knob(outHeight, Sleipnir.KnobType.Output));
-                };
+                    var editorKnob = new Knob(0, Sleipnir.KnobType.Output);
+                    EditorNode.Knobs.Add(editorKnob);
+                    Knobs.Add(editorKnob, new Tuple<string, int>(knob.Item1.Name, -1));
+                }
+            }
+
+            var multiFields = Content.GetType()
+                .GetFields()
+                .Where(m => m.GetCustomAttributes(typeof(MultiKnob)).Any())
+                .Select(k => new Tuple<FieldInfo, MultiKnob>(k,
+                    (MultiKnob)k.GetCustomAttribute(typeof(MultiKnob), true)));
+            
+            foreach (var knob in multiFields)
+            { 
+                var index = 0;
+                foreach (var unused in (IEnumerable)knob.Item1.GetValue(Content))
+                {
+                    if (knob.Item2.Type == KnobType.Input || knob.Item2.Type == KnobType.Both)
+                    {
+                        var editorKnob = new Knob(0, Sleipnir.KnobType.Input);
+                        EditorNode.Knobs.Add(editorKnob);
+                        Knobs.Add(editorKnob, new Tuple<string, int>(knob.Item1.Name, index));
+                    }
+                    if (knob.Item2.Type == KnobType.Output || knob.Item2.Type == KnobType.Both)
+                    {
+                        var editorKnob = new Knob(0, Sleipnir.KnobType.Output);
+                        EditorNode.Knobs.Add(editorKnob);
+                        Knobs.Add(editorKnob, new Tuple<string, int>(knob.Item1.Name, index));
+                    }
+                    index++;
+                }
             }
         }
 
@@ -128,93 +161,20 @@ namespace Sleipnir.Graph
             foreach (var nodeContextMethod in nodeContextMethods)
                 EditorNode.ContextMenuFunctions.Add(nodeContextMethod);
 
+            LoadKnobs();
         }
 
-        public FieldInfo GetKnobFileInfo(Knob knob)
+        public override Knob[] GetKnobs(string fieldName, int index)
         {
-            var objectKnob = (Attributes.Knob)Content.GetType()
-                .GetCustomAttribute(typeof(Attributes.Knob));
-
-            var orderedFieldsKnobs = Content.GetType()
-                .GetFields()
-                .Where(m => m.GetCustomAttributes(typeof(Attributes.Knob)).Any())
-                .OrderBy(field => field.MetadataToken);
-
-            var knobIndex = EditorNode.Knobs.IndexOf(knob);
-            var i = 0;
-
-            if (objectKnob != null)
-            {
-                i = objectKnob.Type == KnobType.Both
-                    ? 2
-                    : 1;
-
-                if (i > knobIndex)
-                    return null;
-            }
-
-            foreach (var knobField in orderedFieldsKnobs)
-            {
-                if (i == knobIndex)
-                    return knobField;
-
-                var attribute = (Attributes.Knob)knobField.GetCustomAttribute(typeof(Attributes.Knob));
-                if (attribute.Type == KnobType.Both)
-                {
-                    i++;
-                    if (i == knobIndex)
-                        return knobField;
-                }
-                i++;
-            }
-            Debug.Log("nothing found");
-            return null;
+            return Knobs.Where(o => o.Value.Item1 == fieldName && o.Value.Item2 == index)
+                .Select(o => o.Key)
+                .ToArray();
         }
 
-        public override Knob[] GetKnobs(string fieldName)
+
+        public override Tuple<string, int> GetKnobInfo(Knob knob)
         {
-            var objectKnob = (Attributes.Knob)Content.GetType()
-                .GetCustomAttribute(typeof(Attributes.Knob));
-
-            if (fieldName.IsNullOrWhitespace())
-            {
-                if (objectKnob == null)
-                    return new Knob[] { };
-
-                return objectKnob.Type == KnobType.Both
-                    ? new[] { EditorNode.Knobs[0], EditorNode.Knobs[1] }
-                    : new[] { EditorNode.Knobs[0] };
-            }
-
-            var knobIndex = 0;
-            if (objectKnob != null)
-            {
-                knobIndex = objectKnob.Type == KnobType.Both
-                    ? 2
-                    : 1;
-            }
-
-            var orderedFieldsKnobs = Content.GetType()
-                .GetFields()
-                .Where(m => m.GetCustomAttributes(typeof(Attributes.Knob)).Any())
-                .OrderBy(field => field.MetadataToken);
-
-            foreach (var knobField in orderedFieldsKnobs)
-            {
-                var attribute = (Attributes.Knob)knobField.GetCustomAttribute(typeof(Attributes.Knob));
-                var knobType = attribute.Type;
-                if (knobField.Name == fieldName)
-                {
-                    return knobType == KnobType.Both
-                        ? new[] { EditorNode.Knobs[knobIndex], EditorNode.Knobs[knobIndex + 1] }
-                        : new[] { EditorNode.Knobs[knobIndex] };
-                }
-                knobIndex = knobType == KnobType.Both
-                    ? knobIndex + 2
-                    : knobIndex + 1;
-            }
-
-            return new Knob[] { };
+            return Knobs[knob];
         }
         #endregion
 #endif
