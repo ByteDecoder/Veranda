@@ -18,8 +18,7 @@ namespace Sleipnir.Graph
 
     public abstract class Node<TContent> : BaseNode
     {
-        [HideLabel, HideReferenceObjectPicker, ShowInInspector, 
-            Sirenix.OdinInspector.OnValueChanged("OnValueUpdate", true)]
+        [HideLabel, HideReferenceObjectPicker, ShowInInspector, OnValueChanged("OnValueUpdate", true)]
         public abstract TContent Content { get; set; }
 
 #if UNITY_EDITOR
@@ -55,6 +54,12 @@ namespace Sleipnir.Graph
             {
                 var headerColor = (HeaderColor)attributes.First(a => a.GetType() == typeof(HeaderColor));
                 EditorNode.HeaderColor = headerColor.Color;
+            }
+
+            if (attributes.Any(a => a.GetType() == typeof(LabelWidth)))
+            {
+                var labelWidth = (LabelWidth)attributes.First(a => a.GetType() == typeof(LabelWidth));
+                EditorNode.LabelWidth = labelWidth.Width;
             }
 
             if (attributes.Any(a => a.GetType() == typeof(LabelSlider)))
@@ -183,7 +188,7 @@ namespace Sleipnir.Graph
         public void AddNodeDelegates()
         {
             _onValueUpdate = GetType().GetMethods()
-                .Where(m => m.GetCustomAttributes(typeof(OnValueChanged), false).Length > 0)
+                .Where(m => m.GetCustomAttributes(typeof(OnNodeValueChanged), false).Length > 0)
                 .Select<MethodInfo, Action>(m => () => m.Invoke(this, new object[] { }))
                 .ToArray();
 

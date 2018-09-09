@@ -5,12 +5,14 @@ using UnityEngine;
 
 namespace Sleipnir.Graph.Demo
 {
-    [Serializable,
-        NodeWidth(300),
-        TitleColor(1, 1, 1),
-        HeaderColor(0.3f, 0.3f, 0.7f),
-        Title("Hyyype!"),
-        LabelSlider]
+    [Serializable]
+    [NodeWidth(300)]
+    [TitleColor(1, 1, 1)]
+    [HeaderColor(0.3f, 0.3f, 0.7f)]
+    [Title("Hyyype!")]
+    [LabelSlider]
+    [LabelWidth(100)]
+    [Attributes.Knob(KnobType.Both)]
     public class DialogueLine
     {
         public Character Character;
