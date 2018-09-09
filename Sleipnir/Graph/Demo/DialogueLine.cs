@@ -9,6 +9,7 @@ namespace Sleipnir.Graph.Demo
         TitleColor(1, 1, 1),
         HeaderColor(0.3f, 0.3f, 0.7f),
         Title("Hyyype!"),
+        LabelSlider,
         Attributes.Knob(KnobType.Both)]
     public class DialogueLine
     {

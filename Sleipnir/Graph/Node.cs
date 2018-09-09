@@ -53,6 +53,13 @@ namespace Sleipnir.Graph
                 EditorNode.HeaderColor = headerColor.Color;
             }
 
+            if (attributes.Any(a => a.GetType() == typeof(LabelSlider)))
+            {
+                var labelSlider = (LabelSlider)attributes.First(a => a.GetType() == typeof(LabelSlider));
+                EditorNode.HasLabelSlider = true;
+                EditorNode.IsLabelSliderShown = labelSlider.IsShown;
+            }
+
             LoadKnobs();
         }
 
