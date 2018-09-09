@@ -9,7 +9,7 @@ namespace Sleipnir.Graph.Demo
         NodeWidth(300),
         TitleColor(1, 1, 1),
         HeaderColor(0.3f, 0.3f, 0.7f),
-        Attributes.Title("Hyyype!"),
+        Title("Hyyype!"),
         LabelSlider]
     public class DialogueLine
     {
@@ -27,8 +27,8 @@ namespace Sleipnir.Graph.Demo
             Debug.Log("Hello!");
         }
 
-        [Attributes.Knob(KnobType.Output)]
-        [MultiKnob(KnobType.Input)]
+        [Attributes.Knob(KnobType.Output, Description = "Out")]
+        [MultiKnob(KnobType.Input, R = 0.4f, G = 0.5f, B = 0.8f, Description = "In")]
         public List<float> List = new List<float>();
     }
 }

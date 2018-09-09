@@ -18,7 +18,8 @@ namespace Sleipnir.Graph
 
     public abstract class Node<TContent> : BaseNode
     {
-        [HideLabel, HideReferenceObjectPicker, ShowInInspector]
+        [HideLabel, HideReferenceObjectPicker, ShowInInspector, 
+            Sirenix.OdinInspector.OnValueChanged("OnValueUpdate", true)]
         public abstract TContent Content { get; set; }
 
 #if UNITY_EDITOR
@@ -26,6 +27,7 @@ namespace Sleipnir.Graph
         public abstract Node EditorNode { get; set; }
 
         private Action[] _onKnobUpdate;
+        private Action[] _onValueUpdate;
 
         public void LoadStartingData()
         {
@@ -64,6 +66,13 @@ namespace Sleipnir.Graph
             LoadKnobs();
         }
 
+        public void OnValueUpdate()
+        {
+            foreach (var action in _onValueUpdate)
+                action?.Invoke();
+            UpdateKnobs();
+        }
+
         public void UpdateKnobs()
         {
             LoadKnobs();
@@ -83,13 +92,21 @@ namespace Sleipnir.Graph
             {
                 if (objectKnob.Type == KnobType.Input || objectKnob.Type == KnobType.Both)
                 {
-                    var editorKnob = new Knob(18f, Sleipnir.KnobType.Input);
+                    var editorKnob = new Knob(18f, Sleipnir.KnobType.Input)
+                    {
+                        Color = objectKnob.Color,
+                        Description = objectKnob.Description
+                    };
                     EditorNode.Knobs.Add(editorKnob);
                     Knobs.Add(editorKnob, new Tuple<string, int>(null, -1));
                 }
                 if (objectKnob.Type == KnobType.Output || objectKnob.Type == KnobType.Both)
                 {
-                    var editorKnob = new Knob(18f, Sleipnir.KnobType.Output);
+                    var editorKnob = new Knob(18f, Sleipnir.KnobType.Output)
+                    {
+                        Color = objectKnob.Color,
+                        Description = objectKnob.Description
+                    };
                     EditorNode.Knobs.Add(editorKnob);
                     Knobs.Add(editorKnob, new Tuple<string, int>(null, -1));
                 }
@@ -105,14 +122,22 @@ namespace Sleipnir.Graph
             {
                 if (knob.Item2.Type == KnobType.Input || knob.Item2.Type == KnobType.Both)
                 {
-                    var editorKnob = new Knob(0, Sleipnir.KnobType.Input);
+                    var editorKnob = new Knob(0, Sleipnir.KnobType.Input)
+                    {
+                        Color = knob.Item2.Color,
+                        Description = knob.Item2.Description
+                    };
                     EditorNode.Knobs.Add(editorKnob);
                     Knobs.Add(editorKnob, new Tuple<string, int>(knob.Item1.Name, -1));
                 }
 
                 if (knob.Item2.Type == KnobType.Output || knob.Item2.Type == KnobType.Both)
                 {
-                    var editorKnob = new Knob(0, Sleipnir.KnobType.Output);
+                    var editorKnob = new Knob(0, Sleipnir.KnobType.Output)
+                    {
+                        Color = knob.Item2.Color,
+                        Description = knob.Item2.Description
+                    };
                     EditorNode.Knobs.Add(editorKnob);
                     Knobs.Add(editorKnob, new Tuple<string, int>(knob.Item1.Name, -1));
                 }
@@ -124,6 +149,7 @@ namespace Sleipnir.Graph
                 .Select(k => new Tuple<FieldInfo, MultiKnob>(k,
                     (MultiKnob)k.GetCustomAttribute(typeof(MultiKnob), true)));
             
+            
             foreach (var knob in multiFields)
             { 
                 var index = 0;
@@ -131,13 +157,21 @@ namespace Sleipnir.Graph
                 {
                     if (knob.Item2.Type == KnobType.Input || knob.Item2.Type == KnobType.Both)
                     {
-                        var editorKnob = new Knob(0, Sleipnir.KnobType.Input);
+                        var editorKnob = new Knob(0, Sleipnir.KnobType.Input)
+                        {
+                            Color = knob.Item2.Color,
+                            Description = knob.Item2.Description
+                        };
                         EditorNode.Knobs.Add(editorKnob);
                         Knobs.Add(editorKnob, new Tuple<string, int>(knob.Item1.Name, index));
                     }
                     if (knob.Item2.Type == KnobType.Output || knob.Item2.Type == KnobType.Both)
                     {
-                        var editorKnob = new Knob(0, Sleipnir.KnobType.Output);
+                        var editorKnob = new Knob(0, Sleipnir.KnobType.Output)
+                        {
+                            Color = knob.Item2.Color,
+                            Description = knob.Item2.Description
+                        };
                         EditorNode.Knobs.Add(editorKnob);
                         Knobs.Add(editorKnob, new Tuple<string, int>(knob.Item1.Name, index));
                     }
@@ -148,6 +182,11 @@ namespace Sleipnir.Graph
 
         public void AddNodeDelegates()
         {
+            _onValueUpdate = GetType().GetMethods()
+                .Where(m => m.GetCustomAttributes(typeof(OnValueChanged), false).Length > 0)
+                .Select<MethodInfo, Action>(m => () => m.Invoke(this, new object[] { }))
+                .ToArray();
+
             _onKnobUpdate = GetType().GetMethods()
                 .Where(m => m.GetCustomAttributes(typeof(OnKnobUpdate), false).Length > 0)
                 .Select<MethodInfo, Action>(m => () => m.Invoke(this, new object[] { }))
@@ -170,7 +209,6 @@ namespace Sleipnir.Graph
                 .Select(o => o.Key)
                 .ToArray();
         }
-
 
         public override Tuple<string, int> GetKnobInfo(Knob knob)
         {
