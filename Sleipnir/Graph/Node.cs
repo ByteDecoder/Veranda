@@ -5,6 +5,7 @@ using System.Reflection;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using Sleipnir.Graph.Attributes;
+using UnityEngine;
 
 namespace Sleipnir.Graph
 {
@@ -30,7 +31,7 @@ namespace Sleipnir.Graph
 
             if (attributes.Any(a => a.GetType() == typeof(NodeWidth)))
             {
-                var width = (NodeWidth) attributes.First(a => a.GetType() == typeof(NodeWidth));
+                var width = (NodeWidth)attributes.First(a => a.GetType() == typeof(NodeWidth));
                 EditorNode.NodeWidth = width.Width;
             }
 
@@ -51,12 +52,14 @@ namespace Sleipnir.Graph
                 var headerColor = (HeaderColor)attributes.First(a => a.GetType() == typeof(HeaderColor));
                 EditorNode.HeaderColor = headerColor.Color;
             }
+
+            LoadKnobs();
         }
 
         public void UpdateKnobs()
         {
             foreach (var action in _onKnobUpdate)
-                action?.Invoke();;
+                action?.Invoke();
         }
 
         public void LoadKnobs()
@@ -120,19 +123,60 @@ namespace Sleipnir.Graph
 
         }
 
+        public FieldInfo GetKnobFileInfo(Knob knob)
+        {
+            var objectKnob = (Attributes.Knob)Content.GetType()
+                .GetCustomAttribute(typeof(Attributes.Knob));
+
+            var orderedFieldsKnobs = Content.GetType()
+                .GetFields()
+                .Where(m => m.GetCustomAttributes(typeof(Attributes.Knob)).Any())
+                .OrderBy(field => field.MetadataToken);
+
+            var knobIndex = EditorNode.Knobs.IndexOf(knob);
+            var i = 0;
+
+            if (objectKnob != null)
+            {
+                i = objectKnob.Type == KnobType.Both
+                    ? 2
+                    : 1;
+
+                if (i > knobIndex)
+                    return null;
+            }
+
+            foreach (var knobField in orderedFieldsKnobs)
+            {
+                if (i == knobIndex)
+                    return knobField;
+
+                var attribute = (Attributes.Knob)knobField.GetCustomAttribute(typeof(Attributes.Knob));
+                if (attribute.Type == KnobType.Both)
+                {
+                    i++;
+                    if (i == knobIndex)
+                        return knobField;
+                }
+                i++;
+            }
+            Debug.Log("nothing found");
+            return null;
+        }
+
         public override Knob[] GetKnobs(string fieldName)
         {
             var objectKnob = (Attributes.Knob)Content.GetType()
                 .GetCustomAttribute(typeof(Attributes.Knob));
-            
+
             if (fieldName.IsNullOrWhitespace())
             {
-                if(objectKnob == null)
+                if (objectKnob == null)
                     return new Knob[] { };
 
-                return objectKnob.Type == KnobType.Both 
+                return objectKnob.Type == KnobType.Both
                     ? new[] { EditorNode.Knobs[0], EditorNode.Knobs[1] }
-                    : new[] { EditorNode.Knobs[0]};
+                    : new[] { EditorNode.Knobs[0] };
             }
 
             var knobIndex = 0;
@@ -154,8 +198,8 @@ namespace Sleipnir.Graph
                 var knobType = attribute.Type;
                 if (knobField.Name == fieldName)
                 {
-                    return knobType == KnobType.Both 
-                        ? new[] { EditorNode.Knobs[knobIndex], EditorNode.Knobs[knobIndex + 1] } 
+                    return knobType == KnobType.Both
+                        ? new[] { EditorNode.Knobs[knobIndex], EditorNode.Knobs[knobIndex + 1] }
                         : new[] { EditorNode.Knobs[knobIndex] };
                 }
                 knobIndex = knobType == KnobType.Both
