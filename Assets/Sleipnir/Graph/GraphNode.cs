@@ -33,9 +33,9 @@ namespace Sleipnir.Graph
         public abstract Node EditorNode { get; set; }
 
         private Dictionary<Knob, Tuple<string, int>> _knobs;
-        private List<Action> _onDraw = new List<Action>();
-        private List<Action> _onConnectionsUpdate = new List<Action>();
-        private List<Action> _onValueChange = new List<Action>();
+        private List<Action> _onDraw;
+        private List<Action> _onConnectionsUpdate;
+        private List<Action> _onValueChange;
 
         public void LoadVisuals()
         {

@@ -116,6 +116,7 @@ namespace Sleipnir.Graph
                 EditorNode = new Node { Position = position }
             };
 
+            node.LoadDelegates();
             node.LoadVisuals();
             node.LoadKnobs();
             LoadContextFunctions(node);
