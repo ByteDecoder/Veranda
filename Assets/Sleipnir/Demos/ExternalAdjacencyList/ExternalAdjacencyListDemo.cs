@@ -131,10 +131,10 @@ namespace Sleipnir.Demo.ExternalAdjacencyList
             return connections;
         }
 
-        public void AddConnection(Knob outputKnob, Knob inputKnob)
+        public void AddConnection(Connection connection)
         {
-            var outputIndex = _editorNodes.FindIndex(o => o.Knobs.Contains(outputKnob));
-            var inputIndex = _editorNodes.FindIndex(o => o.Knobs.Contains(inputKnob));
+            var outputIndex = _editorNodes.FindIndex(o => o.Knobs.Contains(connection.OutputKnob));
+            var inputIndex = _editorNodes.FindIndex(o => o.Knobs.Contains(connection.InputKnob));
             Connections[outputIndex].List.Add(inputIndex);
         }
 

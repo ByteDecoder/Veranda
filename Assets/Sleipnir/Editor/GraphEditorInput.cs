@@ -235,9 +235,9 @@ namespace Sleipnir.Editor
             else
             {
                 if (knob.Type == KnobType.Input)
-                    _graph.AddConnection(_selectedKnob, knob);
+                    _graph.AddConnection(new Connection(_selectedKnob, knob));
                 else
-                    _graph.AddConnection(knob, _selectedKnob);
+                    _graph.AddConnection(new Connection(knob, _selectedKnob));
                 _selectedKnob = null;
             }
         }

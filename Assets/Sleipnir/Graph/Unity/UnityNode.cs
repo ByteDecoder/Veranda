@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Sleipnir.Graph.Unity
 {
     [Serializable]
-    public class UnityNode<TContent> : Node<TContent>
+    public class UnityNode<TContent> : GraphNode<TContent>
     {
         [HideInInspector, SerializeField]
         private TContent _content;

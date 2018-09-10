@@ -134,15 +134,15 @@ namespace Sleipnir.Demo.CustomAdjacencyList
             return connections;
         }
 
-        public void AddConnection(Knob outputKnob, Knob inputKnob)
+        public void AddConnection(Connection connection)
         {
             var indexOfInputNode = _nodes
-                .FindIndex(o => ReferenceEquals(o.InputKnob(), inputKnob));
+                .FindIndex(o => ReferenceEquals(o.InputKnob(), connection.InputKnob));
 
             var outputNode = _nodes
-                .First(o => o.EditorNode.Knobs.Any(k => ReferenceEquals(k, outputKnob)));
+                .First(o => o.EditorNode.Knobs.Any(k => ReferenceEquals(k, connection.OutputKnob)));
 
-            var outKnobIndex = outputNode.OutputKnobIndex(outputKnob);
+            var outKnobIndex = outputNode.OutputKnobIndex(connection.OutputKnob);
 
             outputNode.Connections[outKnobIndex].TargetIndex = indexOfInputNode;
         }

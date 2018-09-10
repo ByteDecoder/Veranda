@@ -15,7 +15,7 @@ namespace Sleipnir
         bool RemoveNode(Node node);
 
         IEnumerable<Connection> Connections();
-        void AddConnection(Knob outputKnob, Knob inputKnob);
+        void AddConnection(Connection connection);
         void RemoveConnection(Connection connection);
 #endif
     }

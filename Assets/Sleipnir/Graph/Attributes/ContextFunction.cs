@@ -3,5 +3,8 @@
 namespace Sleipnir.Graph.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class OnKnobUpdate : Attribute { }
+    public class ContextFunction : Attribute
+    {
+        public string Name;
+    } 
 }

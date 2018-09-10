@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Sleipnir.Graph.Odin
 {
     [Serializable]
-    public class OdinNode<TContent> : Node<TContent>
+    public class OdinNode<TContent> : GraphNode<TContent>
     {
         [HideInInspector, OdinSerialize]
         private TContent _content;

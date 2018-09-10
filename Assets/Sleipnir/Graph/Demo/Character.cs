@@ -6,10 +6,5 @@ namespace Sleipnir.Graph.Demo
     public class Character : ScriptableObject
     {
         public string Name;
-
-        public override string ToString()
-        {
-            return Name;
-        }
     }
 }

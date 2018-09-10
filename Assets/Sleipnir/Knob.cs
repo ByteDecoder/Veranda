@@ -20,6 +20,13 @@ namespace Sleipnir
             RelativeYPosition = relativeYPosition;
             Type = type;
         }
+
+        public Knob(float relativeYPosition, KnobType type, Color color, string description) 
+            : this(relativeYPosition, type)
+        {
+            Color = color;
+            Type = type;
+        }
 #endif
     }
 }
