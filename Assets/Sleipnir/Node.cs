@@ -70,6 +70,8 @@ namespace Sleipnir
             LabelWidth = oldRatio * NodeWidth;
         }
 
+        public Rect TopRect => new Rect(HeaderRect.position, SliderRect.size + HeaderRect.size);
+
         public Rect HeaderRect => HasLabelSlider && IsLabelSliderShown
             ? new Rect(Position, new Vector2(NodeWidth, HeaderHeight))
             : new Rect(Position, new Vector2(NodeWidth, HeaderHeight + SliderHeight));

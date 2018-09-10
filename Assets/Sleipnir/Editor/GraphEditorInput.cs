@@ -144,7 +144,8 @@ namespace Sleipnir.Editor
                     return;
                 }
                 
-                if (node.Content.ContentRect.Contains(mouseGridPosition))
+                if (node.Content.ContentRect.Contains(mouseGridPosition) || 
+                    node.Content.SliderRect.Contains(mouseGridPosition))
                     return;
             }
             
