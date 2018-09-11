@@ -7,6 +7,7 @@ namespace Sleipnir.Graph.Odin
 {
     [Serializable]
     public abstract class OdinGraph<TNodeContent> : Graph<OdinNode<TNodeContent>, TNodeContent>
+        where TNodeContent : ScriptableObject
     {
         [HideInInspector, OdinSerialize]
         private List<OdinNode<TNodeContent>> _nodes = new List<OdinNode<TNodeContent>>();

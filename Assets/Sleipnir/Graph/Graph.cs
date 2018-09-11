@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Sirenix.OdinInspector;
-using Sirenix.Utilities;
 using Sleipnir.Graph.Attributes;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Sleipnir.Graph
 {
     public abstract class Graph<TNode, TNodeContent> : IGraph
         where TNode : GraphNode<TNodeContent>, new()
+        where TNodeContent : ScriptableObject
     {
         [ShowInInspector, ReadOnly]
         public abstract List<TNode> Nodes { get; set; }
@@ -38,6 +42,16 @@ namespace Sleipnir.Graph
             LoadContentProperties();
             foreach (var node in Nodes)
                 LoadContextFunctions(node);
+
+
+            var graphMethods = GetType().GetMethods();
+
+            var onGraphLoad = graphMethods
+                .Where(m => m.GetCustomAttribute<OnGraphLoad>() != null)
+                .ToList();
+
+            foreach (var methodInfo in onGraphLoad)
+                methodInfo.Invoke(this, null);
         }
 
         private void LoadDelegates()
@@ -47,7 +61,6 @@ namespace Sleipnir.Graph
                 .Where(t => typeof(TNodeContent).IsAssignableFrom(t.type) && !t.type.IsAbstract)
                 .Select(t => t.type)
                 .Where(t => t.GetConstructors().Any(a => a.GetParameters().Length == 0))
-                .Where(t => !t.InheritsFrom(typeof(UnityEngine.Object)))
                 .ToDictionary(o => o.Name);
 
             var graphMethods = GetType().GetMethods();
@@ -107,12 +120,16 @@ namespace Sleipnir.Graph
         public void AddNode(string nodeId, Vector2 position)
         {
             var type = _availableNodes[nodeId];
-            var content = 
-                type.GetConstructor(Type.EmptyTypes)?.Invoke(new object[] { });
-            
+            TNodeContent content = (TNodeContent)ScriptableObject.CreateInstance(type);
+            AssetDatabase.CreateAsset(content, "Assets/Sleipnir.asset");
+            EditorUtility.SetDirty(content);
+
+
+            //var content = type.GetConstructor(Type.EmptyTypes)?.Invoke(null);
+
             var node = new TNode
             {
-                Content = (TNodeContent)content,
+                Content = content,
                 EditorNode = new Node { Position = position }
             };
 
@@ -151,7 +168,7 @@ namespace Sleipnir.Graph
                          || n.EditorNode.Knobs.Contains(connection.OutputKnob));
 
             foreach (var updateKnob in toUpdateKnobs)
-                updateKnob.OnConnectionUpdate();
+                updateKnob.OnKnobsUpdate();
         }
         
         void IGraph.RemoveConnection(Connection connection)
@@ -162,7 +179,7 @@ namespace Sleipnir.Graph
                          || n.EditorNode.Knobs.Contains(connection.OutputKnob));
 
             foreach (var updateKnob in toUpdateKnobs)
-                updateKnob.OnConnectionUpdate();
+                updateKnob.OnKnobsUpdate();
         }
 
         public IEnumerable<string> AvailableNodes()

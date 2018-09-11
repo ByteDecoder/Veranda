@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Sleipnir.Graph.Demo
 {
     [Serializable]
-    public class Graph : UnityGraph<Node, DialogueLine>
+    public class Graph : UnityGraph<Node, Character>
     {
         public override IEnumerable<Connection> Connections()
         {

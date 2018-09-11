@@ -21,6 +21,7 @@ namespace Sleipnir.Graph
         [HideReferenceObjectPicker]
         [ShowInInspector]
         [OnValueChanged("OnValueChange", true)]
+        [InlineEditor(ObjectFieldMode = InlineEditorObjectFieldModes.Hidden)]
         public abstract TContent Content { get; set; }
 
 #if UNITY_EDITOR
@@ -32,9 +33,9 @@ namespace Sleipnir.Graph
         
         public abstract Node EditorNode { get; set; }
 
-        private Dictionary<Knob, Tuple<string, int>> _knobs;
+        private Dictionary<Knob, Tuple<string, int>> _knobs = new Dictionary<Knob, Tuple<string, int>>();
         private List<Action> _onDraw;
-        private List<Action> _onConnectionsUpdate;
+        private List<Action> _onKnobsUpdate;
         private List<Action> _onValueChange;
 
         public void LoadVisuals()
@@ -76,7 +77,7 @@ namespace Sleipnir.Graph
             var contentMethods = Content.GetType().GetMethods();
 
             _onDraw = GetMethodsWithAttribute<OnDraw>(contentMethods);
-            _onConnectionsUpdate = GetMethodsWithAttribute<OnConnectionsUpdate>(contentMethods);
+            _onKnobsUpdate = GetMethodsWithAttribute<OnKnobsUpdate>(contentMethods);
             _onValueChange = GetMethodsWithAttribute<OnChanged>(contentMethods);
         }
 
@@ -89,7 +90,7 @@ namespace Sleipnir.Graph
             {
                 var parameters = methodInfo.GetParameters();
                 if(parameters.Length == 0)
-                    result.Add(() => methodInfo.Invoke(Content, new object[] { }));
+                    result.Add(() => methodInfo.Invoke(Content, null));
                 else if(parameters.Length == 1 && parameters[0].ParameterType == typeof(Node))
                     result.Add(() => methodInfo.Invoke(Content, new object[] { EditorNode }));
                 else
@@ -117,7 +118,7 @@ namespace Sleipnir.Graph
                 
                 if (parameters.Length == 0)
                     EditorNode.ContextMenuFunctions.Add(new Tuple<string, Action>
-                        (name, () => methodInfo.Invoke(Content, new object[] { })));
+                        (name, () => methodInfo.Invoke(Content, null)));
                 else if (parameters.Length == 1 && parameters[0].ParameterType == typeof(Node))
                     EditorNode.ContextMenuFunctions.Add(new Tuple<string, Action>
                         (name, () => methodInfo.Invoke(Content, new object[] { EditorNode })));
@@ -154,8 +155,7 @@ namespace Sleipnir.Graph
             LoadHeaderKnobs();
             LoadFieldKnobs();
             LoadCollectionKnobs();
-
-            OnConnectionUpdate();
+            OnKnobsUpdate();
         }
 
         private void LoadHeaderKnobs()
@@ -208,9 +208,9 @@ namespace Sleipnir.Graph
                 action?.Invoke();
         }
 
-        public void OnConnectionUpdate()
+        public void OnKnobsUpdate()
         {
-            foreach (var action in _onConnectionsUpdate)
+            foreach (var action in _onKnobsUpdate)
                 action?.Invoke();
         }
         

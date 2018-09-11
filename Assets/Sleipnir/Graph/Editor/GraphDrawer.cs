@@ -9,6 +9,7 @@ namespace Sleipnir.Graph.Editor
     [DrawerPriority(DrawerPriorityLevel.SuperPriority)]
     public class GraphDrawer<T, TNode, TNodeContent> : GraphDrawer<T>
         where T : Graph<TNode, TNodeContent>
+        where TNodeContent : ScriptableObject
         where TNode : GraphNode<TNodeContent>, new()
     {
         protected override void DrawPropertyLayout(GUIContent label)

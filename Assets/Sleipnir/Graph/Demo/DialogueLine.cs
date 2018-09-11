@@ -20,6 +20,7 @@ namespace Sleipnir.Graph.Demo
         public Character Character;
         public string Text;
         public AudioClip AudioClip;
+        public KillerLine Line;
         
         [CollectionKnob(KnobType.Input, 
             R = 0.4f, G = 0.5f, B = 0.8f, 
@@ -40,7 +41,7 @@ namespace Sleipnir.Graph.Demo
             node.TitleColor = new Color(1 - r, 1 - r, 1 - r);
         }
 
-        [OnConnectionsUpdate]
+        [OnKnobsUpdate]
         public void OnConnectionsUpdate(Sleipnir.Node node)
         {
             foreach (var knob in node.Knobs)

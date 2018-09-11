@@ -3,5 +3,5 @@
 namespace Sleipnir.Graph.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class OnConnectionsUpdate : Attribute { }
+    public class OnKnobsUpdate : Attribute { }
 }
