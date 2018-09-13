@@ -1,24 +1,14 @@
-﻿using System;
-using UnityEngine;
-
-namespace Sleipnir
+﻿namespace Sleipnir
 {
-    [Serializable]
-    public class Connection
+    public struct Connection
     {
-#if UNITY_EDITOR
-        public Knob OutputKnob { get; }
-        public Knob InputKnob { get; }
-        public Vector2 OutputControlPoint;
-        public Vector2 InputControlPoint;
+        public Knob Output;
+        public Knob Input;
 
-        public Connection(Knob outputKnob, Knob inputKnob)
+        public Connection(Knob output, Knob input)
         {
-            OutputKnob = outputKnob;
-            InputKnob = inputKnob;
-            OutputControlPoint = Vector2.right;
-            InputControlPoint = Vector2.left;
+            Output = output;
+            Input = input;
         }
-#endif
     }
 }

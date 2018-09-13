@@ -5,18 +5,16 @@ namespace Sleipnir
 {
     public interface IGraph
     {
-#if UNITY_EDITOR
-        float Scale { get; set; }
-        Vector2 Position { get; set; }
+        float Zoom { get; set; }
+        Vector2 Pan { get; set; }
 
-        IList<Node> Nodes { get; }
+        IList<ValueWrappedNode> Nodes { get; }
         IEnumerable<string> AvailableNodes();
-        void AddNode(string nodeId, Vector2 position);
-        bool RemoveNode(Node node);
+        Node AddNode(string name);
+        void RemoveNode(Node node);
 
         IEnumerable<Connection> Connections();
         void AddConnection(Connection connection);
         void RemoveConnection(Connection connection);
-#endif
     }
 }

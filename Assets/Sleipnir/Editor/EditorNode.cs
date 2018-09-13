@@ -1,39 +1,117 @@
-﻿using Sirenix.OdinInspector;
+﻿using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Sleipnir.Editor
 {
-    public struct EditorNode
+    public class EditorNode
     {
-        // Node drawer needs editor to recalculate positions
-        [HideInInspector] public readonly GraphEditor Editor;
-        [HideInInspector] public readonly Node Content;
+        public const float HeaderHeight = 32f;
+        public const float SliderHeight = 12f;
+        public const float TopBoxHeight = SliderHeight + HeaderHeight;
 
-        public EditorNode(GraphEditor editor, Node node)
-        {
-            Editor = editor;
-            Content = node;
-        }
+        private const float MinNodeWidth = 80f;
+        private const float ResizePrecision = 5f;
+        
+        [HideInInspector]
+        public readonly ValueWrappedNode Content;
+        [HideInInspector]
+        public Color HeaderColor = Color.cyan;
+        [HideInInspector]
+        public Color TitleColor = Color.white;
+        [HideInInspector]
+        public string Title = "Node";
+        [HideInInspector]
+        public bool HasLabelSlider = true;
         
         [ShowInInspector, HideLabel, HideReferenceObjectPicker]
-        private object Value
+        public object Value
         {
             get
             {
-                if (Content.ValueGetter != null)
-                    return Content.ValueGetter();
-                Debug.LogError("Value getter is not set.");
+                if (Content.Getter != null)
+                    return Content.Getter();
+
+                Debug.LogError("Node value getter is not set.");
                 return null;
             }
             set
             {
-                if (Content.ValueSetter != null)
+                if (Content.Setter != null)
                 {
-                    Content.ValueSetter(value);
+                    Content.Setter(value);
                     return;
                 }
-                Debug.LogError("Value setter is not set.");
+
+                Debug.LogError("Node value setter is not set.");
             }
         }
+
+        public EditorNode(ValueWrappedNode content)
+        {
+            Content = content;
+        }
+        
+        private Vector2 Position => Content.Node.NodeRect.position;
+
+        public void Move(Vector2 delta)
+        {
+            Content.Node.NodeRect.position += delta;
+        }
+
+        private float NodeWidth => Mathf.Max(Content.Node.NodeRect.width, MinNodeWidth);
+
+        public float LabelWidth => Mathf.Max(float.Epsilon, Content.Node.LabelWidth);
+
+        public void Resize(NodeResizeSide side, float delta)
+        {
+            var node = Content.Node;
+
+            var oldRatio = LabelWidth / NodeWidth;
+            switch (side)
+            {
+                case NodeResizeSide.Left:
+                    if (NodeWidth - delta < MinNodeWidth)
+                        delta = NodeWidth - MinNodeWidth;
+                    Move(new Vector2(delta, 0));
+                    delta = -delta;
+                    break;
+
+                case NodeResizeSide.Right:
+                    if (NodeWidth + delta < MinNodeWidth)
+                        delta = MinNodeWidth - NodeWidth;
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(side), side, null);
+            }
+            node.NodeRect.width += delta;
+            node.LabelWidth = oldRatio * NodeWidth;
+        }
+        
+        public Rect HeaderRect => HasLabelSlider && Content.Node.IsLabelSliderShown
+            ? new Rect(Position, new Vector2(NodeWidth, HeaderHeight))
+            : new Rect(Position, new Vector2(NodeWidth, TopBoxHeight));
+
+        public Rect SliderRect => HasLabelSlider && Content.Node.IsLabelSliderShown
+            ? new Rect(Position.x, Position.y + HeaderHeight, NodeWidth, SliderHeight)
+            : Rect.zero;
+
+        public Rect TopRect => new Rect(HeaderRect.position, new Vector2(NodeWidth, TopBoxHeight));
+
+        public Rect ContentRect => new Rect(Position.x,
+            Position.y + TopBoxHeight,
+            NodeWidth,
+            Content.Node.NodeRect.height - TopBoxHeight);
+
+        public Rect RightResizeZone => new Rect(HeaderRect.xMax - ResizePrecision,
+            HeaderRect.y,
+            ResizePrecision * 2,
+            TopBoxHeight);
+
+        public Rect LeftResizeZone => new Rect(HeaderRect.position.x - ResizePrecision,
+            HeaderRect.y,
+            ResizePrecision * 2,
+            TopBoxHeight);
     }
 }
