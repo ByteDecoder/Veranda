@@ -15,7 +15,7 @@ namespace Sleipnir.Editor
         private bool _isDragging;
         private NodeResizeSide _resizedZone;
 
-        private void OnEditorOpen()
+        protected void InitInput()
         {
             _selectedInputSlot = null;
             _selectedOutputSlot = null;
@@ -189,22 +189,9 @@ namespace Sleipnir.Editor
                 menu.AddItem(content, false, 
                     () => node.Content.Node.IsLabelSliderShown = !node.Content.Node.IsLabelSliderShown);
             }
-            menu.AddItem(new GUIContent("Delete Node"), false, () => RemoveNode(node));
+            menu.AddItem(new GUIContent("Delete Node"), false, () => _graph.RemoveNode(node.Content.Node));
 
             menu.ShowAsContext();
-        }
-
-        private void RemoveNode(EditorNode node)
-        {
-            var index = _graph.Nodes.IndexOf(node.Content);
-            _graph.RemoveNode(node.Content.Node);
-
-            // Node hasn't been removed
-            if (_graph.Nodes.Contains(node.Value))
-                return;
-            
-            if (index < _graph.Nodes.Count)
-                _graph.Nodes[index].Node.NumberOfPrecedingDummies++;
         }
 
         private void ShowConnectionContextMenu(EditorConnection connection)
@@ -218,20 +205,18 @@ namespace Sleipnir.Editor
         private void ShowGridContextMenu(Vector2 mouseGridPosition)
         {
             var menu = new GenericMenu();
-            var availableNodes = _graph.AvailableNodes();
-            if (availableNodes == null)
-                return;
-
-            foreach (var nodeName in availableNodes)
-                menu.AddItem(new GUIContent("Create Node/" + nodeName), false,
-                    () =>
-                    {
-                        var node = _graph.AddNode(nodeName);
-                        if (node == null)
-                            return;
-                        node.NodeRect = new Rect(mouseGridPosition, new Vector2());
-                    });
-
+            foreach (Type nodeType in _graph.NodeTypes)
+            {
+                string menuName = string.Format("Create Menu/{0}", nodeType);
+                menu.AddItem(new GUIContent(menuName), false, () => {
+                    var mi = _graph.GetType().GetMethod("AddNode");
+                    var miRef = mi.MakeGenericMethod(nodeType);
+                    var node = (Node)miRef.Invoke(_graph, null);
+                    if (node == null)
+                        return;
+                    node.NodeRect = new Rect(mouseGridPosition, new Vector2());
+                });
+            }
             menu.ShowAsContext();
         }
 

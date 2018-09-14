@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+using Sirenix.OdinInspector;
 
-namespace Sleipnir.Demos
+namespace Sleipnir
 {
     [Serializable]
-    public class DemoGraph : IGraph
+    public class OdinGraph<T> : SerializedScriptableObject, IGraph where T : INode, new()
     {
         [SerializeField]
-        private List<DemoNode> _nodes = new List<DemoNode>();
+        private List<T> _nodes = new List<T>();
 
         [SerializeField]
         private List<Node> _editorNodes = new List<Node>();
@@ -25,7 +29,7 @@ namespace Sleipnir.Demos
                     {
                         Node = _editorNodes[index],
                         Getter = () => _nodes[index],
-                        Setter = value => _nodes[index] = (DemoNode) value
+                        Setter = value => _nodes[index] = (T) value
                     });
                 }
                 return result;
@@ -49,17 +53,33 @@ namespace Sleipnir.Demos
             get { return _pan; }
             set { _pan = value; }
         }
-
+        
+        private List<Type> _INodeTypes;
+        private void LoadNodeTypes() {
+            _INodeTypes = new List<Type>();
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach( var assembly in assemblies ) {
+                var types = assembly.GetTypes();
+                foreach( var t in types ) {
+                    if( typeof( T ).IsAssignableFrom( t ) && !t.IsAbstract ) {
+                        _INodeTypes.Add( t );
+                    }
+                }
+            }
+        }
         public IEnumerable<Type> NodeTypes {
             get {
-                yield return typeof(DemoNode);
+                if (_INodeTypes == null) LoadNodeTypes();
+                foreach (var item in _INodeTypes)
+                {
+                    yield return item;
+                }
             }
         }
 
-        public Node AddNode<T>()
+        public Node AddNode<TNode>()
         {
-            System.Object obj = Activator.CreateInstance<T>();
-            _nodes.Add((DemoNode)obj);
+            _nodes.Add(Activator.CreateInstance<T>());
             var node = new Node();
             _editorNodes.Add(node);
             return node;
@@ -85,6 +105,11 @@ namespace Sleipnir.Demos
         {
         }
         
-        public void SetDirty() {}
+        new public void SetDirty()
+        {
+            #if UNITY_EDITOR
+            EditorUtility.SetDirty(this);
+            #endif
+        }
     }
 }
