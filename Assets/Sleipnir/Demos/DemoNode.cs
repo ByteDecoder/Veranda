@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Sleipnir.Demos
@@ -6,7 +6,7 @@ namespace Sleipnir.Demos
     [Serializable]
     public class DemoNode
     {
-        [Knob(KnobDirection.Output)]
+        [Slot(SlotDirection.Output)]
         public string Name;
         public List<SubNode> Sub = new List<SubNode>();
     }
@@ -14,10 +14,10 @@ namespace Sleipnir.Demos
     [Serializable]
     public struct SubNode
     {
-        [Knob(KnobDirection.Output)]
+        [Slot(SlotDirection.Output)]
         public string Output;
         
-        [Knob(KnobDirection.Input)]
+        [Slot(SlotDirection.Input)]
         public string Input;
     }
 }

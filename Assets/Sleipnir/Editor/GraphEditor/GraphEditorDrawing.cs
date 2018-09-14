@@ -55,18 +55,18 @@ namespace Sleipnir.Editor
 
         private void DrawConnectionToMouse()
         {
-            var selectedKnob = _selectedInputKnob ?? _selectedOutputKnob;
+            var selectedSlot = _selectedInputSlot ?? _selectedOutputSlot;
 
-            if (selectedKnob == null)
+            if (selectedSlot == null)
                 return;
 
-            var knobPosition = GridToGuiPositionNoClip(GetKnobRect(selectedKnob).center);
+            var slotPosition = GridToGuiPositionNoClip(GetSlotRect(selectedSlot).center);
             var mousePosition = Event.current.mousePosition;
 
-            if (selectedKnob == _selectedOutputKnob)
-                EditorConnectionDrawer.DrawConnection(knobPosition, mousePosition);
+            if (selectedSlot == _selectedOutputSlot)
+                EditorConnectionDrawer.DrawConnection(slotPosition, mousePosition);
             else
-                EditorConnectionDrawer.DrawConnection(mousePosition, knobPosition);
+                EditorConnectionDrawer.DrawConnection(mousePosition, slotPosition);
         }
     }
 }

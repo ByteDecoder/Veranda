@@ -2,10 +2,10 @@
 {
     public struct Connection
     {
-        public Knob Output;
-        public Knob Input;
+        public Slot Output;
+        public Slot Input;
 
-        public Connection(Knob output, Knob input)
+        public Connection(Slot output, Slot input)
         {
             Output = output;
             Input = input;
