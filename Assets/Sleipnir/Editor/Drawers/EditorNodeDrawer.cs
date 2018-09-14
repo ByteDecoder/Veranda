@@ -56,9 +56,11 @@ namespace Sleipnir.Editor
             // Draw content
             // It doesn't look at all.
             // TODO Make it nice.
+            var contentRect = value.ContentRect;
             var style = new GUIStyle();
             style.padding = new RectOffset(20, 20, 0, 0);
-            GUILayout.BeginArea(editor.GridToGuiDrawRect(value.ContentRect), style);
+            GUILayout.BeginArea(editor.GridToGuiDrawRect(
+                new Rect(contentRect.x - 20, contentRect.y, contentRect.width + 40, contentRect.height)), style);
             var contentBoxRect = SirenixEditorGUI.BeginBox();
 
             // When label width equals 0 it is drawn with default inspector width.

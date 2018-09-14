@@ -25,7 +25,7 @@ namespace Sleipnir.Editor
                 var editorNode = editor.CurrentlyDrawedNode;
                 var relativeRect = new Rect(new Rect(new Vector2(0, propertyRect.y), new Vector2(12, 12)));
                 var slot = new Slot(editorNode.Content, GetSlotPath());
-                var rect = new Rect(editorNode.ContentRect.position + relativeRect.position, relativeRect.size);
+                var rect = new Rect(editorNode.ContentRect.position + new Vector2(-20, propertyRect.y), relativeRect.size);
 
                 GUIHelper.PushColor(Color.cyan);
                 if (GUI.Button(relativeRect, ""))
@@ -38,9 +38,9 @@ namespace Sleipnir.Editor
             if (Attribute.Direction.IsOutput())
             {
                 var editorNode = editor.CurrentlyDrawedNode;
-                var relativeRect = new Rect(new Vector2(editorNode.ContentRect.width - 12, propertyRect.y), new Vector2(12, 12));
+                var relativeRect = new Rect(new Vector2(editorNode.ContentRect.width + 28, propertyRect.y), new Vector2(12, 12));
                 var slot = new Slot(editorNode.Content, GetSlotPath());
-                var rect = new Rect(editorNode.ContentRect.position + relativeRect.position, relativeRect.size);
+                var rect = new Rect(new Vector2(editorNode.ContentRect.xMax + 8, editorNode.ContentRect.position.y + propertyRect.y), relativeRect.size);
 
                 GUIHelper.PushColor(Color.cyan);
                 if (GUI.Button(relativeRect, ""))

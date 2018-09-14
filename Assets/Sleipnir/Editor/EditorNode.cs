@@ -59,7 +59,7 @@ namespace Sleipnir.Editor
                     attribute =>
                     {
                         var oldRect = Content.Node.NodeRect;
-                        Content.Node.NodeRect = new Rect(oldRect.x, oldRect.y, attribute.Width, oldRect.height);
+                        Content.Node.NodeRect = new Rect(oldRect.x, oldRect.y, attribute.DefaultWidth, oldRect.height);
                     });
 
             ProcessOptionalAttribute<HeaderTitleAttribute>(attributes,

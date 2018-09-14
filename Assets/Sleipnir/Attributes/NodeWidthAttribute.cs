@@ -5,11 +5,12 @@ namespace Sleipnir
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class NodeWidthAttribute : Attribute
     {
-        public float Width;
+        public float DefaultWidth;
+        public float MinWidth;
 
-        public NodeWidthAttribute(float width)
+        public NodeWidthAttribute(float defaultWidth)
         {
-            Width = width;
+            DefaultWidth = defaultWidth;
         }
     }
 }

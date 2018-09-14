@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -207,8 +206,8 @@ namespace Sleipnir.Editor
             var menu = new GenericMenu();
             foreach (var nodeType in _graph.NodeTypes)
             {
-                var name = nodeType.Item2 ?? nodeType.Item1.Name;
-                var menuName = $"Create Menu/{name}";
+                var nodeName = nodeType.Item2 ?? nodeType.Item1.Name;
+                var menuName = $"Create Menu/{nodeName}";
                 menu.AddItem(new GUIContent(menuName), false, () =>
                 {
                     var mi = _graph.GetType().GetMethod("AddNode");
@@ -241,26 +240,20 @@ namespace Sleipnir.Editor
 
         public void OnSlotClick(Slot slot, SlotDirection type)
         {
-            if (type.IsInput())
+            if (_selectedOutputSlot == null)
             {
-                if (_selectedOutputSlot == null)
-                {
-                    _selectedInputSlot = slot;
-                } else {
-                    _graph.AddConnection(new Connection(_selectedOutputSlot, slot));
-                    _selectedOutputSlot = null;
-                }
+                _selectedInputSlot = slot;
+            } else {
+                _graph.AddConnection(new Connection(_selectedOutputSlot, slot));
+                _selectedOutputSlot = null;
             }
             
-            if (type.IsOutput())
+            if (_selectedInputSlot == null)
             {
-                if (_selectedInputSlot == null)
-                {
-                    _selectedOutputSlot = slot;
-                } else {
-                    _graph.AddConnection(new Connection(slot, _selectedInputSlot));
-                    _selectedInputSlot = null;
-                }
+                _selectedOutputSlot = slot;
+            } else {
+                _graph.AddConnection(new Connection(slot, _selectedInputSlot));
+                _selectedInputSlot = null;
             }
         }
     }
