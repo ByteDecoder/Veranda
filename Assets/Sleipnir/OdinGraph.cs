@@ -76,7 +76,7 @@ namespace Sleipnir
 
         public Node AddNode<TNode>(string key = null)
         {
-            _nodes.Add(Activator.CreateInstance<T>());
+            _nodes.Add((T)Activator.CreateInstance(typeof(TNode)));
             var node = new Node();
             _editorNodes.Add(node);
             return node;
