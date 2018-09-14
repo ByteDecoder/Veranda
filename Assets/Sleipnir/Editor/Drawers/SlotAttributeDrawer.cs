@@ -27,7 +27,7 @@ namespace Sleipnir.Editor
                 var slot = new Slot(editorNode.Content, GetSlotPath());
                 var rect = new Rect(editorNode.ContentRect.position + new Vector2(-20, propertyRect.y), relativeRect.size);
 
-                GUIHelper.PushColor(Color.cyan);
+                GUIHelper.PushColor(new Color(1f, 0.35f, 0.0f));
                 if (GUI.Button(relativeRect, ""))
                     // There is no such thing as SlotDirection.InOut form editor's perspective
                     editor.OnSlotClick(slot, SlotDirection.Input);
@@ -44,7 +44,7 @@ namespace Sleipnir.Editor
                 var rect = new Rect(new Vector2(editorNode.ContentRect.xMax + 8, editorNode.ContentRect.position.y + propertyRect.y), 
                     relativeRect.size);
 
-                GUIHelper.PushColor(Color.cyan);
+                GUIHelper.PushColor(new Color(1f, 0.35f, 0.0f));
                 if (GUI.Button(relativeRect, ""))
                     // There is no such thing as SlotDirection.InOut form editor's perspective
                     editor.OnSlotClick(slot, SlotDirection.Output);
@@ -57,8 +57,19 @@ namespace Sleipnir.Editor
 
         private string GetSlotPath()
         {
-            // TODO It needs to be relative to the node!
-            return Property.UnityPropertyPath;
+            if (Property.Parent == null) // Unity object
+                return Property.PrefabModificationPath;
+
+            var editor = (GraphEditor)GUIHelper.CurrentWindow;
+            var value = editor.CurrentlyDrawedNode.Value;
+
+            var editorNodeProperty = Property;
+            while (!ReferenceEquals(editorNodeProperty.ValueEntry.WeakSmartValue, value))
+                editorNodeProperty = editorNodeProperty.Parent;
+
+
+            // +1 is for the dot
+            return Property.PrefabModificationPath.Remove(0, editorNodeProperty.PrefabModificationPath.Length + 1);
         }
     }
 }

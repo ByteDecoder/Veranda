@@ -6,7 +6,7 @@ namespace Sleipnir.Demos
     [Serializable]
     public class DemoNode
     {
-        [SlotInOut]
+        [SlotOutput]
         public string Name;
         public List<SubNode> Sub = new List<SubNode>();
     }
@@ -14,10 +14,9 @@ namespace Sleipnir.Demos
     [Serializable]
     public struct SubNode
     {
-        [SlotInOut]
         public string Output;
 
-        [SlotInOut]
+        [SlotInput]
         public string Input;
     }
 }

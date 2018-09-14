@@ -18,9 +18,9 @@ namespace Sleipnir.Editor
         [HideInInspector]
         public readonly ValueWrappedNode Content;
         [HideInInspector]
-        public Color HeaderColor = Color.cyan;
+        public Color HeaderColor = new Color(1f, 0.35f, 0.0f);
         [HideInInspector]
-        public Color TitleColor = Color.white;
+        public Color TitleColor = Color.black;
         [HideInInspector]
         public string Title = "Node";
         [HideInInspector]
