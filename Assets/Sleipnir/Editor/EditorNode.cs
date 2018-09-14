@@ -52,6 +52,7 @@ namespace Sleipnir.Editor
         public EditorNode(ValueWrappedNode content)
         {
             Content = content;
+            Title = content.Getter().GetType().ToString();
             var attributes = content.Getter().GetType().GetCustomAttributes(true).Cast<Attribute>().ToArray();
 
             if (Content.Node.NodeRect.width == 0)
