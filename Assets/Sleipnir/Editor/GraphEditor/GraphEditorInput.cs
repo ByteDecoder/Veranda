@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -206,8 +207,8 @@ namespace Sleipnir.Editor
             var menu = new GenericMenu();
             foreach (var nodeType in _graph.NodeTypes)
             {
-                var nodeName = nodeType.Item2 ?? nodeType.Item1.Name;
-                var menuName = $"Create Menu/{nodeName}";
+                var name = nodeType.Item2 ?? nodeType.Item1.Name;
+                var menuName = $"Create Menu/{name}";
                 menu.AddItem(new GUIContent(menuName), false, () =>
                 {
                     var mi = _graph.GetType().GetMethod("AddNode");
@@ -240,20 +241,28 @@ namespace Sleipnir.Editor
 
         public void OnSlotClick(Slot slot, SlotDirection type)
         {
-            if (_selectedOutputSlot == null)
+            if (type.IsInput())
             {
-                _selectedInputSlot = slot;
-            } else {
-                _graph.AddConnection(new Connection(_selectedOutputSlot, slot));
-                _selectedOutputSlot = null;
+                if (_selectedOutputSlot == null)
+                {
+                    _selectedInputSlot = slot;
+                } else {
+                    _graph.AddConnection(new Connection(_selectedOutputSlot, slot));
+                    _selectedOutputSlot = null;
+                    Debug.Log("add connection");
+                }
             }
             
-            if (_selectedInputSlot == null)
+            if (type.IsOutput())
             {
-                _selectedOutputSlot = slot;
-            } else {
-                _graph.AddConnection(new Connection(slot, _selectedInputSlot));
-                _selectedInputSlot = null;
+                if (_selectedInputSlot == null)
+                {
+                    _selectedOutputSlot = slot;
+                } else {
+                    _graph.AddConnection(new Connection(slot, _selectedInputSlot));
+                    _selectedInputSlot = null;
+                    Debug.Log("add connection");
+                }
             }
         }
     }

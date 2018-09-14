@@ -29,9 +29,10 @@ namespace Sleipnir.Editor
 
                 GUIHelper.PushColor(Color.cyan);
                 if (GUI.Button(relativeRect, ""))
-                    editor.OnSlotClick(slot, Attribute.Direction);
+                    // There is no such thing as SlotDirection.InOut form editor's perspective
+                    editor.OnSlotClick(slot, SlotDirection.Input);
+                
                 GUIHelper.PopColor();
-
                 editor.Slots.Add(new Tuple<Slot, Rect>(slot, rect));
             }
 
@@ -44,7 +45,8 @@ namespace Sleipnir.Editor
 
                 GUIHelper.PushColor(Color.cyan);
                 if (GUI.Button(relativeRect, ""))
-                    editor.OnSlotClick(slot, Attribute.Direction);
+                    // There is no such thing as SlotDirection.InOut form editor's perspective
+                    editor.OnSlotClick(slot, SlotDirection.Output);
                 GUIHelper.PopColor();
                 editor.Slots.Add(new Tuple<Slot, Rect>(slot, rect));
             }
