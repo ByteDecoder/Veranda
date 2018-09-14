@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 
 namespace Sleipnir.Editor
 {
@@ -9,17 +10,28 @@ namespace Sleipnir.Editor
 
         protected override void DrawEditor(int index)
         {
-            if (_graph == null)
-                return;
-
-            var matrix = GUI.matrix;
-            ProcessInput();
-            DrawGrid();
-            BeginZoomed();
-            base.DrawEditor(index);
-            DrawConnectionToMouse();
-            EndZoomed();
-            GUI.matrix = matrix;
+            if (EditorApplication.isCompiling)
+            {
+                ShowNotification(new GUIContent("Editor is Compiling..."));
+            } else {
+                RemoveNotification();
+                DrawGrid();
+                if (_graph != null)
+                {
+                    EditorGUI.BeginChangeCheck();
+                    var matrix = GUI.matrix;
+                    ProcessInput();
+                    BeginZoomed();
+                    base.DrawEditor(index);
+                    DrawConnectionToMouse();
+                    EndZoomed();
+                    GUI.matrix = matrix;
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        _graph.SetDirty();
+                    }
+                }
+            }
         }
         
         private void DrawGrid()

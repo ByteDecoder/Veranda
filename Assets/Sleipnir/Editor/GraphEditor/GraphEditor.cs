@@ -47,7 +47,7 @@ namespace Sleipnir.Editor
         public void LoadGraph(IGraph graph)
         {
             _graph = graph;
-            OnEditorOpen();
+            InitInput();
         }
         
         public Vector2 Pan

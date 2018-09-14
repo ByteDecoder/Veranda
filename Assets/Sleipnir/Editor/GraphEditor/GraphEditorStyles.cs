@@ -11,10 +11,8 @@ namespace Sleipnir.Editor
         private static readonly Color CrossColor = new Color(0.36f, 0.36f, 0.36f);
         private static readonly Color GridBackgroundColor = new Color(0.12f, 0.12f, 0.12f);
 
-        protected override void OnEnable()
+        protected void InitStyles()
         {
-            base.OnEnable();
-
             _crossTexture = GenerateCrossTexture(CrossColor);
             _gridTexture = GenerateGridTexture(GridLineColor, GridBackgroundColor);
         }
