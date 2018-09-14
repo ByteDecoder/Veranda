@@ -249,7 +249,6 @@ namespace Sleipnir.Editor
                 } else {
                     _graph.AddConnection(new Connection(_selectedOutputSlot, slot));
                     _selectedOutputSlot = null;
-                    Debug.Log("add connection");
                 }
             }
             
@@ -261,7 +260,6 @@ namespace Sleipnir.Editor
                 } else {
                     _graph.AddConnection(new Connection(slot, _selectedInputSlot));
                     _selectedInputSlot = null;
-                    Debug.Log("add connection");
                 }
             }
         }
