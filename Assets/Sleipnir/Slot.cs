@@ -1,11 +1,11 @@
 ﻿namespace Sleipnir
 {
-    public class Knob
+    public class Slot
     {
         public ValueWrappedNode Node;
         public string PropertyPath;
 
-        public Knob(ValueWrappedNode node, string propertyPath)
+        public Slot(ValueWrappedNode node, string propertyPath)
         {
             Node = node;
             PropertyPath = propertyPath;

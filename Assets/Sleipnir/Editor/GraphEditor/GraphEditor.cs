@@ -16,14 +16,14 @@ namespace Sleipnir.Editor
         private IGraph _graph;
 
         [HideInInspector]
-        public List<Tuple<Knob, Rect>> Knobs;
+        public List<Tuple<Slot, Rect>> Slots;
 
         [HideReferenceObjectPicker, HideLabel, ShowInInspector]
         public List<EditorNode> Nodes
         {
             get
             {
-                Knobs = new List<Tuple<Knob, Rect>>();
+                Slots = new List<Tuple<Slot, Rect>>();
                 return _graph.Nodes
                         .SelectMany(n => Enumerable.Repeat<ValueWrappedNode>(null, n.Node.NumberOfPrecedingDummies)
                             .Concat(new[] { n }))
@@ -39,10 +39,9 @@ namespace Sleipnir.Editor
             get { return _graph.Connections()?.Select(o => new EditorConnection(o)).ToList(); }
         }
         
-        public Rect GetKnobRect(Knob knob)
+        public Rect GetSlotRect(Slot slot)
         {
-            return Knobs.First(k => k.Item1.Node.Node == knob.Node.Node 
-                              && k.Item1.PropertyPath == knob.PropertyPath).Item2;
+            return Slots.First(k => k.Item1.Node.Node == slot.Node.Node && k.Item1.PropertyPath == slot.PropertyPath).Item2;
         }
 
         public void LoadGraph(IGraph graph)

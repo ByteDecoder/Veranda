@@ -10,15 +10,15 @@ namespace Sleipnir.Editor
     {
         private EditorNode _selectedNode;
         private EditorNode _resizedNode;
-        private Knob _selectedInputKnob;
-        private Knob _selectedOutputKnob;
+        private Slot _selectedInputSlot;
+        private Slot _selectedOutputSlot;
         private bool _isDragging;
         private NodeResizeSide _resizedZone;
 
         private void OnEditorOpen()
         {
-            _selectedInputKnob = null;
-            _selectedOutputKnob = null;
+            _selectedInputSlot = null;
+            _selectedOutputSlot = null;
             _selectedNode = null;
             _resizedNode = null;
             _isDragging = false;
@@ -110,8 +110,8 @@ namespace Sleipnir.Editor
                 if (node.ContentRect.Contains(mouseGridPosition)
                     || node.SliderRect.Contains(mouseGridPosition))
                 {
-                    _selectedInputKnob = null;
-                    _selectedOutputKnob = null;
+                    _selectedInputSlot = null;
+                    _selectedOutputSlot = null;
                     return;
                 }
             }
@@ -128,11 +128,11 @@ namespace Sleipnir.Editor
 
         private void OnRightMouseDown()
         {
-            if (_selectedNode != null || _selectedInputKnob != null || _selectedOutputKnob != null || Nodes == null)
+            if (_selectedNode != null || _selectedInputSlot != null || _selectedOutputSlot != null || Nodes == null)
             {
                 _selectedNode = null;
-                _selectedInputKnob = null;
-                _selectedOutputKnob = null;
+                _selectedInputSlot = null;
+                _selectedOutputSlot = null;
                 return;
             }
 
@@ -163,10 +163,10 @@ namespace Sleipnir.Editor
 
         private bool IsMouseOverConnection(Vector2 mouseGridPosition, EditorConnection connection)
         {
-            var outputKnob = GetKnobRect(connection.Content.Output);
-            var inputKnob = GetKnobRect(connection.Content.Input);
-            var startGridPosition = outputKnob.center;
-            var endGridPosition = inputKnob.center;
+            var outputSlot = GetSlotRect(connection.Content.Output);
+            var inputSlot = GetSlotRect(connection.Content.Input);
+            var startGridPosition = outputSlot.center;
+            var endGridPosition = inputSlot.center;
 
             var bezierCurveData = EditorConnection.BezierCurveData(startGridPosition, endGridPosition);
 
@@ -252,32 +252,28 @@ namespace Sleipnir.Editor
             Zoom(Event.current.delta.y * ZoomSpeed);
         }
 
-        public void OnKnobClick(Knob knob, KnobType type)
+        public void OnSlotClick(Slot slot, SlotDirection type)
         {
-            switch (type)
+            if (type.IsInput())
             {
-                case KnobType.Input:
-                    if (_selectedOutputKnob == null)
-                    {
-                        _selectedInputKnob = knob;
-                        return;
-                    }
-                    _graph.AddConnection(new Connection(_selectedOutputKnob, knob));
-                    _selectedOutputKnob = null;
-                    break;
-
-                case KnobType.Output:
-                    if (_selectedInputKnob == null)
-                    {
-                        _selectedOutputKnob = knob;
-                        return;
-                    }
-                    _graph.AddConnection(new Connection(knob, _selectedInputKnob));
-                    _selectedInputKnob = null;
-                    break;
-                    
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                if (_selectedOutputSlot == null)
+                {
+                    _selectedInputSlot = slot;
+                } else {
+                    _graph.AddConnection(new Connection(_selectedOutputSlot, slot));
+                    _selectedOutputSlot = null;
+                }
+            }
+            
+            if (type.IsOutput())
+            {
+                if (_selectedInputSlot == null)
+                {
+                    _selectedOutputSlot = slot;
+                } else {
+                    _graph.AddConnection(new Connection(slot, _selectedInputSlot));
+                    _selectedInputSlot = null;
+                }
             }
         }
     }

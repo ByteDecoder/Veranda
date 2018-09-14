@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Sleipnir.Editor
 {
     [DrawerPriority(DrawerPriorityLevel.AttributePriority)]
-    public class KnobAttributeDrawer : OdinAttributeDrawer<KnobAttribute>
+    public class SlotAttributeDrawer : OdinAttributeDrawer<SlotAttribute>
     {
         protected override void DrawPropertyLayout(GUIContent label)
         {
@@ -17,39 +17,39 @@ namespace Sleipnir.Editor
             var editor = (GraphEditor) GUIHelper.CurrentWindow;
             var propertyRect = EditorGUILayout.GetControlRect(false, 0);
             
-            if (Attribute.Direction == KnobDirection.Both || Attribute.Direction == KnobDirection.Input)
+            if (Attribute.Direction.IsInput())
             {
                 var editorNode = editor.CurrentlyDrawedNode;
                 var relativeRect = new Rect(new Rect(new Vector2(0, propertyRect.y), new Vector2(12, 12)));
-                var knob = new Knob(editorNode.Content, GetKnobPath());
+                var slot = new Slot(editorNode.Content, GetSlotPath());
                 var rect = new Rect(editorNode.ContentRect.position + relativeRect.position, relativeRect.size);
 
                 GUIHelper.PushColor(Color.cyan);
                 if (GUI.Button(relativeRect, ""))
-                    editor.OnKnobClick(knob, KnobType.Input);
+                    editor.OnSlotClick(slot, Attribute.Direction);
                 GUIHelper.PopColor();
 
-                editor.Knobs.Add(new Tuple<Knob, Rect>(knob, rect));
+                editor.Slots.Add(new Tuple<Slot, Rect>(slot, rect));
             }
 
-            if (Attribute.Direction == KnobDirection.Both || Attribute.Direction == KnobDirection.Output)
+            if (Attribute.Direction.IsOutput())
             {
                 var editorNode = editor.CurrentlyDrawedNode;
                 var relativeRect = new Rect(new Vector2(editorNode.ContentRect.width - 12, propertyRect.y), new Vector2(12, 12));
-                var knob = new Knob(editorNode.Content, GetKnobPath());
+                var slot = new Slot(editorNode.Content, GetSlotPath());
                 var rect = new Rect(editorNode.ContentRect.position + relativeRect.position, relativeRect.size);
 
                 GUIHelper.PushColor(Color.cyan);
                 if (GUI.Button(relativeRect, ""))
-                    editor.OnKnobClick(knob, KnobType.Output);
+                    editor.OnSlotClick(slot, Attribute.Direction);
                 GUIHelper.PopColor();
-                editor.Knobs.Add(new Tuple<Knob, Rect>(knob, rect));
+                editor.Slots.Add(new Tuple<Slot, Rect>(slot, rect));
             }
 
             CallNextDrawer(label);
         }
 
-        private string GetKnobPath()
+        private string GetSlotPath()
         {
             // TODO It needs to be relative to the node!
             return Property.UnityPropertyPath;
