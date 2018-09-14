@@ -2,12 +2,11 @@
 
 namespace Sleipnir
 {
-    [AttributeUsage(AttributeTargets.Field)]
-    public class SlotAttribute : Attribute
+    public abstract class SlotAttribute : Attribute
     {
         public SlotDirection Direction;
 
-        public SlotAttribute(SlotDirection direction)
+        protected SlotAttribute(SlotDirection direction)
         {
             Direction = direction;
         }
