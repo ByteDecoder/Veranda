@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -50,8 +52,29 @@ namespace Sleipnir.Editor
         public EditorNode(ValueWrappedNode content)
         {
             Content = content;
+            var attributes = content.Getter().GetType().GetCustomAttributes(true).Cast<Attribute>().ToArray();
+
+            if (Content.Node.NodeRect.width == 0)
+                ProcessOptionalAttribute<NodeWidthAttribute>(attributes,
+                    attribute =>
+                    {
+                        var oldRect = Content.Node.NodeRect;
+                        Content.Node.NodeRect = new Rect(oldRect.x, oldRect.y, attribute.Width, oldRect.height);
+                    });
+
+            ProcessOptionalAttribute<HeaderTitleAttribute>(attributes,
+                attribute => Title = attribute.Text);
+
         }
-        
+
+        private static void ProcessOptionalAttribute<T>
+            (IEnumerable<Attribute> attributes, Action<T> onFound) where T : Attribute
+        {
+            var attribute = (T)attributes.FirstOrDefault(a => a.GetType() == typeof(T));
+            if (attribute != null)
+                onFound(attribute);
+        }
+
         private Vector2 Position => Content.Node.NodeRect.position;
 
         public void Move(Vector2 delta)
