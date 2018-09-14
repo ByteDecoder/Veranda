@@ -209,10 +209,11 @@ namespace Sleipnir.Editor
             {
                 var name = nodeType.Item2 ?? nodeType.Item1.Name;
                 var menuName = $"Create Menu/{name}";
-                menu.AddItem(new GUIContent(menuName), false, () => {
+                menu.AddItem(new GUIContent(menuName), false, () =>
+                {
                     var mi = _graph.GetType().GetMethod("AddNode");
                     var miRef = mi.MakeGenericMethod(nodeType.Item1);
-                    var node = (Node)miRef.Invoke(_graph, null);
+                    var node = (Node) miRef.Invoke(_graph, new object[] { nodeType.Item2 });
                     if (node == null)
                         return;
                     node.NodeRect = new Rect(mouseGridPosition, new Vector2());

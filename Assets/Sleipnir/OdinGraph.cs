@@ -84,7 +84,7 @@ namespace Sleipnir
 
         public void RemoveNode(Node node)
         {
-            int index = _editorNodes.IndexOf(node);
+            var index = _editorNodes.IndexOf(node);
             _nodes.RemoveAt(index);
             _editorNodes.RemoveAt(index);
         }
