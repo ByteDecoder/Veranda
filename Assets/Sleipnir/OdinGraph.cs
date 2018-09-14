@@ -6,13 +6,13 @@ using UnityEngine;
 using UnityEditor;
 #endif
 using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 
 namespace Sleipnir
 {
-    [Serializable]
     public class OdinGraph<T> : SerializedScriptableObject, IGraph where T : INode, new()
     {
-        [SerializeField]
+        [OdinSerialize]
         private List<T> _nodes = new List<T>();
 
         [SerializeField]
