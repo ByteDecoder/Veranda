@@ -13,10 +13,27 @@ namespace Sleipnir
         }
     }
     
+    [AttributeUsage(AttributeTargets.Field)]
+    public class SlotInputAttribute : SlotAttribute
+    {
+        public SlotInputAttribute() : base(SlotDirection.Input) {}
+    }
+    
+    [AttributeUsage(AttributeTargets.Field)]
+    public class SlotOutputAttribute : SlotAttribute
+    {
+        public SlotOutputAttribute() : base(SlotDirection.Output) {}
+    }
+    
+    [AttributeUsage(AttributeTargets.Field)]
+    public class SlotInOutAttribute : SlotAttribute
+    {
+        public SlotInOutAttribute() : base(SlotDirection.InOut) {}
+    }
+    
     [Flags]
     public enum SlotDirection : int
     {
-        None   = 0,
         Input  = 1 << 0,
         Output = 1 << 1,
         
