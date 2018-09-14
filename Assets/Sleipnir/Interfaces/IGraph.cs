@@ -10,8 +10,8 @@ namespace Sleipnir
         Vector2 Pan { get; set; }
 
         IList<ValueWrappedNode> Nodes { get; }
-        IEnumerable<Type> NodeTypes { get; }
-        Node AddNode<Type>();
+        IEnumerable<Tuple<Type, string>> NodeTypes { get; }
+        Node AddNode<T>(string key = null);
         void RemoveNode(Node node);
 
         IEnumerable<Connection> Connections();

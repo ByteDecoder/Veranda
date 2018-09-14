@@ -205,12 +205,13 @@ namespace Sleipnir.Editor
         private void ShowGridContextMenu(Vector2 mouseGridPosition)
         {
             var menu = new GenericMenu();
-            foreach (Type nodeType in _graph.NodeTypes)
+            foreach (var nodeType in _graph.NodeTypes)
             {
-                string menuName = string.Format("Create Menu/{0}", nodeType);
+                var name = nodeType.Item2 ?? nodeType.Item1.Name;
+                var menuName = $"Create Menu/{name}";
                 menu.AddItem(new GUIContent(menuName), false, () => {
                     var mi = _graph.GetType().GetMethod("AddNode");
-                    var miRef = mi.MakeGenericMethod(nodeType);
+                    var miRef = mi.MakeGenericMethod(nodeType.Item1);
                     var node = (Node)miRef.Invoke(_graph, null);
                     if (node == null)
                         return;

@@ -12,8 +12,11 @@ namespace Sleipnir.Editor
         protected override void DrawPropertyLayout(GUIContent label)
         {
             if (GUIHelper.CurrentWindow.GetType() != typeof(GraphEditor))
+            {
+                CallNextDrawer(label);
                 return;
-            
+            }
+
             var editor = (GraphEditor) GUIHelper.CurrentWindow;
             var propertyRect = EditorGUILayout.GetControlRect(false, 0);
             

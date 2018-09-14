@@ -50,13 +50,15 @@ namespace Sleipnir.Demos
             set { _pan = value; }
         }
 
-        public IEnumerable<Type> NodeTypes {
-            get {
-                yield return typeof(DemoNode);
+        public IEnumerable<Tuple<Type, string>> NodeTypes
+        {
+            get
+            {
+                yield return new Tuple<Type, string>(typeof(DemoNode), null);
             }
         }
 
-        public Node AddNode<T>()
+        public Node AddNode<T>(string key = null)
         {
             System.Object obj = Activator.CreateInstance<T>();
             _nodes.Add((DemoNode)obj);

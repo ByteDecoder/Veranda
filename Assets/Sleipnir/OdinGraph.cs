@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -54,30 +55,26 @@ namespace Sleipnir
             set { _pan = value; }
         }
         
-        private List<Type> _INodeTypes;
-        private void LoadNodeTypes() {
-            _INodeTypes = new List<Type>();
+        private IEnumerable<Tuple<Type, string>> _INodeTypes;
+
+        private IEnumerable<Tuple<Type, string>> GetNodeTypes()
+        {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            foreach( var assembly in assemblies ) {
-                var types = assembly.GetTypes();
-                foreach( var t in types ) {
-                    if( typeof( T ).IsAssignableFrom( t ) && !t.IsAbstract ) {
-                        _INodeTypes.Add( t );
-                    }
-                }
-            }
+            return assemblies.SelectMany(assembly => assembly.GetTypes(), (assembly, t) => new {assembly, t})
+                .Where(t1 => typeof(T).IsAssignableFrom(t1.t) && !t1.t.IsAbstract)
+                .Select(t1 => new Tuple<Type, string>(t1.t, null));
         }
-        public IEnumerable<Type> NodeTypes {
-            get {
-                if (_INodeTypes == null) LoadNodeTypes();
-                foreach (var item in _INodeTypes)
-                {
-                    yield return item;
-                }
+
+        public IEnumerable<Tuple<Type, string>> NodeTypes
+        {
+            get
+            {
+                _INodeTypes = _INodeTypes ?? GetNodeTypes();
+                return _INodeTypes;
             }
         }
 
-        public Node AddNode<TNode>()
+        public Node AddNode<TNode>(string key = null)
         {
             _nodes.Add(Activator.CreateInstance<T>());
             var node = new Node();
@@ -105,7 +102,7 @@ namespace Sleipnir
         {
         }
         
-        new public void SetDirty()
+        public new void SetDirty()
         {
             #if UNITY_EDITOR
             EditorUtility.SetDirty(this);
