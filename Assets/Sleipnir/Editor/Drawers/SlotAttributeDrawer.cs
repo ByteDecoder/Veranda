@@ -2,6 +2,7 @@
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
+using UnityEditor.Graphs;
 using UnityEngine;
 
 namespace Sleipnir.Editor
@@ -64,12 +65,14 @@ namespace Sleipnir.Editor
             var value = editor.CurrentlyDrawedNode.Value;
 
             var editorNodeProperty = Property;
-            while (!ReferenceEquals(editorNodeProperty.ValueEntry.WeakSmartValue, value))
+
+            // null in case of group
+            while (editorNodeProperty.ValueEntry == null || 
+                !ReferenceEquals(editorNodeProperty.ValueEntry.WeakSmartValue, value))
                 editorNodeProperty = editorNodeProperty.Parent;
-
-
+            
             // +1 is for the dot
-            return Property.PrefabModificationPath.Remove(0, editorNodeProperty.PrefabModificationPath.Length + 1);
+            return Property.UnityPropertyPath.Remove(0, editorNodeProperty.UnityPropertyPath.Length +1);
         }
     }
 }
