@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Sirenix.Utilities.Editor;
+using UnityEngine;
 using UnityEditor;
 
 namespace Sleipnir.Editor
@@ -33,7 +34,7 @@ namespace Sleipnir.Editor
                 }
             }
         }
-        
+
         private void DrawGrid()
         {
             if (_gridTexture == null || _crossTexture == null)

@@ -22,6 +22,7 @@ namespace Sleipnir.Editor
             var content = value.Content.Node;
             var editor = (GraphEditor)GUIHelper.CurrentWindow;
             editor.CurrentlyDrawedNode = value;
+            value.Slots = new List<EditorSlot>();
 
             var headerRect = editor.GridToGuiDrawRect(value.HeaderRect);
             var sliderRect = editor.GridToGuiDrawRect(value.SliderRect);
@@ -54,15 +55,12 @@ namespace Sleipnir.Editor
             GUI.Label(headerRect, value.Title, titleGUIStyle);
 
             // Draw content
-            // It doesn't look at all.
-            // TODO Make it nice.
             var contentRect = value.ContentRect;
-            var style = new GUIStyle();
-            style.padding = new RectOffset(20, 20, 0, 0);
             GUILayout.BeginArea(editor.GridToGuiDrawRect(
-                new Rect(contentRect.x - 20, contentRect.y, contentRect.width + 40, contentRect.height)), style);
+                new Rect(contentRect.x, contentRect.y, contentRect.width, contentRect.height)));
             var contentBoxRect = SirenixEditorGUI.BeginBox();
 
+            // TODO labeling stuff.
             // When label width equals 0 it is drawn with default inspector width.
             var labelWidth = value.LabelWidth;
             GUIHelper.PushLabelWidth(labelWidth);
@@ -76,6 +74,19 @@ namespace Sleipnir.Editor
 
             SirenixEditorGUI.EndBox();
             GUILayout.EndArea();
+
+            foreach (var editorSlot in value.Slots)
+                DrawSlot(editorSlot);
+        }
+
+        public static void DrawSlot(EditorSlot slot)
+        {
+            var editor = (GraphEditor)GUIHelper.CurrentWindow;
+
+            GUIHelper.PushColor(new Color(0.95f, 0.38f, 0.24f));
+            if (GUI.Button(editor.GridToGuiDrawRect(slot.Rect), ""))
+                editor.OnSlotClick(slot.Content, slot.Direction);
+            GUIHelper.PopColor();
         }
     }
 

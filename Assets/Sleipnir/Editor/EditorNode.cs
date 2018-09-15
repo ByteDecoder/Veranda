@@ -18,14 +18,16 @@ namespace Sleipnir.Editor
         [HideInInspector]
         public readonly ValueWrappedNode Content;
         [HideInInspector]
-        public Color HeaderColor = new Color(1f, 0.35f, 0.0f);
+        public Color HeaderColor = new Color(0.95f, 0.38f, 0.24f);
         [HideInInspector]
         public Color TitleColor = Color.black;
         [HideInInspector]
-        public string Title = "Node";
+        public string Title;
         [HideInInspector]
         public bool HasLabelSlider = true;
-        
+        [HideInInspector]
+        public List<EditorSlot> Slots = new List<EditorSlot>();
+
         [ShowInInspector, HideLabel, HideReferenceObjectPicker]
         public object Value
         {

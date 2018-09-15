@@ -38,7 +38,7 @@ namespace Sleipnir.Editor
                 bezierCurveData.Item2,
                 bezierCurveData.Item3,
                 bezierCurveData.Item4,
-                new Color(1f, 0.35f, 0.0f),
+                new Color(0.95f, 0.38f, 0.24f),
                 null,
                 EditorConnection.ConnectionWidth);
         }
