@@ -19,8 +19,8 @@ namespace Sleipnir.Editor
             var editor = (GraphEditor)GUIHelper.CurrentWindow;
 
             var editorConnection = (EditorConnection)Property.ValueEntry.WeakSmartValue;
-            var outputSlotRect = editor.GetSlotRect(editorConnection.Content.Output);
-            var inputSlotRect = editor.GetSlotRect(editorConnection.Content.Input);
+            var outputSlotRect = editor.GetSlotRect(editorConnection.Content.Output, SlotDirection.Output);
+            var inputSlotRect = editor.GetSlotRect(editorConnection.Content.Input, SlotDirection.Input);
             var startGridPosition = outputSlotRect.center;
             var endGridPosition = inputSlotRect.center;
             DrawConnection(startGridPosition, endGridPosition);

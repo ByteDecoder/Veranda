@@ -163,8 +163,8 @@ namespace Sleipnir.Editor
 
         private bool IsMouseOverConnection(Vector2 mouseGridPosition, EditorConnection connection)
         {
-            var outputSlot = GetSlotRect(connection.Content.Output);
-            var inputSlot = GetSlotRect(connection.Content.Input);
+            var outputSlot = GetSlotRect(connection.Content.Output, SlotDirection.Output);
+            var inputSlot = GetSlotRect(connection.Content.Input, SlotDirection.Input);
             var startGridPosition = outputSlot.center;
             var endGridPosition = inputSlot.center;
 

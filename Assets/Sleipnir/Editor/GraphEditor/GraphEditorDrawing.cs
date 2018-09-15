@@ -72,7 +72,11 @@ namespace Sleipnir.Editor
             if (selectedSlot == null)
                 return;
 
-            var slotPosition = GridToGuiPositionNoClip(GetSlotRect(selectedSlot).center);
+            var direction = _selectedInputSlot == null
+                ? SlotDirection.Output
+                : SlotDirection.Input;
+
+            var slotPosition = GridToGuiPositionNoClip(GetSlotRect(selectedSlot, direction).center);
             var mousePosition = Event.current.mousePosition;
 
             if (selectedSlot == _selectedOutputSlot)

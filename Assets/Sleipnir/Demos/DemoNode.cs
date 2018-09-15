@@ -16,7 +16,7 @@ namespace Sleipnir.Demos
     {
         public string Output;
 
-        [SlotInput]
+        [SlotInOut]
         public string Input;
     }
 }

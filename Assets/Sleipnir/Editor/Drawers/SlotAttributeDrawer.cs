@@ -34,7 +34,7 @@ namespace Sleipnir.Editor
                     editor.OnSlotClick(slot, SlotDirection.Input);
                 
                 GUIHelper.PopColor();
-                editor.Slots.Add(new Tuple<Slot, Rect>(slot, rect));
+                editor.Slots.Add(new Tuple<Slot, Rect, SlotDirection>(slot, rect, SlotDirection.Input));
             }
 
             if (Attribute.Direction.IsOutput())
@@ -50,7 +50,7 @@ namespace Sleipnir.Editor
                     // There is no such thing as SlotDirection.InOut form editor's perspective
                     editor.OnSlotClick(slot, SlotDirection.Output);
                 GUIHelper.PopColor();
-                editor.Slots.Add(new Tuple<Slot, Rect>(slot, rect));
+                editor.Slots.Add(new Tuple<Slot, Rect, SlotDirection>(slot, rect, SlotDirection.Output));
             }
 
             CallNextDrawer(label);
