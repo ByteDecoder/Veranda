@@ -1,5 +1,4 @@
-﻿using Sirenix.Utilities.Editor;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 namespace Sleipnir.Editor

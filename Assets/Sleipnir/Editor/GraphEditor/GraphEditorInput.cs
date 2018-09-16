@@ -164,8 +164,8 @@ namespace Sleipnir.Editor
         {
             var outputSlot = GetSlotRect(connection.Content.Output, SlotDirection.Output);
             var inputSlot = GetSlotRect(connection.Content.Input, SlotDirection.Input);
-            var startGridPosition = outputSlot.center;
-            var endGridPosition = inputSlot.center;
+            var startGridPosition = GridToGuiPositionNoClip(outputSlot.center);
+            var endGridPosition = GridToGuiPositionNoClip(inputSlot.center);
 
             var bezierCurveData = EditorConnection.BezierCurveData(startGridPosition, endGridPosition);
 

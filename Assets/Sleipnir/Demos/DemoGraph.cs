@@ -74,17 +74,21 @@ namespace Sleipnir.Demos
             _editorNodes.RemoveAt(index);
         }
 
+        private List<Connection> _connections = new List<Connection>();
+
         public IEnumerable<Connection> Connections()
-        { 
-            return null;
+        {
+            return _connections;
         }
 
         public void AddConnection(Connection connection)
         {
+            _connections.Add(connection);
         }
 
         public void RemoveConnection(Connection connection)
         {
+            _connections.Remove(connection);
         }
         
         public void SetDirty() {}
