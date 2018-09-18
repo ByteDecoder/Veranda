@@ -64,7 +64,7 @@ namespace Sleipnir.Editor
             // When label width equals 0 it is drawn with default inspector width.
             var labelWidth = value.LabelWidth;
             GUIHelper.PushLabelWidth(labelWidth);
-            GUIHelper.PushHierarchyMode(true);
+            GUIHelper.PushHierarchyMode(false);
             CallNextDrawer(label);
             GUIHelper.PopHierarchyMode();
             GUIHelper.PopLabelWidth();
