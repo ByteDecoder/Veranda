@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,13 +13,16 @@ namespace Sleipnir
 {
     public class OdinGraph<T> : SerializedScriptableObject, IGraph where T : INode, new()
     {
+        [LabelText("Evaluation Async Wait Time"), Range(0.001f, 10.0f)]
+        public float AsyncWaitTime = 0.1f;
+        
         [OdinSerialize]
         private List<T> _nodes = new List<T>();
 
         [SerializeField]
         private List<Node> _editorNodes = new List<Node>();
 
-        IList<ValueWrappedNode> IGraph.Nodes
+        IList<ValueWrappedNode> Nodes
         {
             get
             {
@@ -35,6 +39,10 @@ namespace Sleipnir
                 }
                 return result;
             }
+        }
+        IList<ValueWrappedNode> IGraph.Nodes
+        {
+            get { return Nodes; }
         }
 
         [SerializeField]
@@ -89,17 +97,21 @@ namespace Sleipnir
             _editorNodes.RemoveAt(index);
         }
 
+        private List<Connection> _connections = new List<Connection>();
+
         public IEnumerable<Connection> Connections()
-        { 
-            return null;
+        {
+            return _connections;
         }
 
         public void AddConnection(Connection connection)
         {
+            _connections.Add(connection);
         }
 
         public void RemoveConnection(Connection connection)
         {
+            _connections.Remove(connection);
         }
         
         public new void SetDirty()
@@ -107,6 +119,88 @@ namespace Sleipnir
             #if UNITY_EDITOR
             EditorUtility.SetDirty(this);
             #endif
+        }
+        
+        [Button]
+        public void Test()
+        {
+            Evaluate();
+        }
+        
+        public void Evaluate()
+        {
+            int maxIterations = _nodes.Count + 1;
+            for (int i = 0; i < maxIterations; i++) {
+                if (Evaluate(i)) break;
+            }
+            ResetEvaluations();
+        }
+
+        public IEnumerable AsyncEvaluate()
+        {
+            int maxIterations = _nodes.Count + 1;
+            for (int i = 0; i < maxIterations; i++) {
+                if (Evaluate(i)) break;
+                yield return new WaitForSeconds(AsyncWaitTime);
+            }
+            ResetEvaluations();
+        }
+
+        private bool Evaluate(int iteration)
+        {
+            bool allNodesHaveEvaluated = true;
+            foreach (var item in Nodes)
+            {
+                if (item.Node.HasEvaluated) continue;
+                allNodesHaveEvaluated = false;
+                CanEvaluate(iteration, item);
+                if (item.Node.CanEvaluate) EvaluateNode(item);
+            }
+            return allNodesHaveEvaluated;
+        }
+        
+        private void CanEvaluate(int iteration, ValueWrappedNode node)
+        {
+            bool canEvaluate = true;
+            if (iteration == 0)
+            {
+                // When this is the first iteration
+                // Only allow evaluation of a node if the graph no input connections for it
+                foreach (var conn in _connections)
+                {
+                    if (conn.Input.Node == node ) canEvaluate = false;
+                }
+            } else {
+                // When this is not the first iteration
+                // Only allow evaluation of a node if all of the connections where 
+                // this node is an input if the upstream output node has already evaluated
+                foreach (var conn in _connections)
+                {
+                    if (conn.Input.Node == node )
+                    {
+                        if (conn.Output.Node.Node.HasEvaluated == false) canEvaluate = false;
+                    }
+                }
+            }
+            if (canEvaluate) node.Node.CanEvaluate = true;
+        }
+        
+        private void EvaluateNode(ValueWrappedNode node)
+        {
+            foreach (var conn in _connections)
+            {
+                if (conn.Output.Node == node) conn.Shlep();
+            }
+            // Put in logic here for evaluating EvaluateAttribute marked methods based on their Order
+            node.Node.HasEvaluated = true;
+        }
+        
+        private void ResetEvaluations()
+        {
+            foreach (var item in Nodes)
+            {
+                item.Node.HasEvaluated = false;
+            }
         }
     }
 }

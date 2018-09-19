@@ -10,6 +10,8 @@ namespace Sleipnir
         public Rect NodeRect;
         public float LabelWidth;
         public bool IsLabelSliderShown;
+        public bool HasEvaluated = false;
+        public bool CanEvaluate = false;
         
         // Dummies are null objects inserted to in-graph node list.
         // They allow nodes to keep their content properly extended 
