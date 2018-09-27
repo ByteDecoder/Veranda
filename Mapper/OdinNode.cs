@@ -60,15 +60,17 @@ namespace Sleipnir.Mapper
         {
             Nest = new Nest(Value, "");
             var mapped = Nest.GetSlots<T>(Graph.IndexOf(this), "");
+            
 
             Slots = Slots
                 .Where(s => mapped.Any(m => m.Item1.DeepReflectionPath == s.Key.DeepReflectionPath))
                 .ToDictionary(s => s.Key, s => s.Value);
+            
 
             foreach (var odinSlot in mapped)
                 if (Slots.All(k => k.Key.DeepReflectionPath != odinSlot.Item1.DeepReflectionPath))
                 {
-                    if((odinSlot.Item2.Direction & Direction.InOut) != Direction.InOut)
+                    if(odinSlot.Item2.Direction == Direction.InOut)
                         Slots.Add(odinSlot.Item1, new []
                         {
                             new Slot(SlotDirection.Input, Node, 0),
@@ -85,6 +87,7 @@ namespace Sleipnir.Mapper
                         });
                     }
                 }
+
             Node.Slots = Slots.SelectMany(s => s.Value).ToList();
         }
         #endregion

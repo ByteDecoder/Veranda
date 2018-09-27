@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Sleipnir.Mapper.Editor
 {
-    [DrawerPriority(121, 0, 0)]
+    [DrawerPriority(120, 0, 0)]
     public class SlotMapper: OdinAttributeDrawer<SlotAttribute>
     {
         public static Dictionary<OdinSlot, Slot[]> CurrentNodeSlots;
@@ -23,12 +23,16 @@ namespace Sleipnir.Mapper.Editor
                 return;
             }
 
+            if (NestMapper.NestProperty != Property.Parent)
+            {
+                CallNextDrawer(label);
+                return;
+            }
+
             var propertyRect = EditorGUILayout.GetControlRect(false, 0);
             var path = NestMapper.CurrentPath.IsNullOrWhitespace()
                 ? Property.Name
-                : Property.Name.StartsWith("$")     
-                    ? NestMapper.CurrentPath + ".[" + Property.Name + "]"
-                    : NestMapper.CurrentPath + "." + Property.Name;
+                : NestMapper.CurrentPath + "." + Property.Name;
             
             if (CurrentNodeSlots.All(s => s.Key.DeepReflectionPath != path))
             {

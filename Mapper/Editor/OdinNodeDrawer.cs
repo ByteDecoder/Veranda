@@ -20,6 +20,7 @@ namespace Sleipnir.Mapper.Editor
 
             SlotMapper.CurrentNodeSlots = node.Slots;
             SlotMapper.NodeValue = node.Value;
+            NestMapper.NestProperty = Property.Children[0];
             NestMapper.Nests = new Stack<Nest>();
             NestMapper.Nests.Push(node.Nest);
             NestMapper.CurrentPath = "";
