@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
 using Sleipnir.Editor;
+using UnityEditor;
 using UnityEngine;
 
 namespace Sleipnir.Mapper.Editor
@@ -10,8 +12,9 @@ namespace Sleipnir.Mapper.Editor
     [DrawerPriority(120, 0, 0)]
     public class NestMapper : OdinAttributeDrawer<NestedAttribute>
     {
-        public static Nest CurrentNest;
+        public static Stack<Nest> Nests = new Stack<Nest>();
         public static string CurrentPath;
+        public static InspectorProperty NestProperty;
 
         protected override void DrawPropertyLayout(GUIContent label)
         {
@@ -20,17 +23,38 @@ namespace Sleipnir.Mapper.Editor
                 CallNextDrawer(label);
                 return;
             }
-            var oldNest = CurrentNest;
-            var oldPath = CurrentPath;
+            
+            var name = Property.Name.StartsWith("$") // List elements
+                ? "[" + Property.Name.TrimStart('$') + "]"
+                : Property.Name;
 
-            CurrentNest = CurrentNest.Nests.First(n => n.FieldName == Property.Name);
+            var oldPath = CurrentPath;
+            var oldProperty = NestProperty;
+
+            NestProperty = Property;
+            Nests.Push(Nests.Peek().Nests.First(n => n.FieldName == name));
             CurrentPath = oldPath.IsNullOrWhitespace()
-                ? Property.Name
-                : oldPath + "." + Property.Name;
+                ? name
+                : oldPath + "." + name;
+            
+            var propertyRect = EditorGUILayout.GetControlRect(false, 0);
+            if (Event.current.type == EventType.Repaint)
+                Nests.Peek().YPosition = propertyRect.y + 50;
+            
+            var path = CurrentPath;
+            var slots = SlotMapper.CurrentNodeSlots
+                .Where(s => s.Key.DeepReflectionPath.StartsWith(path));
+
+            foreach (var slot in slots.SelectMany(s => s.Value))
+            {
+                slot.RelativeYPosition = Nests.Peek().YPosition;
+                slot.Interactable = false;
+            }
 
             CallNextDrawer(label);
-            CurrentNest = oldNest;
+            Nests.Pop();
             CurrentPath = oldPath;
+            NestProperty = oldProperty;
         }
     }
 }

@@ -3,11 +3,11 @@
     public class SubSlot
     {
         public string FieldName;
-        public SlotDirection Direction;
-
-        public SubSlot(SlotDirection direction, string fieldName)
+        public SlotAttribute Attribute;
+        
+        public SubSlot(SlotAttribute attribute, string fieldName)
         {
-            Direction = direction;
+            Attribute = attribute;
             FieldName = fieldName;
         }
     }

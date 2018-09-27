@@ -12,7 +12,7 @@ namespace Sleipnir.Mapper.Editor
     [DrawerPriority(121, 0, 0)]
     public class SlotMapper: OdinAttributeDrawer<SlotAttribute>
     {
-        public static Dictionary<OdinSlot, Slot> CurrentNodeSlots;
+        public static Dictionary<OdinSlot, Slot[]> CurrentNodeSlots;
         public static object NodeValue;
 
         protected override void DrawPropertyLayout(GUIContent label)
@@ -22,17 +22,30 @@ namespace Sleipnir.Mapper.Editor
                 CallNextDrawer(label);
                 return;
             }
+
             var propertyRect = EditorGUILayout.GetControlRect(false, 0);
             var path = NestMapper.CurrentPath.IsNullOrWhitespace()
                 ? Property.Name
-                : NestMapper.CurrentPath + "." + Property.Name;
+                : Property.Name.StartsWith("$")     
+                    ? NestMapper.CurrentPath + ".[" + Property.Name + "]"
+                    : NestMapper.CurrentPath + "." + Property.Name;
+            
+            if (CurrentNodeSlots.All(s => s.Key.DeepReflectionPath != path))
+            {
+                CallNextDrawer(label);
+                return;
+            }
 
             var slot = CurrentNodeSlots
-                .First(s => s.Key.DeepReflectionPath == path)
-                .Value;
+                .FirstOrDefault(s => s.Key.DeepReflectionPath == path);
+            
+            if (!slot.Equals(default(KeyValuePair<OdinSlot, Slot[]>)) && Event.current.type == EventType.Repaint)
+                foreach (var s in slot.Value)
+                {
+                    s.Interactable = true;
+                    s.RelativeYPosition = propertyRect.y + 50;
+                }
 
-            if (Event.current.type == EventType.Repaint)
-                slot.RelativeYPosition = propertyRect.y + 50;
             CallNextDrawer(label);
         }
     }

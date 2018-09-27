@@ -9,7 +9,7 @@ namespace Sleipnir.Mapper
     [Serializable]
     public class OdinNode<T>
     {
-        //[OnValueChanged("Remap")]
+        [OnValueChanged("Remap", true)]
         [HideReferenceObjectPicker]
         [HideLabel]
         public T Value;
@@ -22,13 +22,16 @@ namespace Sleipnir.Mapper
 #if UNITY_EDITOR
         #region Sleipnir data
         [NonSerialized]
-        public Dictionary<OdinSlot, Slot> Slots;
+        public Dictionary<OdinSlot, Slot[]> Slots;
         [NonSerialized]
         public bool HasEvaluated = false;
         [NonSerialized]
         public bool CanEvaluate = false;
         [NonSerialized]
         public Nest Nest;
+
+        [NonSerialized] public List<OdinNode<T>> Graph;
+        [NonSerialized] public Node Node;
 
         [SerializeField, HideInInspector]
         private readonly SerializedNodeData _serializedData = new SerializedNodeData();
@@ -41,37 +44,48 @@ namespace Sleipnir.Mapper
         public Node GetDrawingData(List<OdinNode<T>> graph)
         {
             if(Slots == null)
-                Slots = new Dictionary<OdinSlot, Slot>();
+                Slots = new Dictionary<OdinSlot, Slot[]>();
             var node = new Node(
                 () => this,
                 value => Value = ((OdinNode<T>)value).Value,
                 _serializedData
                 );
-            Remap(graph, node);
+            Node = node;
+            Graph = graph;
+            Remap();
             return node;
         }
-
-        public void StartDrawing()
-        {
-        }
-
-        public void EndDrawing()
-        {
-        }
-
-        public void Remap(List<OdinNode<T>> graph, Node node)
+        
+        public void Remap()
         {
             Nest = new Nest(Value, "");
-            var odinSlots = Nest.GetSlots<T>(graph.IndexOf(this), "");
-            foreach (var slot in Slots)
-                if (!odinSlots.Contains(slot.Key))
-                    Slots.Remove(slot.Key);
+            var mapped = Nest.GetSlots<T>(Graph.IndexOf(this), "");
 
-            foreach (var odinSlot in odinSlots)
-                if (!Slots.ContainsKey(odinSlot))
-                    Slots.Add(odinSlot, new Slot(SlotDirection.Input, node, 0));
+            Slots = Slots
+                .Where(s => mapped.Any(m => m.Item1.DeepReflectionPath == s.Key.DeepReflectionPath))
+                .ToDictionary(s => s.Key, s => s.Value);
 
-            node.Slots = Slots.Values.ToList();
+            foreach (var odinSlot in mapped)
+                if (Slots.All(k => k.Key.DeepReflectionPath != odinSlot.Item1.DeepReflectionPath))
+                {
+                    if((odinSlot.Item2.Direction & Direction.InOut) != Direction.InOut)
+                        Slots.Add(odinSlot.Item1, new []
+                        {
+                            new Slot(SlotDirection.Input, Node, 0),
+                            new Slot(SlotDirection.Output, Node, 0)
+                        });
+                    else
+                    {
+                        var direction = odinSlot.Item2.Direction.IsOutput()
+                            ? SlotDirection.Output
+                            : SlotDirection.Input;
+                        Slots.Add(odinSlot.Item1, new[]
+                        {
+                            new Slot(direction, Node, 0)
+                        });
+                    }
+                }
+            Node.Slots = Slots.SelectMany(s => s.Value).ToList();
         }
         #endregion
 #endif

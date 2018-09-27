@@ -28,8 +28,8 @@ namespace Sleipnir.Mapper
         {
             _connectionDrawingData = connection;
             var slots = graph.SelectMany(n => n.Slots).ToList();
-            Output = slots.First(k => ReferenceEquals(k.Value, connection.OutputSlot)).Key;
-            Input = slots.First(k => ReferenceEquals(k.Value, connection.InputSlot)).Key;
+            Output = slots.First(k => ReferenceEquals(k.Value.First(), connection.OutputSlot)).Key;
+            Input = slots.First(k => ReferenceEquals(k.Value.Last(), connection.InputSlot)).Key;
         }
 
         public Connection ConnectionDrawingData(IReadOnlyList<OdinNode<T>> graph)
@@ -44,8 +44,8 @@ namespace Sleipnir.Mapper
             var outputNode = graph[Output.NodeIndex];
             var inputNode = graph[Input.NodeIndex];
 
-            var outputDrawingSlot = outputNode.Slots[Output];
-            var inputDrawingSlot = inputNode.Slots[Input];
+            var outputDrawingSlot = outputNode.Slots[Output].First();
+            var inputDrawingSlot = inputNode.Slots[Input].Last();
 
             return new Connection(outputDrawingSlot, inputDrawingSlot);
         }

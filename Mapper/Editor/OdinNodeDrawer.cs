@@ -1,4 +1,5 @@
-﻿using Sirenix.OdinInspector.Editor;
+﻿using System.Collections.Generic;
+using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using Sleipnir.Editor;
 using UnityEngine;
@@ -16,13 +17,13 @@ namespace Sleipnir.Mapper.Editor
                 return;
             }
             var node = ValueEntry.SmartValue;
+
             SlotMapper.CurrentNodeSlots = node.Slots;
             SlotMapper.NodeValue = node.Value;
-            NestMapper.CurrentNest = node.Nest;
+            NestMapper.Nests = new Stack<Nest>();
+            NestMapper.Nests.Push(node.Nest);
             NestMapper.CurrentPath = "";
-            node.StartDrawing();
             CallNextDrawer(label);
-            node.EndDrawing();
         }
     }
 }

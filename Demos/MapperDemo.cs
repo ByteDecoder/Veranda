@@ -15,23 +15,31 @@ namespace Sleipnir.Demos
     [Serializable]
     public class Node
     {
-        [Nested]
-        [Slot(Direction.Input)]
-        public Nested A = new Nested();
+        [Slot(Direction.Output)]
+        public string C;
 
         [Nested]
         [Slot(Direction.Output)]
+        public Nested A = new Nested();
+
+        [Slot(Direction.Input)]
         public Nested B = new Nested();
         
-        //[Nested]
-        //[Slot(Direction.Output)]
-        //public List<Nested> List = new List<Nested>();
+        [Nested]
+        [OdinSerialize]
+        [Slot(Direction.Output)]
+        public List<Nested> BList = new List<Nested>();
+
+        [Nested]
+        [OdinSerialize]
+        [Slot(Direction.Output)]
+        public List<Nested> AList = new List<Nested>();
     }
 
     [Serializable]
     public class Nested
     {
-        [Slot(Direction.Input)]
+        [Slot(Direction.Output)]
         public string C;
 
         [Slot(Direction.Input)]
