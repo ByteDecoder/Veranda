@@ -33,22 +33,15 @@ namespace Sleipnir.Mapper.Editor
             var path = NestMapper.CurrentPath.IsNullOrWhitespace()
                 ? Property.Name
                 : NestMapper.CurrentPath + "." + Property.Name;
-            
-            if (CurrentNodeSlots.All(s => s.Key.DeepReflectionPath != path))
-            {
-                CallNextDrawer(label);
-                return;
-            }
 
             var slot = CurrentNodeSlots
                 .FirstOrDefault(s => s.Key.DeepReflectionPath == path);
             
-            if (!slot.Equals(default(KeyValuePair<OdinSlot, Slot[]>)) && Event.current.type == EventType.Repaint)
-                foreach (var s in slot.Value)
-                {
-                    s.Interactable = true;
+            foreach (var s in slot.Value)
+            {
+                if (Event.current.type == EventType.Repaint)
                     s.RelativeYPosition = propertyRect.y + 50;
-                }
+            }
 
             CallNextDrawer(label);
         }

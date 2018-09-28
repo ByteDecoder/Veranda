@@ -26,7 +26,6 @@ namespace Sleipnir.Mapper
 
     public class SlotAttribute : Attribute
     {
-        public bool DisplayWhenHidden = false;
         public Direction Direction;
 
         public SlotAttribute(Direction direction)

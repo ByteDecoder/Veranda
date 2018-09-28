@@ -47,8 +47,8 @@ namespace Sleipnir.Mapper.Editor
 
             foreach (var slot in slots.SelectMany(s => s.Value))
             {
-                slot.RelativeYPosition = Nests.Peek().YPosition;
-                slot.Interactable = false;
+                if (Event.current.type == EventType.Repaint)
+                    slot.RelativeYPosition = Nests.Peek().YPosition;
             }
 
             CallNextDrawer(label);

@@ -12,16 +12,14 @@ namespace Sleipnir.Mapper
     {
         public string FieldName;
         public bool Drawn = false;
-        public bool DisplayWhenHidden;
         public float YPosition = 0;
         public List<Nest> Nests;
         public List<SubSlot> Slots;
 
-        public Nest(object toMap, string fieldName, bool displayWhenHidden = true)
+        public Nest(object toMap, string fieldName)
         {
             Nests = new List<Nest>();
             FieldName = fieldName;
-            DisplayWhenHidden = displayWhenHidden;
 
             Slots = toMap
                 .GetType()
@@ -39,7 +37,7 @@ namespace Sleipnir.Mapper
             var list = toMap as IList;
             if (list != null)
                 for (var i = 0; i < list.Count; i++)
-                    Nests.Add(new Nest(list[i], "[" + i + "]", displayWhenHidden));
+                    Nests.Add(new Nest(list[i], "[" + i + "]"));
 
             var nestedFields = toMap.GetType()
                 .GetFields().Where(p => p.IsDefined(typeof(NestedAttribute), true))
@@ -50,8 +48,7 @@ namespace Sleipnir.Mapper
                 var value = nestedField.GetValue(toMap);
                 if (value == null)
                     continue;
-                var attribute = (NestedAttribute)nestedField.GetCustomAttribute(typeof(NestedAttribute));
-                Nests.Add(new Nest(value, nestedField.Name, attribute.DisplayWhenHidden && DisplayWhenHidden));
+                Nests.Add(new Nest(value, nestedField.Name));
             }
         }
 

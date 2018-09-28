@@ -13,10 +13,7 @@ namespace Sleipnir.Editor
         private const float MaxZoom = 7f;
 
         private IGraph _graph;
-
-        [ShowInInspector]
-        public List<Connection> Connections => _graph.Connections()?.ToList();
-
+        
         [HideReferenceObjectPicker, HideLabel, ShowInInspector]
         public List<Node> Nodes
         {
@@ -35,7 +32,10 @@ namespace Sleipnir.Editor
                 // without setter property is marked as readonly
             }
         }
-        
+
+        [ShowInInspector]
+        public List<Connection> Connections => _graph.Connections()?.ToList();
+
         public void LoadGraph(IGraph graph)
         {
             _graph = graph;
