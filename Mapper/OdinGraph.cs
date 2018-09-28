@@ -173,7 +173,7 @@ namespace Sleipnir.Mapper
             foreach (var slot in _nodes.SelectMany(n => n.Slots.Keys))
                 if (slot.NodeIndex > index)
                     slot.NodeIndex--;
-
+            Evaluate();
         }
 
         public IEnumerable<Connection> Connections() =>
@@ -183,13 +183,27 @@ namespace Sleipnir.Mapper
         {
             if(_connections.Any(c => connection.Equals(c.ConnectionDrawingData(_nodes))))
                 return;
+            var odinConnection = new OdinConnection<T>(connection, _nodes);
+
+            try
+            {
+                odinConnection.Shlep(this);
+            }
+            catch
+            {
+                Debug.Log("Invalid type.");
+                return;
+            }
+
            _connections.Add(new OdinConnection<T>(connection, _nodes));
+            Evaluate();
         }
 
         public void RemoveConnection(Connection connection)
         {
             var toRemove = _connections.First(c => connection.Equals(c.ConnectionDrawingData(_nodes)));
             _connections.Remove(toRemove);
+            Evaluate();
         }
         #endregion
 #endif
