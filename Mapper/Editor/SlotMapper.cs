@@ -18,7 +18,7 @@ namespace Sleipnir.Mapper.Editor
         protected override void DrawPropertyLayout(GUIContent label)
         {
             if (GUIHelper.CurrentWindow.GetType() != typeof(GraphEditor)
-                || NestMapper.NestProperty != Property.Parent) // Nested not marked with [Nested]
+                || !NestMapper.NestProperty.IsParentOf(Property)) // Nested not marked with [Nested]
             {
                 CallNextDrawer(label);
                 return;
