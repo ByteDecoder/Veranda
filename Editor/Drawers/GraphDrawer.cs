@@ -12,10 +12,9 @@ namespace Sleipnir.Editor
             {
                 if (GUILayout.Button("Open editor"))
                 {
-                    var window = (GraphEditor)EditorWindow.GetWindow(typeof(GraphEditor));
+                    var window = (GraphEditor) EditorWindow.GetWindow(typeof(GraphEditor));
                     window.LoadGraph(ValueEntry.SmartValue);
                 }
-
                 CallNextDrawer(label);
             }
         }

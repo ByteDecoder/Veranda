@@ -8,7 +8,7 @@ namespace Sleipnir.Mapper
     {
         public string DeepReflectionPath;
         public int NodeIndex;
-
+        
         public Func<object, object> Getter<T>(OdinGraph<T> graph)
         {
             return DeepReflection.CreateWeakInstanceValueGetter(

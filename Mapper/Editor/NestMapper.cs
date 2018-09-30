@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Sleipnir.Mapper.Editor
 {
-    [DrawerPriority(121, 0, 0)]
+    [DrawerPriority(120, 0, 0)]
     public class NestMapper : OdinAttributeDrawer<NestedAttribute>
     {
         public static Stack<Nest> Nests = new Stack<Nest>();

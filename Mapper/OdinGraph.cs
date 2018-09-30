@@ -89,7 +89,8 @@ namespace Sleipnir.Mapper
                 if (_nodes[connection.Output.NodeIndex] == node)
                     connection.Shlep(this);
 
-            // Put in logic here for evaluating EvaluateAttribute marked methods based on their Order
+            // Put in logic here for evaluating EvaluateAttribute marked methods based on their Order            
+            node.Changed();
             node.HasEvaluated = true;
         }
 
@@ -109,7 +110,25 @@ namespace Sleipnir.Mapper
 
         private IEnumerable<Type> _nodeTypes;
 
-        IList<Node> IGraph.Nodes => _nodes.Select(n => n.NodeDrawingData(_nodes)).ToList();
+        IList<Node> IGraph.Nodes
+        {
+            get
+            {
+                foreach (var odinNode in _nodes)
+                    odinNode.Draw();
+                
+                return _nodes.Select(n => n.Node).ToList();
+            }
+        }
+
+        public void LoadDrawingData()
+        {
+            foreach (var odinNode in _nodes)
+                odinNode.LoadDrawingData(_nodes);
+
+            foreach (var odinConnection in _connections)
+                odinConnection.LoadDrawingData(_nodes);
+        }
         
         public float Zoom
         {
@@ -139,13 +158,13 @@ namespace Sleipnir.Mapper
         public void AddNode(string typeName)
         {
             var type = _nodeTypes.First(t => t.Name == typeName);
-            var odinNode = new OdinNode<T>((T)Activator.CreateInstance(type));
+            var odinNode = new OdinNode<T>((T)Activator.CreateInstance(type), _nodes);
             _nodes.Add(odinNode);
         }
 
         public void RemoveNode(Node node)
         {
-            var odinNode = _nodes.First(n => ReferenceEquals(n.NodeDrawingData(_nodes), node));
+            var odinNode = _nodes.First(n => ReferenceEquals(n.Node, node));
             var index = _nodes.IndexOf(odinNode);
             _nodes.RemoveAt(index);
 
@@ -177,11 +196,11 @@ namespace Sleipnir.Mapper
         }
 
         public IEnumerable<Connection> Connections() =>
-            _connections.Select(n => n.ConnectionDrawingData(_nodes)).ToList();
+            _connections.Select(n => n.ConnectionDrawingData).ToList();
 
         public void AddConnection(Connection connection)
         {
-            if(_connections.Any(c => connection.Equals(c.ConnectionDrawingData(_nodes))))
+            if(_connections.Any(c => connection.Equals(c.ConnectionDrawingData)))
                 return;
             var odinConnection = new OdinConnection<T>(connection, _nodes);
 
@@ -201,7 +220,7 @@ namespace Sleipnir.Mapper
 
         public void RemoveConnection(Connection connection)
         {
-            var toRemove = _connections.First(c => connection.Equals(c.ConnectionDrawingData(_nodes)));
+            var toRemove = _connections.First(c => connection.Equals(c.ConnectionDrawingData));
             _connections.Remove(toRemove);
             Evaluate();
         }

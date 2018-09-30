@@ -22,24 +22,17 @@ namespace Sleipnir.Mapper
 
 #if UNITY_EDITOR
         #region Sleipnir data
-        private Connection? _connectionDrawingData;
+        public Connection ConnectionDrawingData;
 
         public OdinConnection(Connection connection, IEnumerable<OdinNode<T>> graph)
         {
-            _connectionDrawingData = connection;
+            ConnectionDrawingData = connection;
             var slots = graph.SelectMany(n => n.Slots).ToList();
             Output = slots.First(k => ReferenceEquals(k.Value.Last(), connection.OutputSlot)).Key;
             Input = slots.First(k => ReferenceEquals(k.Value.First(), connection.InputSlot)).Key;
         }
 
-        public Connection ConnectionDrawingData(IReadOnlyList<OdinNode<T>> graph)
-        {
-            if(!_connectionDrawingData.HasValue)
-                _connectionDrawingData = GetDrawingData(graph);
-            return _connectionDrawingData.Value;
-        }
-
-        private Connection GetDrawingData(IReadOnlyList<OdinNode<T>> graph)
+        public void LoadDrawingData(IReadOnlyList<OdinNode<T>> graph)
         {
             var outputNode = graph[Output.NodeIndex];
             var inputNode = graph[Input.NodeIndex];
@@ -49,7 +42,7 @@ namespace Sleipnir.Mapper
             var inputDrawingSlot = inputNode.Slots
                 .First(s => s.Key.DeepReflectionPath == Input.DeepReflectionPath).Value.First();
 
-            return new Connection(outputDrawingSlot, inputDrawingSlot);
+            ConnectionDrawingData = new Connection(outputDrawingSlot, inputDrawingSlot);
         }
         #endregion
 #endif

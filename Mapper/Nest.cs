@@ -14,7 +14,7 @@ namespace Sleipnir.Mapper
         public bool Drawn = false;
         public float YPosition = 0;
         public List<Nest> Nests;
-        public List<SubSlot> Slots;
+        public List<Tuple<SlotAttribute, string>> Slots;
 
         public Nest(object toMap, string fieldName)
         {
@@ -27,9 +27,9 @@ namespace Sleipnir.Mapper
                 .Where(p => p.IsDefined(typeof(SlotAttribute), true))
                 .SelectMany(s =>
                 {
-                    var result = new List<SubSlot>();
+                    var result = new List<Tuple<SlotAttribute, string>>();
                     var attribute = (SlotAttribute) s.GetCustomAttribute(typeof(SlotAttribute));
-                    result.Add(new SubSlot(attribute, s.Name));
+                    result.Add(new Tuple<SlotAttribute, string>(attribute, s.Name));
                     return result;
                 })
                 .ToList();
@@ -64,11 +64,11 @@ namespace Sleipnir.Mapper
                     new OdinSlot
                     { 
                         DeepReflectionPath = path.IsNullOrWhitespace()
-                            ? subSlot.FieldName
-                            : path + "." + subSlot.FieldName,
+                            ? subSlot.Item2
+                            : path + "." + subSlot.Item2,
                         NodeIndex = nodeIndex
                     }, 
-                    subSlot.Attribute
+                    subSlot.Item1
                 ))
                 .ToList();
 

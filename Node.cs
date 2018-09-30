@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 using UnityEngine;
 
 namespace Sleipnir
@@ -41,7 +42,9 @@ namespace Sleipnir
             HeaderColor = new Color(0.95f, 0.38f, 0.24f);
             TitleColor = Color.black;
             HasLabelSlider = true;
-            HeaderTitle = Value.GetType().FullName;
+            HeaderTitle = Value.GetType().GetNiceName();
+
+            ContextMenuFunctions = new List<Tuple<string, Action>>();
         }
 
         [ShowInInspector]

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using Sleipnir.Mapper;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Sleipnir.Demos
 {
@@ -13,13 +15,13 @@ namespace Sleipnir.Demos
     }
 
     [Serializable]
+    [NodeTitle("Example")]
     public class Node
     {
-        [Slot(Direction.Input)]
         public string C;
         
         public Nested A = new Nested();
-
+        
         [Nested]
         [Slot(Direction.InOut)]
         public Nested B = new Nested();
@@ -32,6 +34,19 @@ namespace Sleipnir.Demos
         [OdinSerialize]
         [Slot(Direction.InOut)]
         public List<Nested> AList = new List<Nested>();
+
+        [ContextFunction(Name = "Stupify Name")]
+        public void Foo()
+        {
+            C = "A";
+        }
+
+        [ContextFunction]
+        public void RandomizeColor(Sleipnir.Node node)
+        {
+            node.HeaderColor = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
+        }
+
     }
 
     [Serializable]
