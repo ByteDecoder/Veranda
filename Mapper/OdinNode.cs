@@ -75,8 +75,8 @@ namespace Sleipnir.Mapper
         [NonSerialized]
         public Node Node;
 
-        private readonly List<Action> _onDraw = new List<Action>();
-        private readonly List<Action> _onChanged = new List<Action>();
+        private List<Action> _onDraw;
+        private List<Action> _onChanged;
         
         public void LoadDrawingData(List<OdinNode<T>> graph)
         {
@@ -89,6 +89,9 @@ namespace Sleipnir.Mapper
                 );
             Node = node;
             Graph = graph;
+
+            _onDraw = new List<Action>();
+            _onChanged = new List<Action>();
 
             var attributes = Value.GetType().GetCustomAttributes(true);
             
@@ -147,7 +150,7 @@ namespace Sleipnir.Mapper
                 if (parameters.Length == 0)
                     onLoadFunction.Invoke(Value, null);
                 else if (parameters.Length == 1 && typeof(Node).IsAssignableFrom(parameters[0].ParameterType)) 
-                    onLoadFunction.Invoke(Value, new object[] {Node});
+                    onLoadFunction.Invoke(Value, new object[] { Node });
             }
 
             var onDraw = methods
@@ -163,7 +166,7 @@ namespace Sleipnir.Mapper
             }
 
             var onChanged = methods
-                .Where(m => m.GetCustomAttributes(typeof(OnDrawAttribute), false).Length > 0);
+                .Where(m => m.GetCustomAttributes(typeof(OnChangedAttribute), false).Length > 0);
 
             foreach (var onChangedFunction in onChanged)
             {

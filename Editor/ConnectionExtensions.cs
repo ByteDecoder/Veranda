@@ -53,8 +53,8 @@ namespace Sleipnir.Editor
 
         internal static bool IsPointOverConnection(this Connection connection, Vector2 gridPoint)
         {
-            var startGridPosition = connection.InputSlot.GridRect.center;
-            var endGridPosition = connection.OutputSlot.GridRect.center;
+            var startGridPosition = connection.OutputSlot.GridRect.center;
+            var endGridPosition = connection.InputSlot.GridRect.center;
             var bezierCurveData = BezierCurveData(startGridPosition, endGridPosition);
             return HandleUtility.DistancePointBezier(
                        gridPoint,
