@@ -18,7 +18,8 @@ namespace Sleipnir.Mapper.Editor
 
         protected override void DrawPropertyLayout(GUIContent label)
         {
-            if (GUIHelper.CurrentWindow.GetType() != typeof(GraphEditor))
+            if (GUIHelper.CurrentWindow.GetType() != typeof(GraphEditor)
+                || NestProperty != Property.Parent)
             {
                 CallNextDrawer(label);
                 return;
@@ -32,6 +33,7 @@ namespace Sleipnir.Mapper.Editor
             var oldProperty = NestProperty;
 
             NestProperty = Property;
+
             Nests.Push(Nests.Peek().Nests.First(n => n.FieldName == name));
             CurrentPath = oldPath.IsNullOrWhitespace()
                 ? name

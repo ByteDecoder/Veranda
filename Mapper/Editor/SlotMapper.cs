@@ -17,22 +17,18 @@ namespace Sleipnir.Mapper.Editor
 
         protected override void DrawPropertyLayout(GUIContent label)
         {
-            if (GUIHelper.CurrentWindow.GetType() != typeof(GraphEditor))
+            if (GUIHelper.CurrentWindow.GetType() != typeof(GraphEditor)
+                || NestMapper.NestProperty != Property.Parent) // Nested not marked with [Nested]
             {
                 CallNextDrawer(label);
                 return;
             }
+            
+            var path = NestMapper.CurrentPath.IsNullOrWhitespace()
+                ? Property.Name
+                : NestMapper.CurrentPath + "." + Property.Name;
 
-            var path = NestMapper.CurrentPath;
-
-            if (NestMapper.NestProperty != Property)
-            {
-                path = NestMapper.CurrentPath.IsNullOrWhitespace()
-                    ? Property.Name
-                    : NestMapper.CurrentPath + "." + Property.Name;
-            }
-
-            var labelOnly = false;
+            //var labelOnly = false;
             var propertyRect = EditorGUILayout.GetControlRect(false, 0);
             if (CurrentNodeSlots.Any(s => s.Key.DeepReflectionPath == path))
             {
@@ -43,19 +39,21 @@ namespace Sleipnir.Mapper.Editor
                     if (Event.current.type == EventType.Repaint)
                         s.RelativeYPosition = propertyRect.y + 50;
 
-                    labelOnly =  ((GraphEditor) GUIHelper.CurrentWindow)
-                        .Connections
-                        .Any(c => c.InputSlot == s);
+                    //labelOnly = ((GraphEditor) GUIHelper.CurrentWindow)
+                    //    .Connections
+                    //    .Any(c => c.InputSlot == s);
                 }
             }
-            else
-            {
-                labelOnly = true;
-            }
+           // else
+            //{
+            //    labelOnly = true;
+            //}
 
-            if (labelOnly)
-                EditorGUILayout.LabelField(Property.NiceName);
-            else
+            //if (labelOnly)
+            //{
+             //   EditorGUILayout.LabelField(Property.NiceName);
+            //}
+           // else
                 CallNextDrawer(label);
         }
     }

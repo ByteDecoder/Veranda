@@ -12,18 +12,18 @@ namespace Sleipnir.Mapper
     [Serializable]
     public class OdinNode<T>
     {
-        [OnValueChanged("Changed", true)]
+        [OnValueChanged("EvaluateGraph", true)]
         [HideReferenceObjectPicker]
         [HideLabel]
         [OdinSerialize]
         public T Value;
 
-        public OdinNode(T value, List<OdinNode<T>> graph)
+        public OdinNode(T value, List<OdinNode<T>> graph, OdinGraph<T> _graph)
         {
             Value = value;
 #if UNITY_EDITOR
             #region Sleipnir data
-            LoadDrawingData(graph);
+            LoadDrawingData(graph, _graph);
 
             var attributes = value.GetType().GetCustomAttributes(true);
 
@@ -74,11 +74,12 @@ namespace Sleipnir.Mapper
         public List<OdinNode<T>> Graph;
         [NonSerialized]
         public Node Node;
-
+        [NonSerialized]
+        private OdinGraph<T> _graph;
         private List<Action> _onDraw;
         private List<Action> _onChanged;
         
-        public void LoadDrawingData(List<OdinNode<T>> graph)
+        public void LoadDrawingData(List<OdinNode<T>> graph, OdinGraph<T> __graph)
         {
             if(Slots == null)
                 Slots = new Dictionary<OdinSlot, Slot[]>();
@@ -89,7 +90,7 @@ namespace Sleipnir.Mapper
                 );
             Node = node;
             Graph = graph;
-
+            _graph = __graph;
             _onDraw = new List<Action>();
             _onChanged = new List<Action>();
 
@@ -180,6 +181,12 @@ namespace Sleipnir.Mapper
             Changed();
         }
 
+        // Sorry for the naming, it is temporary.
+        public void EvaluateGraph()
+        {
+            _graph.Evaluate();
+        }
+
         public void Draw()
         {
             foreach (var action in _onDraw)
@@ -188,16 +195,19 @@ namespace Sleipnir.Mapper
 
         public void Changed()
         {
+            Remap();
             foreach (var action in _onChanged)
                 action.Invoke();
-            
-            Remap();
         }
         
         public void Remap()
         {
             Nest = new Nest(Value, "");
-            var mapped = Nest.GetSlots<T>(Graph.IndexOf(this), "");
+            // -1 in case of node that wasn't yet added to graph (OdinGraph.CreateNode calls it later)
+            var index = Graph.IndexOf(this) == -1
+                ? Graph.Count
+                : Graph.IndexOf(this);
+            var mapped = Nest.GetSlots<T>(index, "");
             Slots = Slots
                 .Where(s => mapped.Any(m => m.Item1.DeepReflectionPath == s.Key.DeepReflectionPath))
                 .ToDictionary(s => s.Key, s => s.Value);

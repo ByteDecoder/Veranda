@@ -124,7 +124,7 @@ namespace Sleipnir.Mapper
         public void LoadDrawingData()
         {
             foreach (var odinNode in _nodes)
-                odinNode.LoadDrawingData(_nodes);
+                odinNode.LoadDrawingData(_nodes, this);
 
             foreach (var odinConnection in _connections)
                 odinConnection.LoadDrawingData(_nodes);
@@ -158,7 +158,7 @@ namespace Sleipnir.Mapper
         public void AddNode(string typeName)
         {
             var type = _nodeTypes.First(t => t.Name == typeName);
-            var odinNode = new OdinNode<T>((T)Activator.CreateInstance(type), _nodes);
+            var odinNode = new OdinNode<T>((T)Activator.CreateInstance(type), _nodes, this);
             _nodes.Add(odinNode);
         }
 
@@ -203,16 +203,8 @@ namespace Sleipnir.Mapper
             if(_connections.Any(c => connection.Equals(c.ConnectionDrawingData)))
                 return;
             var odinConnection = new OdinConnection<T>(connection, _nodes);
-
-            try
-            {
-                odinConnection.Shlep(this);
-            }
-            catch
-            {
-                Debug.Log("Invalid type.");
-                return;
-            }
+            
+            odinConnection.Shlep(this);
 
            _connections.Add(new OdinConnection<T>(connection, _nodes));
             Evaluate();
