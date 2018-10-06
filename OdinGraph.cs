@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
-using UnityEngine;
 using Sirenix.Serialization;
+using UnityEngine;
 
-namespace Sleipnir.Mapper
+namespace Sleipnir
 {
     [Serializable]
     public class OdinGraph<T> : IGraph, IEnumerable<T>

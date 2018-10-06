@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Sirenix.Utilities;
 
-namespace Sleipnir.Mapper
+namespace Sleipnir
 {
     [Serializable]
     public class Nest

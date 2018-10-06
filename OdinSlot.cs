@@ -1,8 +1,7 @@
 ﻿using System;
 using Sirenix.Utilities;
-using UnityEngine;
 
-namespace Sleipnir.Mapper
+namespace Sleipnir
 {
     [Serializable]
     public class OdinSlot

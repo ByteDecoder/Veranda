@@ -1,9 +1,8 @@
 ﻿using Sirenix.OdinInspector.Editor;
-using Sleipnir.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace Sleipnir.Mapper.Editor
+namespace Sleipnir.Editor
 {
     [DrawerPriority(0, 0, 10)]
     public class GraphDrawer<TGraph, TNode> : OdinValueDrawer<TGraph> where TGraph : OdinGraph<TNode>

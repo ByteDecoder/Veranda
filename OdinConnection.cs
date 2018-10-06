@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Sleipnir.Mapper
+namespace Sleipnir
 {
     [Serializable]
     public class OdinConnection<T>

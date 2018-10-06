@@ -3,11 +3,10 @@ using System.Linq;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
-using Sleipnir.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace Sleipnir.Mapper.Editor
+namespace Sleipnir.Editor
 {
     [DrawerPriority(120, 0, 0)]
     public class NestMapper : OdinAttributeDrawer<NestedAttribute>

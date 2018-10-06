@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
-using Sleipnir.Editor;
 using UnityEngine;
 
-namespace Sleipnir.Mapper.Editor
+namespace Sleipnir.Editor
 {
     [DrawerPriority(DrawerPriorityLevel.SuperPriority)]
     public class OdinNodeDrawer<T, TNodeContent> : OdinValueDrawer<T> where T : OdinNode<TNodeContent>

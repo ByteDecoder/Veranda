@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sleipnir.Mapper
+namespace Sleipnir
 {
     [Flags]
     public enum Direction

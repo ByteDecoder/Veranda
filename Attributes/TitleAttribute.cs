@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Sleipnir.Mapper
+namespace Sleipnir
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class NodeTitleAttribute : Attribute

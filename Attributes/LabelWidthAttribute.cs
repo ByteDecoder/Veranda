@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sleipnir.Mapper
+namespace Sleipnir
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class LabelAttribute : Attribute

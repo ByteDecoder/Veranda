@@ -7,7 +7,7 @@ using Sirenix.Serialization;
 using Sirenix.Utilities;
 using UnityEngine;
 
-namespace Sleipnir.Mapper
+namespace Sleipnir
 {
     [Serializable]
     public class OdinNode<T>
@@ -53,7 +53,6 @@ namespace Sleipnir.Mapper
             else
                 Node.SerializedNodeData.LabelWidth = Node.SerializedNodeData.GridRect.width/3;
             #endregion
-
 #endif
         }
 

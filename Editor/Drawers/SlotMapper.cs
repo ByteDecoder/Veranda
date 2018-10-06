@@ -3,11 +3,10 @@ using System.Linq;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities;
 using Sirenix.Utilities.Editor;
-using Sleipnir.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace Sleipnir.Mapper.Editor
+namespace Sleipnir.Editor
 {
     [DrawerPriority(121, 0, 0)]
     public class SlotMapper: OdinAttributeDrawer<SlotAttribute>
@@ -54,7 +53,7 @@ namespace Sleipnir.Mapper.Editor
              //   EditorGUILayout.LabelField(Property.NiceName);
             //}
            // else
-                CallNextDrawer(label);
+            CallNextDrawer(label);
         }
     }
 }
