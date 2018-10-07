@@ -22,7 +22,7 @@ namespace Sleipnir.Demos
         public Nested A = new Nested();
         
         [Nested]
-        [Slot(Direction.InOut)]
+        [Slot(SlotDirection.InOut)]
         public Nested B = new Nested();
         
         [OdinSerialize]
@@ -31,7 +31,7 @@ namespace Sleipnir.Demos
 
         [Nested]
         [OdinSerialize]
-        [Slot(Direction.InOut)]
+        [Slot(SlotDirection.InOut)]
         public List<Nested> AList = new List<Nested>();
 
         [ContextFunction(Name = "Stupify Name")]
@@ -51,10 +51,10 @@ namespace Sleipnir.Demos
     [Serializable]
     public class Nested
     {
-        [Slot(Direction.Output)]
+        [Slot(SlotDirection.Output)]
         public string C;
 
-        [Slot(Direction.Input)]
+        [Slot(SlotDirection.Input)]
         public string D;
     }
 }
