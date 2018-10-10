@@ -44,6 +44,25 @@ namespace Sleipnir
 
             ConnectionDrawingData = new Connection(outputDrawingSlot, inputDrawingSlot);
         }
+
+        public void RestoreInputSlot(OdinGraph<T> graph)
+        {
+            var getter = Input.Getter(graph);
+            var setter = Input.Setter(graph);
+            var inputNode = graph[Input.NodeIndex];
+            if (inputNode == null || getter(inputNode) == null)
+                return;
+            var type = getter(inputNode).GetType();
+            
+            setter(inputNode, GetDefaultValue(type));
+        }
+
+        private static object GetDefaultValue(Type type)
+        {
+            return type.IsValueType 
+                ? Activator.CreateInstance(type) 
+                : null;
+        }
         #endregion
 #endif
     }

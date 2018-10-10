@@ -207,13 +207,13 @@ namespace Sleipnir
             var odinConnection = new OdinConnection<T>(connection, _nodes);
             
             odinConnection.Shlep(this);
-
            _connections.Add(new OdinConnection<T>(connection, _nodes));
         }
 
         public void RemoveConnection(Connection connection)
         {
             var toRemove = _connections.First(c => connection.Equals(c.ConnectionDrawingData));
+            toRemove.RestoreInputSlot(this);
             _connections.Remove(toRemove);
         }
         #endregion

@@ -27,7 +27,7 @@ namespace Sleipnir.Editor
                 ? Property.Name
                 : NestMapper.CurrentPath + "." + Property.Name;
 
-            //var labelOnly = false;
+            var labelOnly = false;
             var propertyRect = EditorGUILayout.GetControlRect(false, 0);
             if (CurrentNodeSlots.Any(s => s.Key.DeepReflectionPath == path))
             {
@@ -35,25 +35,19 @@ namespace Sleipnir.Editor
                     .First(s => s.Key.DeepReflectionPath == path);
                 foreach (var s in slot.Value)
                 {
+                    if (!labelOnly)
+                        labelOnly = ((GraphEditor)GUIHelper.CurrentWindow)
+                            .Connections
+                            .Any(c => c.InputSlot == s);
                     if (Event.current.type == EventType.Repaint)
                         s.RelativeYPosition = propertyRect.y + 50;
-
-                    //labelOnly = ((GraphEditor) GUIHelper.CurrentWindow)
-                    //    .Connections
-                    //    .Any(c => c.InputSlot == s);
                 }
             }
-           // else
-            //{
-            //    labelOnly = true;
-            //}
 
-            //if (labelOnly)
-            //{
-             //   EditorGUILayout.LabelField(Property.NiceName);
-            //}
-           // else
-            CallNextDrawer(label);
+            if (labelOnly)
+                EditorGUILayout.LabelField(Property.NiceName);
+            else
+                CallNextDrawer(label);
         }
     }
 }

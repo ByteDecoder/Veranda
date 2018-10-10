@@ -12,6 +12,7 @@ namespace Sleipnir
     [Serializable]
     public class OdinNode<T>
     {
+        [OnValueChanged("Changed", true)]
         [HideReferenceObjectPicker]
         [HideLabel]
         [OdinSerialize]
@@ -183,10 +184,7 @@ namespace Sleipnir
                 .OrderBy(m => m.GetAttribute<EvaluateAttribute>().Order);
 
             foreach (var onEvaluateFunction in onEvaluate)
-            {
-                var parameters = onEvaluateFunction.GetParameters();
                 _onEvaluation.Add(() => onEvaluateFunction.Invoke(Value, null));
-            }
 
             Changed();
         }

@@ -12,7 +12,7 @@ namespace Sleipnir.Editor
             if (GUILayout.Button("Open editor"))
             {
                 var window = (GraphEditor)EditorWindow.GetWindow(typeof(GraphEditor));
-                window.title = "Sleipnir";
+                window.titleContent = new GUIContent("Sleipnir");
                 ValueEntry.SmartValue.LoadDrawingData();
                 window.LoadGraph(ValueEntry.SmartValue);
             }

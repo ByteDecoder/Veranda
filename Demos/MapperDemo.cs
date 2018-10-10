@@ -40,7 +40,7 @@ namespace Sleipnir.Demos
             C = "A";
         }
 
-        //[OnChanged]
+        [OnChanged]
         public void RandomizeColor(Sleipnir.Node node)
         {
             node.HeaderColor = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
