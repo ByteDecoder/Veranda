@@ -16,7 +16,10 @@ namespace RedOwl.GraphFramework.Editor
 		
 		protected override void OnAfterDefaultInspector()
 		{
-			if (GUILayout.Button("Execute")) ((Graph)target).Execute();
+			var color = GUI.backgroundColor;
+			GUI.backgroundColor = Color.green;
+			if (GUILayout.Button("Execute", GUILayout.Height(35))) ((Graph)target).Execute();
+			GUI.backgroundColor = color;
 		}
 	}
 }

@@ -1,54 +1,48 @@
 ﻿#if UNITY_EDITOR
 #pragma warning disable 0649 // UXMLReference variable declared but not assigned to.
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
-#if UNITY_2019_1_OR_NEWER
-using UnityEngine.UIElements;
-#else
 using UnityEngine.Experimental.UIElements;
-#endif
 using RedOwl.Editor;
-using RedOwl.GraphFramework;
 
-/*
 namespace RedOwl.GraphFramework.Editor
 {
-	[UXML, USS("RedOwl/GraphSystem/Styles"), USSClass("workspace", "flexfill")]
+	[UXML, USS("RedOwl/GraphFramework/Editor/Styles"), USSClass("workspace", "flexfill")]
 	public class GraphView : RedOwlVisualElement, IOnMouse, IOnMouseMove, IOnZoom, IOnContextMenu, IHandlesBezier
     {
+		public new class UxmlFactory : UxmlFactory<GraphView> {}
+
 		[UXMLReference]
 		VisualElement workspace;
 	    
 	    [UXMLReference]
-	    VisualElement nodesGroup;
+	    VisualElement nodes;
+		private Dictionary<Guid, GraphNode> nodeTable = new Dictionary<Guid, GraphNode>(); 
 
 		[UXMLReference]
 	    HandlesRenderer connections;
 	    
-	    private GraphNode[] nodes;
 	    private Vector2 lastMousePosition = Vector2.zero;
 	    
-	    public Graph Graph { get; private set; }
+	    public Graph graph { get; private set; }
 	    
-	    public float LineWidth { get; } = 4f;
-	    public Color LineColor { get; } = new Color32(241, 96, 62, 255);
+	    public float LineWidth { get; set; } = 4f;
+	    public Color LineColor { get; set; } = new Color32(241, 96, 62, 255);
 	    public IEnumerable<Tuple<Vector2, Vector2>> GetBezierPoints()
 	    {
-	    	foreach (var conn in Graph.Connections)
+	    	foreach (var conn in graph.connections)
 	    	{
 		    	yield return new Tuple<Vector2, Vector2>(
-			    	nodes[Graph.IndexOf(conn.output.node)].GetOutputAnchor(conn.output.slot),
-			    	nodes[Graph.IndexOf(conn.input.node)].GetInputAnchor(conn.input.slot)
+			    	nodeTable[conn.output.node].GetOutputAnchor(conn.output.port),
+			    	nodeTable[conn.input.node].GetInputAnchor(conn.input.port)
 			    );
 	    	}
 	    
 	    	if (outputPortReady)
 	    	{
 		    	yield return new Tuple<Vector2, Vector2> (
-			    	nodes[Graph.IndexOf(_outputPort.node)].GetOutputAnchor(_outputPort.slot),
+			    	nodeTable[outputPort.Item1].GetOutputAnchor(outputPort.Item2.id),
 			    	lastMousePosition
 		    	);
 	    	}
@@ -58,47 +52,60 @@ namespace RedOwl.GraphFramework.Editor
 	    
 	    public void Load(Graph graph)
 	    {
-	    	if (Graph != null) Graph.OnGraphChanged -= BuildUI;
-		    Graph = graph;
-		    Graph.OnGraphChanged += BuildUI;
-		    BuildUI();
-	    }
-	    
-	    private void BuildUI()
-	    {
-		    nodesGroup.Clear();
-		    foreach (Node node in Graph.Nodes)
+			if (this.graph != null)
+			{
+				this.graph.OnCleared -= OnClear;
+				this.graph.OnNodeAdded -= AddNode;
+				this.graph.OnNodeRemoved -= RemoveNode;
+				this.graph.OnConnectionAdded -= OnConnectionsAdded;
+				this.graph.OnConnectionRemoved -= OnConnectionsRemoved;
+			}
+		    this.graph = graph;
+			nodes.Clear();
+			nodeTable.Clear();
+		    foreach (Node node in graph)
 		    {
-		    	nodesGroup.Add(new GraphNode(this, node));
+				AddNode(node);
 		    }
-		    nodes = nodesGroup.Children<GraphNode>().ToArray();
-		    connections.Load(this);
+			foreach (Connection connection in graph.connections)
+			{
+				nodeTable[connection.input.node].ConnectInput(connection.input.port);
+				nodeTable[connection.output.node].ConnectOutput(connection.output.port);
+			}
+			connections.Load(this);
+			graph.OnCleared += OnClear;
+			graph.OnNodeAdded += AddNode;
+			graph.OnNodeRemoved += RemoveNode;
+			graph.OnConnectionAdded += OnConnectionsAdded;
+			graph.OnConnectionRemoved += OnConnectionsRemoved;
 	    }
+
+		private void OnClear()
+		{
+			nodes.Clear();
+			nodeTable.Clear();
+			connections.MarkDirtyRepaint();
+		}
+
+		private void OnConnectionsAdded(Connection connection)
+		{
+			nodeTable[connection.input.node].ConnectInput(connection.input.port);
+			nodeTable[connection.output.node].ConnectOutput(connection.output.port);
+			connections.MarkDirtyRepaint();
+		}
+
+		private void OnConnectionsRemoved(Connection connection)
+		{
+			nodeTable[connection.input.node].DisconnectInput(connection.input.port);
+			nodeTable[connection.output.node].DisconnectOutput(connection.output.port);
+			connections.MarkDirtyRepaint();
+		}
 	    
 	    public void OnMouseMove(MouseMoveEvent evt)
 	    {
 	    	lastMousePosition = evt.mousePosition;
 	    	if (outputPortReady) connections.MarkDirtyRepaint();
 	    }
-		
-	    private static bool outputPortSet = false;
-	    private static Port outputPort;
-        
-	    public void SetOutputPort(Port port)
-	    {
-		    outputPort = port;
-		    outputPortSet = true;
-	    }
-
-	    public string SetInputPort(Port port)
-	    {
-		    if (!outputPortSet) return string.Empty;
-		    string output = Graph.AddConnection(port, outputPort);
-		    outputPortSet = false;
-		    return output;
-	    }
-
-	    
 	    
 	    public bool IsContentDragger { get { return true; } }
 	    
@@ -132,46 +139,45 @@ namespace RedOwl.GraphFramework.Editor
 	    		outputPortReady = false;
 	    		connections.MarkDirtyRepaint();
 	    	}
-	    	IGraph g = Graph as IGraph;
+			IGraph g = graph as IGraph;
 	    	if (g != null)
 	    	{
 	    		foreach (Tuple<string, Type> item in g.GetNodesTypes())
 	    		{
-	    			evt.menu.AppendAction(item.Item1, (a) => Graph.AddNode(item.Item2, lastMousePosition), DropdownMenu.MenuAction.AlwaysEnabled);
+	    			evt.menu.AppendAction(item.Item1, (a) => graph.Add(item.Item2, lastMousePosition), DropdownMenu.MenuAction.AlwaysEnabled);
 	    		}
 	    	}
 	    }
+
+		public void AddNode(Node node)
+		{
+			var view = new GraphNode(this, node);
+		    nodes.Add(view);
+			nodeTable.Add(node.id, view);
+		}
+
+		public void RemoveNode(Node node)
+		{
+			nodes.Remove(nodeTable[node.id]);
+		}
 	    
 	    private bool outputPortReady = false;
-	    private Port _outputPort;
-	    public bool ClickOutputPort(string nodeId, int slotIndex)
+		private Tuple<Guid, IPort> outputPort;
+	    public bool ClickOutputPort(Guid node, IPort port)
 	    {
 		    if (outputPortReady) return false;
-		    _outputPort = new Port { node = Graph[nodeId].id, slot = slotIndex };
+			outputPort = new Tuple<Guid, IPort>(node, port);
 		    outputPortReady = true;
 		    return true;
 	    }
 	    
-	    public bool ClickInputPort(string nodeId, int slotIndex)
+	    public bool ClickInputPort(IPort port)
 	    {
 		    if (!outputPortReady) return false;
-		    Graph.AddConnection(new Port { node = Graph[nodeId].id, slot = slotIndex }, _outputPort);
+			graph.Connect(outputPort.Item2, port);
 		    outputPortReady = false;
 		    return true;
 	    }
-	    
-	    public void RemoveInputConnection(string id, int slotIndex)
-	    {
-		    Graph.RemoveInputConnection(id, slotIndex);
-	    }
-        
-	    public void RemoveOutputConnection(string id, int slotIndex)
-	    {
-		    Graph.RemoveOutputConnection(id, slotIndex);
-	    }
-
-
     }
 }
-*/
 #endif

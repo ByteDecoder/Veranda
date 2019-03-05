@@ -11,6 +11,11 @@ using RedOwl.Serialization;
 
 namespace RedOwl.GraphFramework
 {
+    public interface IGraph
+    {
+        IEnumerable<Tuple<string, Type>> GetNodesTypes();
+    }
+
     public abstract partial class Graph : SerializedScriptableObject, IEnumerable<Node>
     {
 #if UNITY_EDITOR
@@ -66,12 +71,12 @@ namespace RedOwl.GraphFramework
         }
     }
 
-    public abstract class Graph<T> : Graph where T : Node
+    public abstract class Graph<T> : Graph, IGraph where T : Node
     {
 #if UNITY_EDITOR
         private List<Tuple<string, Type>> nodeTypes;
 
-		internal IEnumerable<Tuple<string, Type>> GetNodesTypes()
+		public IEnumerable<Tuple<string, Type>> GetNodesTypes()
 		{
 			if (nodeTypes == null)
 			{

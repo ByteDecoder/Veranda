@@ -3,26 +3,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-#if UNITY_2019_1_OR_NEWER
-using UnityEngine.UIElements;
-using UnityEditor.UIElements;
-#else
 using UnityEngine.Experimental.UIElements;
 using UnityEditor.Experimental.UIElements;
-#endif
 using RedOwl.Editor;
-using RedOwl.GraphFramework;
 
-/*
 namespace RedOwl.GraphFramework.Editor
 {
 	[UXML]
-	public class GraphSlot : RedOwlVisualElement, IOnMouse
+	public class GraphPort : RedOwlVisualElement, IOnMouse
 	{
 		[UXMLReference]
 		private VisualElement body;
-		private Label label;
-		private PropertyField field;
+		private LabelX label;
+		private PropertyFieldX field;
 		
 		[UXMLReference]
 		private VisualElement input;
@@ -30,20 +23,26 @@ namespace RedOwl.GraphFramework.Editor
 		[UXMLReference]
 		private VisualElement output;
 		
-		private GraphNode node;
-		private Slot slot;
+		private GraphView view;
+		private Node node;
+		private IPort port;
     	
-		public GraphSlot(GraphNode node, SerializedProperty property, Slot slot) : base()
+		public GraphPort(GraphView view, Node node, IPort port) : base()
 		{
+			this.view = view;
 			this.node = node;
-			this.slot = slot;
-			
-			field = new PropertyField(property);
+			this.port = port;
+
+			label = new LabelX(port.name);
+			label.style.width = node.view.labelWidth;
+
+			field = port.GetField();
+			field.label.style.width = node.view.labelWidth;
+
 			body.Add(field);
-			field.Show(true);
-			
-			//input.Show(slot.Direction.IsInput());
-			//output.Show(slot.Direction.IsOutput());
+
+			input.Show(port.direction.IsInput());
+			output.Show(port.direction.IsOutput());
 		}
 		
 		public bool IsContentDragger { get { return false; } }
@@ -65,12 +64,12 @@ namespace RedOwl.GraphFramework.Editor
 		{
 			if (input.ContainsPoint(this.ChangeCoordinatesTo(input, evt.localMousePosition)))
 			{
-				node.ClickSlot(true, SlotDirection.Input, slotIndex);
+				view.ClickInputPort(port);
 			}
 			
 			if (output.ContainsPoint(this.ChangeCoordinatesTo(output, evt.localMousePosition)))
 			{
-				node.ClickSlot(true, SlotDirection.Output, slotIndex);
+				view.ClickOutputPort(node.id, port);
 			}
 		}
 		
@@ -78,23 +77,37 @@ namespace RedOwl.GraphFramework.Editor
 		{
 			if (input.ContainsPoint(this.ChangeCoordinatesTo(input, evt.localMousePosition)))
 			{
-				node.ClickSlot(false, SlotDirection.Input, slotIndex);
+				view.graph.Disconnect(port);
 			}
 			
 			if (output.ContainsPoint(this.ChangeCoordinatesTo(output, evt.localMousePosition)))
 			{
-				node.ClickSlot(false, SlotDirection.Output, slotIndex);
+				view.graph.Disconnect(port);
 			}
 		}
 		
 		public void ConnectInput()
 		{
 			input.AddToClassList("portConnected");
+			body.Clear();
+			body.Add(label);
 		}
 		
 		public void ConnectOutput()
 		{
 			output.AddToClassList("portConnected");
+		}
+
+		public void DisconnectInput()
+		{
+			input.RemoveFromClassList("portConnected");
+			body.Clear();
+			body.Add(field);
+		}
+		
+		public void DisconnectOutput()
+		{
+			output.RemoveFromClassList("portConnected");
 		}
 		
 		public Vector2 GetInputAnchor()
@@ -108,5 +121,4 @@ namespace RedOwl.GraphFramework.Editor
 		}
     }
 }
-*/
 #endif

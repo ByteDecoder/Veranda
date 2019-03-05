@@ -24,6 +24,7 @@ namespace RedOwl.GraphFramework
 			connections.Clear();
 			ClearSubAssets();
 			MarkDirty();
+			FireCleared();
 		}
 
 		/// <summary>
@@ -34,6 +35,18 @@ namespace RedOwl.GraphFramework
 		public T Add<T>() where T : Node
 		{
 			return (T)Add(typeof(T), Vector2.zero);
+		}
+
+		/// <summary>
+		/// Creates and returns a node of type T and adds it to the graph at the specified x,y position
+		/// </summary>
+		/// <param name="x">The x position of the node</param>
+		/// <param name="y">The y position of the node</param>
+		/// <typeparam name="T">Node Type to instantiate</typeparam>
+		/// <returns></returns>
+		public T Add<T>(float x, float y) where T : Node
+		{
+			return (T)Add(typeof(T), new Vector2(x, y));
 		}
 
 		/// <summary>
@@ -53,14 +66,14 @@ namespace RedOwl.GraphFramework
 		/// <param name="nodeType">Node Type to instantiate</param>
 		/// <param name="position">The position in graph space to place the node</param>
 		/// <returns></returns>
-		protected Node Add(Type nodeType, Vector2 position)
+		internal Node Add(Type nodeType, Vector2 position)
 		{
 			Node node = (Node)CreateInstance(nodeType);
 			node.id = Guid.NewGuid();
 			node.graph = this;
 			node.view.collapsed = false;
+			node.view.layout = new Rect(position.x, position.y, 150, 0);
 			node.Initialize();
-			node.view.layout.position = new Vector2(position.x - (node.view.layout.width * 0.25f), position.y - 30);
 			nodes.Add(node.id, node);
 			AddSubAsset(node);
 			FireNodeAdded(node);
@@ -107,13 +120,21 @@ namespace RedOwl.GraphFramework
 			{
 				foreach (var item in connections)
 				{
-					if (item.input.port == input.id || item.output.port == output.id) return false;
+					if (item.input.port == input.id || item.output.port == output.id)
+					{
+						Debug.LogWarningFormat("There can only be one connection for ports: {0} || {1}", output.id, input.id);
+						return false;
+					}
 				}
 			}
 			if (!output.CanConnectPort(input)) return false;
 			Node nodeOutput = FindNodeWithPort(output);
 			Node nodeInput = FindNodeWithPort(input);
-			if (nodeOutput == null || nodeInput == null) return false;
+			if (nodeOutput == null || nodeInput == null)
+			{
+				Debug.LogWarningFormat("Unable to find nodes for ports: {0} || {1}", output.id, input.id);
+				return false;
+			}
 			Connection connection = new Connection(nodeOutput, output, nodeInput, input);
 			connections.Add(connection);
 			MarkDirty();
@@ -175,7 +196,7 @@ namespace RedOwl.GraphFramework
 		{
 			foreach (var node in nodes.Values)
 			{
-				foreach (var item in node.ports.Values)
+				foreach (var item in node)
 				{
 					if (item.id == port.id) return node;
 				}

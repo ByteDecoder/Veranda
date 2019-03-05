@@ -14,16 +14,31 @@ namespace RedOwl.GraphFramework.Editor
 		{
 			var filters = new List<string>();
 			filters.Add("m_Script");
+			foreach (var item in ((Node)target))
+			{
+				filters.Add(item.name);
+			}
 			return filters.ToArray();
 		}
 		
 		protected override void OnBeforeDefaultInspector()
 		{
-			EditorGUIUtility.labelWidth = 80;
+			EditorGUIUtility.labelWidth = ((Node)target).view.labelWidth;
+			EditorGUI.BeginChangeCheck();
 		}
 		
 		protected override void OnAfterDefaultInspector()
 		{
+			if (EditorGUI.EndChangeCheck())
+			{
+				Debug.LogFormat("Found change on node: {0}", target.name);
+				Node node = target as Node;
+				if (node != null) 
+				{
+					EditorUtility.SetDirty(node);
+					if (node.graph.AutoExecute) node.graph.Execute();
+				}
+			}
 			EditorGUIUtility.labelWidth = 0;
 		}
 	}

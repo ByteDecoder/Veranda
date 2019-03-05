@@ -6,32 +6,35 @@ using System.Collections;
 
 namespace RedOwl.GraphFramework
 {
+    [Serializable]
     public struct NodeViewData
     {
         public string title;
+        public float labelWidth;
 		public Color color;
         public bool collapsed;
 		public Rect layout;
-
-        private bool hasSizeFix;
-        public void SetHeight(float height)
-		{
-			if (!hasSizeFix)
-			{
-				layout.height = height;
-				hasSizeFix = true;
-			}
-		}
     }
 
-    public abstract class Node : SerializedScriptableObject, IEnumerable<IPort>
+    public abstract class Node : RedOwl.Serialization.SerializedScriptableObject, IEnumerable<IPort>
     {
+        [HideInInspector]
         public Guid id;
+        [HideInInspector]
         public Graph graph;
 
+        [HideInInspector]
         public NodeViewData view;
 
-        public Dictionary<Guid, IPort> ports { get; protected set; }
+        [NonSerialized]
+        public Dictionary<Guid, PortInfo> portInfos;
+
+        private IPort GetPort(PortInfo info)
+        {
+            IPort port = info.Get(this);
+            port.name = info.Name;
+            return port;
+        }
 
         /// <summary>
         /// Returns the port with the given GUID
@@ -41,49 +44,58 @@ namespace RedOwl.GraphFramework
         {
             get
             {
-                return ports[key];
+                return GetPort(portInfos[key]);
             }
         }
 
         IEnumerator<IPort> IEnumerable<IPort>.GetEnumerator()
         {
-            foreach (var port in ports.Values)
+            foreach (var port in portInfos.Values)
             {
-                yield return port;
+                yield return GetPort(port);
             }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var port in ports.Values)
+            foreach (var port in portInfos.Values)
             {
-                yield return port;
+                yield return GetPort(port);
             }
         }
 
         [NonSerialized]
         private bool IsInitialized;
-        private Dictionary<Guid, IPort> _ports;
 
         internal void Initialize()
         {
             if (IsInitialized) return;
             Type type = this.GetType();
             view.title = type.Name.Replace("Node", "");
+            view.labelWidth = 80;
             view.color = Color.gray;
             type.WithAttr<NodeColorAttribute>(a => { view.color = a.color; });
             type.WithAttr<NodeTitleAttribute>(a => { view.title = a.title; });
             type.WithAttr<NodeWidthAttribute>(a => { view.layout.width = a.width; });
+            type.WithAttr<NodeLabelWidthAttribute>(a => { view.labelWidth = a.width; });
             var infos = PortCache.Get(this.GetType());
-            ports = new Dictionary<Guid, IPort>(infos.Count);
+            portInfos = new Dictionary<Guid, PortInfo>(infos.Count);
             IPort port;
             foreach (PortInfo info in infos)
             {
                 port = info.Get(this);
-                port.name = info.Name;
-                ports.Add(port.id, port);
+                portInfos.Add(port.id, info);
             }
             IsInitialized = true;
+        }
+
+        /// <summary>
+        /// Call this function to collapse the node
+        /// </summary>
+        /// <param name="collapse">If true node will be collapsed</param>
+        public void Collapse(bool collapse = true)
+        {
+            view.collapsed = collapse;
         }
 
         public override string ToString()

@@ -3,6 +3,13 @@ namespace RedOwl.GraphFramework
 {
 	public abstract partial class Graph
 	{
+		public delegate void Cleared();
+		public event Cleared OnCleared;
+		internal void FireCleared()
+		{
+			OnCleared?.Invoke();
+		}
+
 		public delegate void NodeAdded(Node node);
 		public event NodeAdded OnNodeAdded;
 		internal void FireNodeAdded(Node node)

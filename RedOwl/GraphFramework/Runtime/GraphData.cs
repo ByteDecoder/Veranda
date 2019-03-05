@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 using RedOwl.Serialization;
+using Sirenix.OdinInspector;
 
 namespace RedOwl.GraphFramework
 {
@@ -13,10 +14,11 @@ namespace RedOwl.GraphFramework
     {
         public bool AutoExecute;
 
+		//[HideInInspector]
+		[ShowInInspector]
+        public Dictionary<Guid, Node> nodes = new Dictionary<Guid, Node>();
 		[HideInInspector]
-        internal Dictionary<Guid, Node> nodes = new Dictionary<Guid, Node>();
-		[HideInInspector]
-        internal List<Connection> connections = new List<Connection>();
+        public List<Connection> connections = new List<Connection>();
 
 		/// <summary>
 		/// Returns the node with the given GUID

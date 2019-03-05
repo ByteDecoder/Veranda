@@ -1,4 +1,7 @@
 using System;
+#if UNITY_EDITOR
+using RedOwl.Editor;
+#endif
 
 namespace RedOwl.GraphFramework
 {
@@ -14,5 +17,8 @@ namespace RedOwl.GraphFramework
         void Set(object value);
         bool CanConnectPort(IPort port);
         string ToString();
+#if UNITY_EDITOR
+        PropertyFieldX GetField();
+#endif
     }
 }

@@ -56,7 +56,7 @@ namespace RedOwl.GraphFramework
 			foreach (var connection in this.connections)
 				if (connection.input.node == node.id)
 				{
-					//Debug.LogFormat("Shelping: {0} | {1} => {2}", this[output.node], this[output.node][output.port], this[input.node][input.port]);
+					//Debug.LogFormat("Shelping: {0} | {1} => {2}", this[connection.output.node], this[connection.output.node][connection.output.port], this[connection.input.node][connection.input.port]);
 					this[connection.input.node][connection.input.port].Set(this[connection.output.node][connection.output.port].Get());
 				}
 			node.OnExecute();

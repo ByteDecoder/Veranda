@@ -1,23 +1,17 @@
 ﻿#if UNITY_EDITOR
 #pragma warning disable 0649 // UXMLReference variable declared but not assigned to.
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-#if UNITY_2019_1_OR_NEWER
-using UnityEngine.UIElements;
-using UnityEditor.UIElements;
-#else
 using UnityEngine.Experimental.UIElements;
 using UnityEditor.Experimental.UIElements;
-#endif
 using RedOwl.Editor;
 using RedOwl.GraphFramework;
 
-/*
 namespace RedOwl.GraphFramework.Editor
 {
-	//TODO: Collapse and Layout stuff i cannot get working correctly
 	[UXML, USSClass("float", "node")]
 	public class GraphNode : RedOwlVisualElement, IOnMouse
 	{
@@ -32,60 +26,93 @@ namespace RedOwl.GraphFramework.Editor
 		
 		[UXMLReference]
 		private ToolbarButton delete;
-		
+
 		[UXMLReference]
 		private VisualElement body;
 		
+		private InspectorElement properties;
+		private VisualElement ports;
+		private Dictionary<Guid, GraphPort> portTable = new Dictionary<Guid, GraphPort>(); 
+		
 		private GraphView view;		
 		private Node node;
-		private List<GraphSlot> ports;
+		private SerializedObject target;
 		    	
 		public GraphNode(GraphView view, Node node) : base()
 		{
 			this.view = view;
 			this.node = node;
-			title.text = node.view.title;
+
 			style.width = node.view.layout.width;
 			style.backgroundColor = node.view.color;
+
+			target = new SerializedObject(node);
+			properties = new InspectorElement();
+			properties.Bind(target);
+			foreach (IPort item in node)
+			{
+				portTable.Add(item.id, new GraphPort(view, node, item));
+			}
+		}
+
+		[UICallback(1, true)]
+		private void CreateUI()
+		{
+			title.text = node.view.title;
 			
 			collapse.clickable.clicked += ToggleCollapse;
 			delete.clickable.clicked += Delete;
 			
-			CreateSlots();
-			ConnectSlots();
+			if (!node.view.collapsed)
+			{
+				ShowBody();
+			} else {
+				HideBody();
+			}
 			Load();
 		}
-		
-		private void CreateSlots()
+
+		private void ShowBody()
 		{
-			ports = new List<GraphSlot>();
-			var target = new SerializedObject(node);
-			SerializedProperty property = target.GetIterator();
-			property.NextVisible(true);
-			do
+			var props = new VisualElement();
+			props.Add(properties);
+			body.Add(props);
+
+			ports = new VisualElement();
+			foreach (var port in portTable.Values)
 			{
-				if (property.name == "m_Script") continue;
-				var slot = new GraphSlot(this, property);
-				ports.Add(slot);
-				body.Add(slot);
+				ports.Add(port);
 			}
-			while (property.NextVisible(false));
-			body.Bind(target);
+			body.Add(ports);
+			collapseIcon.icon = "fa-chevron-down";
+			body.Show();
+		}
+
+		private void HideBody()
+		{
+			collapseIcon.icon = "fa-chevron-right";
+			body.Clear();
+			body.Show(false);
+		}
+
+		public void ConnectInput(Guid id)
+		{
+			portTable[id].ConnectInput();
 		}
 		
-		private void ConnectSlots()
+		public void ConnectOutput(Guid id)
 		{
-			foreach (Connection conn in view.Graph.connections)
-			{
-				if (conn.input.node == node.id)
-				{
-					ports[conn.input.slot].ConnectInput();
-				}
-				if (conn.output.node == node.id)
-				{
-					ports[conn.output.slot].ConnectOutput();
-				}
-			}
+			portTable[id].ConnectOutput();
+		}
+
+		public void DisconnectInput(Guid id)
+		{
+			portTable[id].DisconnectInput();
+		}
+		
+		public void DisconnectOutput(Guid id)
+		{
+			portTable[id].DisconnectOutput();
 		}
 	    
 		public bool IsContentDragger { get { return false; } }
@@ -106,83 +133,53 @@ namespace RedOwl.GraphFramework.Editor
 			Save();
 		}
 		
-		[UICallback(5, true)]
-		private void SizeFix()
-		{
-			node.SetHeight(this.layout.height);
-			if (node.collapsed)
-			{
-				this.SetSize(new Vector2(node.layout.size.x, 34));
-				collapseIcon.icon = "fa-chevron-right";
-				body.Show(false);
-			}
-			Load();
-		}
-		
 		private void Save()
 		{
-			node.SetPosition(this.layout, transform.position);
-			view.Graph.MarkDirty();
+			node.view.layout.position = transform.position;
+			view.graph.MarkDirty();
 		}
 		
 		private void Load()
 		{
-			transform.position = node.layout.position;
+			transform.position = node.view.layout.position;
 		}
 	    
 		private void ToggleCollapse()
 		{
-			node.collapsed = !node.collapsed;
-			if (node.collapsed)
+			node.view.collapsed = !node.view.collapsed;
+			if (node.view.collapsed)
 			{
-				this.SetSize(new Vector2(node.layout.size.x, 34));
-				collapseIcon.icon = "fa-chevron-right";
-				body.Show(false);
+				HideBody();
 			} else {
-				this.SetSize(node.layout.size);
-				collapseIcon.icon = "fa-chevron-down";
-				body.Show();
+				ShowBody();
 			}
 			Save();
 		}
 		
 		private void Delete()
 		{
-			view.Graph.RemoveNode(node.id);
+			view.graph.Remove(node.id);
 		}
 		
-		public Vector2 GetInputAnchor(int index)
+		public Vector2 GetInputAnchor(Guid key)
 		{
-			if (node.collapsed)
+			if (node.view.collapsed)
 			{
 				return this.LocalToWorld(layout.position + new Vector2(1, layout.height * 0.5f));
 			} else {
-				return ports[index].GetInputAnchor();
+				return portTable[key].GetInputAnchor();
 			}
 		}
 		
-		public Vector2 GetOutputAnchor(int index)
+		public Vector2 GetOutputAnchor(Guid key)
 		{
-			if (node.collapsed)
+			if (node.view.collapsed)
 			{
 				return this.LocalToWorld(layout.position + new Vector2(layout.width - 1, layout.height * 0.5f));
 			} else {
-				return ports[index].GetOutputAnchor();
-			}
-		}
-		
-		public void ClickSlot(bool add, SlotDirection direction, int slotIndex)
-		{
-			if (add)
-			{
-				if (direction.IsInput()) view.ClickInputPort(node.id, slotIndex);
-				if (direction.IsOutput()) view.ClickOutputPort(node.id, slotIndex);
-			} else {
-				if (direction.IsInput()) view.RemoveInputConnection(node.id, slotIndex);
-				if (direction.IsOutput()) view.RemoveOutputConnection(node.id, slotIndex);
+				return portTable[key].GetOutputAnchor();
 			}
 		}
     }
 }
-*/
 #endif
