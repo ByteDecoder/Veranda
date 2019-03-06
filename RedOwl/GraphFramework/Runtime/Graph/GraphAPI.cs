@@ -116,17 +116,6 @@ namespace RedOwl.GraphFramework
 		/// <returns>Returns true of the connection was made</returns>
 		public bool Connect(Port output, Port input)
 		{
-			if (output.style == PortStyles.Single || input.style == PortStyles.Single)
-			{
-				foreach (var item in connections)
-				{
-					if (item.input.port == input.id || item.output.port == output.id)
-					{
-						Debug.LogWarningFormat("There can only be one connection for ports: {0} || {1}", output.id, input.id);
-						return false;
-					}
-				}
-			}
 			if (!output.CanConnectPort(input)) return false;
 			Node nodeOutput = FindNodeWithPort(output);
 			Node nodeInput = FindNodeWithPort(input);
@@ -135,10 +124,13 @@ namespace RedOwl.GraphFramework
 				Debug.LogWarningFormat("Unable to find nodes for ports: {0} || {1}", output.id, input.id);
 				return false;
 			}
-			Connection connection = new Connection(nodeOutput, output, nodeInput, input);
-			connections.Add(connection);
-			MarkDirty();
-			FireConnectionAdded(connection);
+			var inputIsSingle = input.style.IsSingle();
+			var outputIsSingle = output.style.IsSingle();
+			for (int i = connections.Count - 1; i >= 0; i--)
+			{
+				if ((inputIsSingle && connections[i].input.port == input.id) || (inputIsSingle && connections[i].output.port == output.id)) RemoveConnection(i);
+			}
+			AddConnection(new Connection(nodeOutput, output, nodeInput, input));
 			return true;
 		}
 
@@ -148,19 +140,12 @@ namespace RedOwl.GraphFramework
 		/// <param name="port">The port to disconnect all connections to/from</param>
 		public void Disconnect(Port port)
 		{
-			bool changed = false;
 			for (int i = connections.Count - 1; i >= 0; i--)
 			{
 				if (connections[i].input.port == port.id || connections[i].output.port == port.id)
 				{
-					changed = true;
-					FireConnectionRemoved(connections[i]);
-					connections.RemoveAt(i);
+					RemoveConnection(i);
 				}
-			}
-			if (changed)
-			{
-				MarkDirty();
 			}
 		}
 
@@ -171,19 +156,28 @@ namespace RedOwl.GraphFramework
 		/// <param name="portB">The input/output port to disconnect</param>
 		public void Disconnect(Port portA, Port portB)
 		{
-			bool changed = false;
 			for (int i = connections.Count - 1; i >= 0; i--)
 			{
 				if ((connections[i].input.port == portA.id && connections[i].output.port == portB.id) || (connections[i].input.port == portB.id && connections[i].output.port == portA.id))
 				{
-					changed = true;
-					FireConnectionRemoved(connections[i]);
-					connections.RemoveAt(i);
+					RemoveConnection(i);
 				}
 			}
-			if (changed)
+		}
+
+		/// <summary>
+		/// Disconnects any connections involving both of these port ids
+		/// </summary>
+		/// <param name="portA">The input/output port id to disconnect</param>
+		/// <param name="portB">The input/output port id to disconnect</param>
+		public void Disconnect(Guid portA, Guid portB)
+		{
+			for (int i = connections.Count - 1; i >= 0; i--)
 			{
-				MarkDirty();
+				if ((connections[i].input.port == portA && connections[i].output.port == portB) || (connections[i].input.port == portB && connections[i].output.port == portA))
+				{
+					RemoveConnection(i);
+				}
 			}
 		}
 
@@ -202,6 +196,20 @@ namespace RedOwl.GraphFramework
 				}
 			}
 			return null;
+		}
+
+		/// <summary>
+		/// Given a port find and return all the connections its involved in
+		/// </summary>
+		/// <param name="port">the port to search and find the connections for</param>
+		/// <param name="isInput">if true the port will be treated as an input port</param>
+		/// <returns>Returns an enumerable of connections this port was involved in</returns>
+		public IEnumerable<Connection> FindConnectionsWithPort(Port port, bool isInput)
+		{
+			foreach (var connection in connections)
+			{
+				if ((isInput && connection.input.port == port.id) || (connection.output.port == port.id)) yield return connection;
+			}
 		}
 	}
 }
