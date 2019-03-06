@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <UXML xmlns="UnityEngine.Experimental.UIElements" xmlns:ue="UnityEditor.Experimental.UIElements" xmlns:ro="RedOwl.Editor">
-    <VisualElement class="portRow container row stretch">
-        <VisualElement name="input" class="port" />
-        <VisualElement name="body" class="flexfill" />
-        <VisualElement name="output" class="port" />
-    </VisualElement>
+    <VisualElement name="input" class="port unconnected" />
+    <VisualElement name="body" class="flexfill" />
+    <VisualElement name="output" class="port unconnected" />
 </UXML>

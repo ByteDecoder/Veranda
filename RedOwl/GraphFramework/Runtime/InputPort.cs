@@ -2,6 +2,7 @@ using System;
 
 namespace RedOwl.GraphFramework
 {
+    [PortDirection(PortDirections.Input)]
     public class InputPort<T> : Port<T>
     {
         public InputPort() : base(PortDirections.Input) {}

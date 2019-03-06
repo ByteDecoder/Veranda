@@ -31,7 +31,6 @@ namespace RedOwl.GraphFramework.Editor
 		{
 			if (EditorGUI.EndChangeCheck())
 			{
-				Debug.LogFormat("Found change on node: {0}", target.name);
 				Node node = target as Node;
 				if (node != null) 
 				{

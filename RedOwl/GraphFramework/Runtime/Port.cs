@@ -10,23 +10,30 @@ using RedOwl.Editor;
 namespace RedOwl.GraphFramework
 {
     [Serializable]
-    public abstract class Port<T> : IPort
+    public abstract class Port
     {
-        public string name { get; set; }
+        public delegate void ValueChanged(object data);
+		public event ValueChanged OnValueChanged;
+		internal void FireValueChanged()
+		{
+			OnValueChanged?.Invoke(_data);
+		}
+
         [SerializeField]
-        private Guid _id;
-        public Guid id { get { return _id; } protected set { _id = value; }}
-        [SerializeField]
-        private PortStyles _style;
-        public PortStyles style { get { return _style; } protected set { _style = value; }}
-        [SerializeField]
-        private PortDirections _direction;
-        public PortDirections direction { get { return _direction; } protected set { _direction = value; }}
-        public T value;
-        public Type type { get { return typeof(T); } }
+        protected object _data;
+        internal object data {
+            get { return _data; }
+            set { _data = Convert.ChangeType(value, type); }
+        }
+
+        public readonly Guid id;
+
+        internal string name;
+        internal PortStyles style;
+        internal PortDirections direction;
 
         private TypeConverter _converter;
-        private TypeConverter converter
+        protected TypeConverter converter
         {
             get
             {
@@ -35,27 +42,39 @@ namespace RedOwl.GraphFramework
             }
         }
 
-        public Port(PortDirections direction, PortStyles style = PortStyles.Single)
+        public Port(object value, PortDirections direction, PortStyles style = PortStyles.Single)
         {
+            this._data = value;
             this.id = Guid.NewGuid();
-            this.value = default(T);
             this.style = style;
             this.direction = direction;
         }
 
-        public Port(T value, PortDirections direction, PortStyles style = PortStyles.Single)
-        {
-            this.id = Guid.NewGuid();
-            this.value = value;
-            this.style = style;
-            this.direction = direction;
+        public override string ToString() => _data.ToString();
+
+        // Contract
+        public abstract bool CanConnectPort(Port port);
+        public abstract Type type { get; }
+#if UNITY_EDITOR
+        public abstract PropertyFieldX GetField();
+#endif
+    }
+
+    [Serializable]
+    public abstract class Port<T> : Port
+    {
+        public T value {
+            get { return (T)data; }
+            set { data = value; }
         }
 
-        public object Get() => (object)value;
+        public Port(PortDirections direction) : this(default(T), direction) {}
+        public Port(PortDirections direction, PortStyles style) : this(default(T), direction, style) {}
+        public Port(T value, PortDirections direction) : base(value, direction) {}
+        public Port(T value, PortDirections direction, PortStyles style) : base(value, direction, style) {}
 
-        public void Set(object value) => this.value = (T)Convert.ChangeType(value, type);
-
-        public bool CanConnectPort(IPort port)
+        // Contract
+        public override bool CanConnectPort(Port port)
         {
             if (type == port.type) return true;
             if (converter.CanConvertFrom(port.type))
@@ -72,9 +91,10 @@ namespace RedOwl.GraphFramework
             return false;
         }
 
-        public override string ToString() => value.ToString();
+        public override Type type { get { return typeof(T); } }
+        
 #if UNITY_EDITOR
-        public PropertyFieldX GetField() => new PropertyFieldX<T>(ObjectNames.NicifyVariableName(name), () => { return value; }, (data) => { value = data; });
+        public override PropertyFieldX GetField() => new PropertyFieldX<T>(ObjectNames.NicifyVariableName(name), () => { return value; }, (data) => { value = data; FireValueChanged(); });
 #endif
     }
 }

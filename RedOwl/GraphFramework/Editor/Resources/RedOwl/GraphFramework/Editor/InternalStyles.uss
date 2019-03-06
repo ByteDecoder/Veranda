@@ -9,9 +9,8 @@
     -unity-text-align: middle-center;
 }
 
-.node {
-    background-color: rgb(70, 70, 70);
-    border-color:  rgb(172, 172, 172);
+.node.background {
+    width: 200;
     border-radius: 7;
     border-left-width: 0.5;
     border-top-width: 0.5;
@@ -19,50 +18,33 @@
     border-bottom-width: 0.5;
 }
 
-.nodeHeader {
-    background-color: rgb(172, 172, 172);
-}
-
-.nodeBody {
+.node.body {
     margin-left: -0.5px;
     margin-right: -0.5px;
     margin-bottom: 8px;
-    background-color: rgb(172, 172, 172);
-    border-color:  rgb(200, 200, 200);
     border-top-width: 1;
     border-bottom-width: 1;
 }
 
-.nodeBody.hide {
+.node.body.hide {
     margin-bottom: 0px;
 }
 
-.portRow {
+#GraphPort {
     margin-left: -17px;
     margin-right: -17px;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: space-between;
 }
 
 .port {
     width: 14;
     height: 14;
-    border-color: rgb(150, 150, 150);
     border-radius: 10;
     border-left-width: 0.5;
     border-top-width: 0.5;
     border-right-width: 0.5;
     border-bottom-width: 0.5;
-}
-
-.port:hover {
-    background-color: rgb(255, 239, 93);
-    border-color: rgb(155, 128, 40);
-}
-
-.portConnected {
-    background-color: rgb(241, 96, 62);
-    border-color: rgb(155, 62, 40);
-}
-.portConnected:hover {
-    background-color: rgb(150, 35, 35);
-    border-color: rgb(70, 5, 5);
 }

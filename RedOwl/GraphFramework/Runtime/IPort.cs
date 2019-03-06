@@ -1,3 +1,4 @@
+/*
 using System;
 #if UNITY_EDITOR
 using RedOwl.Editor;
@@ -22,3 +23,4 @@ namespace RedOwl.GraphFramework
 #endif
     }
 }
+*/

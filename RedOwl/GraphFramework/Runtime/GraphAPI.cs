@@ -114,7 +114,7 @@ namespace RedOwl.GraphFramework
 		/// <param name="output">The output port to connect</param>
 		/// <param name="input">The input port to connect the output port to</param>
 		/// <returns>Returns true of the connection was made</returns>
-		public bool Connect(IPort output, IPort input)
+		public bool Connect(Port output, Port input)
 		{
 			if (output.style == PortStyles.Single || input.style == PortStyles.Single)
 			{
@@ -146,7 +146,7 @@ namespace RedOwl.GraphFramework
 		/// Disconnects all connections to the given port
 		/// </summary>
 		/// <param name="port">The port to disconnect all connections to/from</param>
-		public void Disconnect(IPort port)
+		public void Disconnect(Port port)
 		{
 			bool changed = false;
 			for (int i = connections.Count - 1; i >= 0; i--)
@@ -169,7 +169,7 @@ namespace RedOwl.GraphFramework
 		/// </summary>
 		/// <param name="portA">The input/output port to disconnect</param>
 		/// <param name="portB">The input/output port to disconnect</param>
-		public void Disconnect(IPort portA, IPort portB)
+		public void Disconnect(Port portA, Port portB)
 		{
 			bool changed = false;
 			for (int i = connections.Count - 1; i >= 0; i--)
@@ -192,7 +192,7 @@ namespace RedOwl.GraphFramework
 		/// </summary>
 		/// <param name="port">The port to search and find the node for</param>
 		/// <returns>Returns the node which has ownership of the given port</returns>
-		public Node FindNodeWithPort(IPort port)
+		public Node FindNodeWithPort(Port port)
 		{
 			foreach (var node in nodes.Values)
 			{

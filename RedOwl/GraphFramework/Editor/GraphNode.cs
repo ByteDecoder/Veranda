@@ -12,7 +12,7 @@ using RedOwl.GraphFramework;
 
 namespace RedOwl.GraphFramework.Editor
 {
-	[UXML, USSClass("float", "node")]
+	[UXML, USSClass("float", "node", "background")]
 	public class GraphNode : RedOwlVisualElement, IOnMouse
 	{
 		[UXMLReference]
@@ -42,16 +42,22 @@ namespace RedOwl.GraphFramework.Editor
 		{
 			this.view = view;
 			this.node = node;
+			this.name = node.GetType().Name;
 
-			style.width = node.view.layout.width;
-			style.backgroundColor = node.view.color;
+			//style.width = node.view.layout.width;
+			//style.backgroundColor = node.view.color;
 
 			target = new SerializedObject(node);
 			properties = new InspectorElement();
 			properties.Bind(target);
-			foreach (IPort item in node)
+
+			ports = new VisualElement();
+			ports.name = "ports";
+			foreach (Port item in node)
 			{
-				portTable.Add(item.id, new GraphPort(view, node, item));
+				var port = new GraphPort(view, node, item);
+				ports.Add(port);
+				portTable.Add(item.id, port);
 			}
 		}
 
@@ -74,15 +80,7 @@ namespace RedOwl.GraphFramework.Editor
 
 		private void ShowBody()
 		{
-			var props = new VisualElement();
-			props.Add(properties);
-			body.Add(props);
-
-			ports = new VisualElement();
-			foreach (var port in portTable.Values)
-			{
-				ports.Add(port);
-			}
+			body.Add(properties);
 			body.Add(ports);
 			collapseIcon.icon = "fa-chevron-down";
 			body.Show();
@@ -121,10 +119,16 @@ namespace RedOwl.GraphFramework.Editor
 		    get {
 			    yield return new MouseFilter { 
 				    button = MouseButton.LeftMouse,
+					OnDown = OnDown,
 				    OnMove = OnDrag
                 };
 		    }
 	    }
+
+		public void OnDown(MouseDownEvent evt)
+		{
+			BringToFront();
+		}
         
 		public void OnDrag(MouseMoveEvent evt, Vector3 delta)
 		{

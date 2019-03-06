@@ -7,21 +7,45 @@ namespace RedOwl.GraphFramework
 {
     public struct PortInfo
 	{
-        public string Name;
-        public FieldInfo Field { get; private set; }
-        public PropertyInfo Property { get; private set; }
+        internal string name;
+        internal PortStyles style;
+        internal PortDirections direction;
+        internal FieldInfo field;
+        internal PropertyInfo property;
+
+		public PortInfo(Type type, FieldInfo info) : this(type, info.Name)
+		{
+			var style = PortStyles.Single;
+			var direction = PortDirections.None;
+			info.FieldType.WithAttr<PortStyleAttribute>(a => { style = a.style; Debug.Log("Found Port Style Attr"); });
+			info.FieldType.WithAttr<PortDirectionAttribute>(a => { direction = a.direction; Debug.Log("Found Port Direction Attr"); });
+			this.style = style;
+			this.direction = direction;
+		}
+
+		public PortInfo(Type type, PropertyInfo info) : this(type, info.Name)
+		{
+			var style = PortStyles.Single;
+			var direction = PortDirections.None;
+			info.PropertyType.WithAttr<PortStyleAttribute>(a => { style = a.style; Debug.Log("Found Port Style Attr"); });
+			info.PropertyType.WithAttr<PortDirectionAttribute>(a => { direction = a.direction; Debug.Log("Found Port Direction Attr"); });
+			this.style = style;
+			this.direction = direction;
+		}
         
 		public PortInfo(Type type, string name)
 		{
-            Name = name;
-			Field = type.GetField(name);
-			Property = type.GetProperty(name);
+            this.name = name;
+			this.style = PortStyles.Single;
+			this.direction = PortDirections.None;
+			field = type.GetField(name);
+			property = type.GetProperty(name);
             //Debug.LogFormat("Creating PortInfo for {0} | {1}.{2}", Field == null ? "Property" : "Field", type.Name, name);
 		}
         
-        public IPort Get(object instance)
+        public Port Get(object instance)
         {
-            return (IPort)(Field == null ? Property.GetValue(instance, null) : Field.GetValue(instance));
+            return (Port)(field == null ? property.GetValue(instance, null) : field.GetValue(instance));
         }
     }
 
@@ -94,13 +118,13 @@ using UnityEditor.Callbacks;
 			var ports = new List<PortInfo>();
 			foreach (FieldInfo info in nodeType.GetFields(PortFlags))
 			{
-                if (typeof(IPort).IsAssignableFrom(info.FieldType))
-                    ports.Add(new PortInfo(nodeType, info.Name));
+                if (typeof(Port).IsAssignableFrom(info.FieldType))
+                    ports.Add(new PortInfo(nodeType, info));
             }
 			foreach (PropertyInfo info in nodeType.GetProperties(PortFlags))
 			{
-                if (typeof(IPort).IsAssignableFrom(info.PropertyType) && !(info.GetIndexParameters().Length > 0))
-                    ports.Add(new PortInfo(nodeType, info.Name));
+                if (typeof(Port).IsAssignableFrom(info.PropertyType) && !(info.GetIndexParameters().Length > 0))
+                    ports.Add(new PortInfo(nodeType, info));
 			}
 			_cache[nodeType] = ports;
 		}

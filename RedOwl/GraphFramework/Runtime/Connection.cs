@@ -8,7 +8,7 @@ namespace RedOwl.GraphFramework
         public Guid node;
         public Guid port;
 
-        public Slot(Node node, IPort port)
+        public Slot(Node node, Port port)
         {
             this.node = node.id;
             this.port = port.id;
@@ -20,7 +20,7 @@ namespace RedOwl.GraphFramework
         public Slot input;
         public Slot output;
 
-        public Connection(Node outputNode, IPort outputPort, Node inputNode, IPort inputPort)
+        public Connection(Node outputNode, Port outputPort, Node inputNode, Port inputPort)
         {
             this.input = new Slot(inputNode, inputPort);
             this.output = new Slot(outputNode, outputPort);

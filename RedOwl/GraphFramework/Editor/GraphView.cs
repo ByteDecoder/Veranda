@@ -8,7 +8,7 @@ using RedOwl.Editor;
 
 namespace RedOwl.GraphFramework.Editor
 {
-	[UXML, USS("RedOwl/GraphFramework/Editor/Styles"), USSClass("workspace", "flexfill")]
+	[UXML, USS("RedOwl/GraphFramework/Editor/InternalStyles"), USS("RedOwl/GraphFramework/Editor/DefaultColors"), USSClass("workspace", "flexfill", "graph")]
 	public class GraphView : RedOwlVisualElement, IOnMouse, IOnMouseMove, IOnZoom, IOnContextMenu, IHandlesBezier
     {
 		public new class UxmlFactory : UxmlFactory<GraphView> {}
@@ -26,24 +26,26 @@ namespace RedOwl.GraphFramework.Editor
 	    private Vector2 lastMousePosition = Vector2.zero;
 	    
 	    public Graph graph { get; private set; }
-	    
-	    public float LineWidth { get; set; } = 4f;
-	    public Color LineColor { get; set; } = new Color32(241, 96, 62, 255);
-	    public IEnumerable<Tuple<Vector2, Vector2>> GetBezierPoints()
+
+	    public IEnumerable<Tuple<Vector2, Vector2, Color, float>> GetBezierPoints()
 	    {
 	    	foreach (var conn in graph.connections)
 	    	{
-		    	yield return new Tuple<Vector2, Vector2>(
+		    	yield return new Tuple<Vector2, Vector2, Color, float>(
 			    	nodeTable[conn.output.node].GetOutputAnchor(conn.output.port),
-			    	nodeTable[conn.input.node].GetInputAnchor(conn.input.port)
+			    	nodeTable[conn.input.node].GetInputAnchor(conn.input.port),
+					Color.gray,
+					3f
 			    );
 	    	}
 	    
 	    	if (outputPortReady)
 	    	{
-		    	yield return new Tuple<Vector2, Vector2> (
+		    	yield return new Tuple<Vector2, Vector2, Color, float> (
 			    	nodeTable[outputPort.Item1].GetOutputAnchor(outputPort.Item2.id),
-			    	lastMousePosition
+			    	lastMousePosition,
+					Color.yellow,
+					3f
 		    	);
 	    	}
 	    }
@@ -61,6 +63,7 @@ namespace RedOwl.GraphFramework.Editor
 				this.graph.OnConnectionRemoved -= OnConnectionsRemoved;
 			}
 		    this.graph = graph;
+			this.AddStyleSheetPath(string.Format("{0}/GraphStyles", graph.GetType().Namespace));
 			nodes.Clear();
 			nodeTable.Clear();
 		    foreach (Node node in graph)
@@ -162,16 +165,16 @@ namespace RedOwl.GraphFramework.Editor
 		}
 	    
 	    private bool outputPortReady = false;
-		private Tuple<Guid, IPort> outputPort;
-	    public bool ClickOutputPort(Guid node, IPort port)
+		private Tuple<Guid, Port> outputPort;
+	    public bool ClickOutputPort(Guid node, Port port)
 	    {
 		    if (outputPortReady) return false;
-			outputPort = new Tuple<Guid, IPort>(node, port);
+			outputPort = new Tuple<Guid, Port>(node, port);
 		    outputPortReady = true;
 		    return true;
 	    }
 	    
-	    public bool ClickInputPort(IPort port)
+	    public bool ClickInputPort(Port port)
 	    {
 		    if (!outputPortReady) return false;
 			graph.Connect(outputPort.Item2, port);

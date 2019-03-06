@@ -16,7 +16,7 @@ namespace RedOwl.GraphFramework
 		public Rect layout;
     }
 
-    public abstract class Node : RedOwl.Serialization.SerializedScriptableObject, IEnumerable<IPort>
+    public abstract class Node : RedOwl.Serialization.SerializedScriptableObject, IEnumerable<Port>
     {
         [HideInInspector]
         public Guid id;
@@ -29,10 +29,13 @@ namespace RedOwl.GraphFramework
         [NonSerialized]
         public Dictionary<Guid, PortInfo> portInfos;
 
-        private IPort GetPort(PortInfo info)
+        private Port GetPort(PortInfo info)
         {
-            IPort port = info.Get(this);
-            port.name = info.Name;
+            Port port = info.Get(this);
+            port.name = info.name;
+            port.style = info.style;
+            port.direction = info.direction;
+            //Debug.LogFormat("Port {0}.{1} has {2} | {3}", GetType().Name, port.name, port.direction, port.style);
             return port;
         }
 
@@ -40,7 +43,7 @@ namespace RedOwl.GraphFramework
         /// Returns the port with the given GUID
         /// </summary>
         /// <value>GUID</value>
-        public IPort this[Guid key]
+        public Port this[Guid key]
         {
             get
             {
@@ -48,7 +51,7 @@ namespace RedOwl.GraphFramework
             }
         }
 
-        IEnumerator<IPort> IEnumerable<IPort>.GetEnumerator()
+        IEnumerator<Port> IEnumerable<Port>.GetEnumerator()
         {
             foreach (var port in portInfos.Values)
             {
@@ -74,13 +77,11 @@ namespace RedOwl.GraphFramework
             view.title = type.Name.Replace("Node", "");
             view.labelWidth = 80;
             view.color = Color.gray;
-            type.WithAttr<NodeColorAttribute>(a => { view.color = a.color; });
             type.WithAttr<NodeTitleAttribute>(a => { view.title = a.title; });
-            type.WithAttr<NodeWidthAttribute>(a => { view.layout.width = a.width; });
             type.WithAttr<NodeLabelWidthAttribute>(a => { view.labelWidth = a.width; });
             var infos = PortCache.Get(this.GetType());
             portInfos = new Dictionary<Guid, PortInfo>(infos.Count);
-            IPort port;
+            Port port;
             foreach (PortInfo info in infos)
             {
                 port = info.Get(this);

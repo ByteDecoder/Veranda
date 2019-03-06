@@ -57,7 +57,7 @@ namespace RedOwl.GraphFramework
 				if (connection.input.node == node.id)
 				{
 					//Debug.LogFormat("Shelping: {0} | {1} => {2}", this[connection.output.node], this[connection.output.node][connection.output.port], this[connection.input.node][connection.input.port]);
-					this[connection.input.node][connection.input.port].Set(this[connection.output.node][connection.output.port].Get());
+					this[connection.input.node][connection.input.port].data = this[connection.output.node][connection.output.port].data;
 				}
 			node.OnExecute();
 			evaluatedNodes.Add(node.id);

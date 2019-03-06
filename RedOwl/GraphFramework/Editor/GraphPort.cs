@@ -9,7 +9,7 @@ using RedOwl.Editor;
 
 namespace RedOwl.GraphFramework.Editor
 {
-	[UXML]
+	[UXML, USS("RedOwl/GraphFramework/Editor/TypeColors")]
 	public class GraphPort : RedOwlVisualElement, IOnMouse
 	{
 		[UXMLReference]
@@ -25,15 +25,20 @@ namespace RedOwl.GraphFramework.Editor
 		
 		private GraphView view;
 		private Node node;
-		private IPort port;
+		private Port port;
+
+		private bool isInput;
+		private bool isOutput;
     	
-		public GraphPort(GraphView view, Node node, IPort port) : base()
+		public GraphPort(GraphView view, Node node, Port port) : base()
 		{
 			this.view = view;
 			this.node = node;
 			this.port = port;
+			port.OnValueChanged += (data) => { if (node.graph.AutoExecute) node.graph.Execute(); };
 
 			label = new LabelX(port.name);
+			label.AddToClassList("centered");
 			label.style.width = node.view.labelWidth;
 
 			field = port.GetField();
@@ -41,8 +46,20 @@ namespace RedOwl.GraphFramework.Editor
 
 			body.Add(field);
 
-			input.Show(port.direction.IsInput());
-			output.Show(port.direction.IsOutput());
+			isInput = port.direction.IsInput();
+			isOutput = port.direction.IsOutput();
+
+			input.Show(isInput);
+			input.name = port.type.Name;
+			output.Show(isOutput);
+			output.name = port.type.Name;
+		}
+
+		[UICallback(1, true)]
+		private void BuildUI()
+		{
+			body.style.paddingLeft = 13;
+			body.style.paddingRight = 3;
 		}
 		
 		public bool IsContentDragger { get { return false; } }
@@ -62,12 +79,12 @@ namespace RedOwl.GraphFramework.Editor
         
 		public void OnLeftMouseUp(MouseUpEvent evt)
 		{
-			if (input.ContainsPoint(this.ChangeCoordinatesTo(input, evt.localMousePosition)))
+			if (isInput && input.ContainsPoint(this.ChangeCoordinatesTo(input, evt.localMousePosition)))
 			{
 				view.ClickInputPort(port);
 			}
 			
-			if (output.ContainsPoint(this.ChangeCoordinatesTo(output, evt.localMousePosition)))
+			if (isOutput && output.ContainsPoint(this.ChangeCoordinatesTo(output, evt.localMousePosition)))
 			{
 				view.ClickOutputPort(node.id, port);
 			}
@@ -75,12 +92,12 @@ namespace RedOwl.GraphFramework.Editor
 		
 		public void OnRightMouseUp(MouseUpEvent evt)
 		{
-			if (input.ContainsPoint(this.ChangeCoordinatesTo(input, evt.localMousePosition)))
+			if (isInput && input.ContainsPoint(this.ChangeCoordinatesTo(input, evt.localMousePosition)))
 			{
 				view.graph.Disconnect(port);
 			}
 			
-			if (output.ContainsPoint(this.ChangeCoordinatesTo(output, evt.localMousePosition)))
+			if (isOutput && output.ContainsPoint(this.ChangeCoordinatesTo(output, evt.localMousePosition)))
 			{
 				view.graph.Disconnect(port);
 			}
@@ -88,26 +105,32 @@ namespace RedOwl.GraphFramework.Editor
 		
 		public void ConnectInput()
 		{
-			input.AddToClassList("portConnected");
+			input.RemoveFromClassList("unconnected");
+			input.AddToClassList("connected");
 			body.Clear();
+			body.AddToClassList("centered");
 			body.Add(label);
 		}
 		
 		public void ConnectOutput()
 		{
-			output.AddToClassList("portConnected");
+			input.RemoveFromClassList("unconnected");
+			output.AddToClassList("connected");
 		}
 
 		public void DisconnectInput()
 		{
-			input.RemoveFromClassList("portConnected");
+			input.RemoveFromClassList("connected");
+			input.AddToClassList("unconnected");
 			body.Clear();
+			body.RemoveFromClassList("centered");
 			body.Add(field);
 		}
 		
 		public void DisconnectOutput()
 		{
-			output.RemoveFromClassList("portConnected");
+			output.RemoveFromClassList("connected");
+			output.AddToClassList("unconnected");
 		}
 		
 		public Vector2 GetInputAnchor()
