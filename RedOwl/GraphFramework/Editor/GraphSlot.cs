@@ -55,7 +55,7 @@ namespace RedOwl.GraphFramework.Editor
 			output.name = port.type.Name;
 		}
 
-		private void BuildUI()
+		protected override void BuildUI()
 		{
 			body.style.paddingLeft = 13;
 			body.style.paddingRight = 3;

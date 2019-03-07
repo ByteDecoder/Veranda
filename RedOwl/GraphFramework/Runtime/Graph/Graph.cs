@@ -69,6 +69,8 @@ namespace RedOwl.GraphFramework
                 yield return node;
             }
         }
+
+        public override string ToString() => this.name;
     }
 
     public abstract class Graph<T> : Graph, IGraph where T : Node

@@ -13,6 +13,10 @@ namespace RedOwl.GraphFramework.Editor
 		[UXMLReference]
 		public GraphView view;
 
+        [UXMLReference]
+        public VisualElement breadcrumbs;
+        private GraphBreadcrumbBar breadcrumbBar;
+
         public static void Open() => EnsureWindow();
 
         [OnOpenAssetAttribute(1)]
@@ -20,6 +24,23 @@ namespace RedOwl.GraphFramework.Editor
 
         public override string GetWindowTitle() => "Graph Editor";
 
-        public override void Load(Graph graph) => view.Load(graph);
+        protected override void BuildUI()
+        {
+            breadcrumbBar = new GraphBreadcrumbBar();
+            breadcrumbs.Add(breadcrumbBar);
+        }
+
+        public override void Load(Graph graph)
+        {
+            breadcrumbBar.ClearBreadcrumbs();
+            breadcrumbBar.AddBreadcrumb(graph);
+            view.Load(graph);
+        }
+
+        public void LoadSubGraph(Graph graph)
+        {
+            breadcrumbBar.AddBreadcrumb(graph);
+            view.Load(graph);
+        }
     }
 }
