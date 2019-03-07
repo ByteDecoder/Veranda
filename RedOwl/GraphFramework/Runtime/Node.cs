@@ -33,7 +33,6 @@ namespace RedOwl.GraphFramework
         {
             Port port = info.Get(this);
             port.name = info.name;
-            port.style = info.style;
             port.direction = info.direction;
             //Debug.LogFormat("Port {0}.{1} has {2} | {3}", GetType().Name, port.name, port.direction, port.style);
             return port;

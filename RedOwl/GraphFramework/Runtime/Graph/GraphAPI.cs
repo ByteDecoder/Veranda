@@ -129,11 +129,9 @@ namespace RedOwl.GraphFramework
 				Debug.LogWarningFormat("Unable to find nodes for ports: {0} || {1}", output.id, input.id);
 				return false;
 			}
-			var inputIsSingle = input.style.IsSingle();
-			var outputIsSingle = output.style.IsSingle();
 			for (int i = connections.Count - 1; i >= 0; i--)
 			{
-				if ((inputIsSingle && connections[i].input.port == input.id) || (inputIsSingle && connections[i].output.port == output.id)) RemoveConnection(i);
+				if ((connections[i].input.port == input.id)) RemoveConnection(i);
 			}
 			AddConnection(new Connection(nodeOutput, output, nodeInput, input));
 			return true;

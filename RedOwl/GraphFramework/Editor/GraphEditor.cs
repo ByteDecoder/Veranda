@@ -16,6 +16,10 @@ namespace RedOwl.GraphFramework.Editor
 				GraphWindow.Open();
 				GraphWindow.instance.Load((Graph)target);
 			}
+			if (GUILayout.Button("Execute Graph", GUILayout.Height(25)))
+			{
+				((Graph)target).Execute();
+			}
 		}
 	}
 }

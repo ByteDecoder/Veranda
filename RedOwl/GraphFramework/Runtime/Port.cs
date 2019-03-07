@@ -29,7 +29,6 @@ namespace RedOwl.GraphFramework
         public readonly Guid id;
 
         internal string name;
-        internal PortStyles style;
         internal PortDirections direction;
 
         private TypeConverter _converter;
@@ -42,11 +41,10 @@ namespace RedOwl.GraphFramework
             }
         }
 
-        public Port(object value, PortDirections direction, PortStyles style = PortStyles.Single)
+        public Port(object value, PortDirections direction)
         {
             this._data = value;
             this.id = Guid.NewGuid();
-            this.style = style;
             this.direction = direction;
         }
 
@@ -69,9 +67,7 @@ namespace RedOwl.GraphFramework
         }
 
         public Port(PortDirections direction) : this(default(T), direction) {}
-        public Port(PortDirections direction, PortStyles style) : this(default(T), direction, style) {}
         public Port(T value, PortDirections direction) : base(value, direction) {}
-        public Port(T value, PortDirections direction, PortStyles style) : base(value, direction, style) {}
 
         // Contract
         public override bool CanConnectPort(Port port)

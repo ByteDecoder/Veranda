@@ -8,35 +8,27 @@ namespace RedOwl.GraphFramework
     public struct PortInfo
 	{
         internal string name;
-        internal PortStyles style;
         internal PortDirections direction;
         internal FieldInfo field;
         internal PropertyInfo property;
 
 		public PortInfo(Type type, FieldInfo info) : this(type, info.Name)
 		{
-			var style = PortStyles.Single;
 			var direction = PortDirections.None;
-			info.FieldType.WithAttr<PortStyleAttribute>(a => { style = a.style; Debug.Log("Found Port Style Attr"); });
-			info.FieldType.WithAttr<PortDirectionAttribute>(a => { direction = a.direction; Debug.Log("Found Port Direction Attr"); });
-			this.style = style;
+			info.FieldType.WithAttr<PortDirectionAttribute>(a => { direction = a.direction; });
 			this.direction = direction;
 		}
 
 		public PortInfo(Type type, PropertyInfo info) : this(type, info.Name)
 		{
-			var style = PortStyles.Single;
 			var direction = PortDirections.None;
-			info.PropertyType.WithAttr<PortStyleAttribute>(a => { style = a.style; Debug.Log("Found Port Style Attr"); });
-			info.PropertyType.WithAttr<PortDirectionAttribute>(a => { direction = a.direction; Debug.Log("Found Port Direction Attr"); });
-			this.style = style;
+			info.PropertyType.WithAttr<PortDirectionAttribute>(a => { direction = a.direction; });
 			this.direction = direction;
 		}
         
 		public PortInfo(Type type, string name)
 		{
             this.name = name;
-			this.style = PortStyles.Single;
 			this.direction = PortDirections.None;
 			field = type.GetField(name);
 			property = type.GetProperty(name);
