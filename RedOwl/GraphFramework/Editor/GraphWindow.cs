@@ -7,7 +7,7 @@ using RedOwl.Editor;
 
 namespace RedOwl.GraphFramework.Editor
 {
-	[UXML, USS("RedOwl/GraphFramework/Editor/InternalStyles"), USS("RedOwl/GraphFramework/Editor/DefaultColors"), USS("RedOwl/GraphFramework/Editor/TypeColors")]
+	[UXML, USS, USS("RedOwl/GraphFramework/Editor/DefaultColors"), USS("RedOwl/GraphFramework/Editor/TypeColors")]
     public class GraphWindow : RedOwlAssetEditor<Graph, GraphWindow>
 	{
 		[UXMLReference]
