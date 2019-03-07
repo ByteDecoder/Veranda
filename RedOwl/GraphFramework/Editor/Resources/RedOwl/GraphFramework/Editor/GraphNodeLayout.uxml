@@ -3,9 +3,12 @@
     <VisualElement class="background">
         <VisualElement name="header" class="header">
             <VisualElement class="container row padded-4">
-                <ue:ToolbarButton name="collapse" class="container row"><ro:FontAwesome name="collapseIcon" type="solid" icon="fa-chevron-down" /></ue:ToolbarButton>
+                <ue:ToolbarButton name="collapse" class="container row" tooltip="Collapse"><ro:FontAwesome name="collapseIcon" type="solid" icon="fa-chevron-down" /></ue:ToolbarButton>
                 <Label name="title" text="Title" />
-                <ue:ToolbarButton name="delete" class="container row"><ro:FontAwesome type="solid" icon="fa-trash-alt" /></ue:ToolbarButton>
+                <VisualElement class="container row">
+                    <ue:ToolbarButton name="duplicate" class="container row" tooltip="Duplicate"><ro:FontAwesome type="solid" icon="fa-clone" /></ue:ToolbarButton>
+                    <ue:ToolbarButton name="delete" class="container row" tooltip="Delete"><ro:FontAwesome type="solid" icon="fa-trash-alt" /></ue:ToolbarButton>
+                </VisualElement>
             </VisualElement>
         </VisualElement>
         <VisualElement name="body" class="body" />

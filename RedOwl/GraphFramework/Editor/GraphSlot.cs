@@ -113,7 +113,7 @@ namespace RedOwl.GraphFramework.Editor
 		
 		public void ConnectOutput()
 		{
-			input.RemoveFromClassList("unconnected");
+			output.RemoveFromClassList("unconnected");
 			output.AddToClassList("connected");
 		}
 

@@ -69,15 +69,20 @@ namespace RedOwl.GraphFramework
 		internal Node Add(Type nodeType, Vector2 position)
 		{
 			Node node = (Node)CreateInstance(nodeType);
-			node.id = Guid.NewGuid();
-			node.graph = this;
-			node.view.collapsed = false;
-			node.view.layout = new Rect(position.x, position.y, 150, 0);
-			node.Initialize();
-			nodes.Add(node.id, node);
-			AddSubAsset(node);
-			FireNodeAdded(node);
+			AddNode(node, position);
 			return node;
+		}
+
+		/// <summary>
+		/// Duplicate a node, add it to the graph and return it
+		/// </summary>
+		/// <param name="node">The node to duplicate</param>
+		/// <returns></returns>
+		public Node Duplicate(Node node)
+		{
+			Node dup = Add(node.GetType(), node.view.layout.position + new Vector2(30, 30));
+			dup.Duplicate(node);
+			return dup;
 		}
 
 		/// <summary>

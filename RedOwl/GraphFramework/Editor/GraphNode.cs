@@ -23,6 +23,9 @@ namespace RedOwl.GraphFramework.Editor
 		
 		[UXMLReference]
 		private Label title;
+
+		[UXMLReference]
+		private ToolbarButton duplicate;
 		
 		[UXMLReference]
 		private ToolbarButton delete;
@@ -67,6 +70,7 @@ namespace RedOwl.GraphFramework.Editor
 			title.text = node.view.title;
 			
 			collapse.clickable.clicked += ToggleCollapse;
+			duplicate.clickable.clicked += Duplicate;
 			delete.clickable.clicked += Delete;
 			
 			if (!node.view.collapsed)
@@ -158,6 +162,11 @@ namespace RedOwl.GraphFramework.Editor
 				ShowBody();
 			}
 			Save();
+		}
+
+		private void Duplicate()
+		{
+			view.graph.Duplicate(node);
 		}
 		
 		private void Delete()

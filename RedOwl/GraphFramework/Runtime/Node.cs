@@ -90,6 +90,11 @@ namespace RedOwl.GraphFramework
             IsInitialized = true;
         }
 
+        public void Duplicate(Node orig)
+        {
+            // TODO: copy data from one node to another - how?
+        }
+
         /// <summary>
         /// Call this function to collapse the node
         /// </summary>
