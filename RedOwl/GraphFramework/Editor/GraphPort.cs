@@ -9,8 +9,8 @@ using RedOwl.Editor;
 
 namespace RedOwl.GraphFramework.Editor
 {
-	[UXML, USS("RedOwl/GraphFramework/Editor/TypeColors")]
-	public class GraphPort : RedOwlVisualElement, IOnMouse
+	[UXML]
+	public class GraphSlot : RedOwlVisualElement, IOnMouse
 	{
 		[UXMLReference]
 		private VisualElement body;
@@ -30,7 +30,7 @@ namespace RedOwl.GraphFramework.Editor
 		private bool isInput;
 		private bool isOutput;
     	
-		public GraphPort(GraphView view, Node node, Port port) : base()
+		public GraphSlot(GraphView view, Node node, Port port) : base()
 		{
 			this.view = view;
 			this.node = node;
@@ -55,7 +55,6 @@ namespace RedOwl.GraphFramework.Editor
 			output.name = port.type.Name;
 		}
 
-		[UICallback(1, true)]
 		private void BuildUI()
 		{
 			body.style.paddingLeft = 13;

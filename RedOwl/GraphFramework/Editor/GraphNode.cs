@@ -12,7 +12,7 @@ using RedOwl.GraphFramework;
 
 namespace RedOwl.GraphFramework.Editor
 {
-	[UXML, USSClass("float", "node", "background")]
+	[UXML, USSClass("float", "background")]
 	public class GraphNode : RedOwlVisualElement, IOnMouse
 	{
 		[UXMLReference]
@@ -32,7 +32,7 @@ namespace RedOwl.GraphFramework.Editor
 		
 		private InspectorElement properties;
 		private VisualElement ports;
-		private Dictionary<Guid, GraphPort> portTable = new Dictionary<Guid, GraphPort>(); 
+		private Dictionary<Guid, GraphSlot> portTable = new Dictionary<Guid, GraphSlot>(); 
 		
 		private GraphView view;		
 		private Node node;
@@ -55,7 +55,7 @@ namespace RedOwl.GraphFramework.Editor
 			ports.name = "ports";
 			foreach (Port item in node)
 			{
-				var port = new GraphPort(view, node, item);
+				var port = new GraphSlot(view, node, item);
 				ports.Add(port);
 				portTable.Add(item.id, port);
 			}

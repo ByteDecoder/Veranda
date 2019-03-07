@@ -1,15 +1,4 @@
-.slots {
-    margin-left: -18px;
-    margin-right: -18px;
-}
-
-.slot {
-    flex-grow: 1;
-    align-items: center;
-    -unity-text-align: middle-center;
-}
-
-.node.background {
+.GraphNode .background {
     width: 200;
     border-radius: 7;
     border-left-width: 0.5;
@@ -18,7 +7,7 @@
     border-bottom-width: 0.5;
 }
 
-.node.body {
+.GraphNode .body {
     margin-left: -0.5px;
     margin-right: -0.5px;
     margin-bottom: 8px;
@@ -26,11 +15,11 @@
     border-bottom-width: 1;
 }
 
-.node.body.hide {
+.GraphNode .body.hide {
     margin-bottom: 0px;
 }
 
-#GraphPort {
+.GraphSlot {
     margin-left: -17px;
     margin-right: -17px;
     flex-direction: row;
@@ -39,7 +28,7 @@
     justify-content: space-between;
 }
 
-.port {
+.GraphSlot .GraphPort {
     width: 14;
     height: 14;
     border-radius: 10;

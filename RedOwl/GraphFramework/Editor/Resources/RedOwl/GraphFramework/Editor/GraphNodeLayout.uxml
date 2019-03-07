@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <UXML xmlns="UnityEngine.Experimental.UIElements" xmlns:ue="UnityEditor.Experimental.UIElements" xmlns:ro="RedOwl.Editor">
-    <VisualElement name="header" class="node header">
-        <VisualElement class="container row padded-4">
-            <ue:ToolbarButton name="collapse" class="container row"><ro:FontAwesome name="collapseIcon" type="solid" icon="fa-chevron-down" /></ue:ToolbarButton>
-            <Label name="title" text="Title" />
-            <ue:ToolbarButton name="delete" class="container row"><ro:FontAwesome type="solid" icon="fa-trash-alt" /></ue:ToolbarButton>
+    <VisualElement class="background">
+        <VisualElement name="header" class="header">
+            <VisualElement class="container row padded-4">
+                <ue:ToolbarButton name="collapse" class="container row"><ro:FontAwesome name="collapseIcon" type="solid" icon="fa-chevron-down" /></ue:ToolbarButton>
+                <Label name="title" text="Title" />
+                <ue:ToolbarButton name="delete" class="container row"><ro:FontAwesome type="solid" icon="fa-trash-alt" /></ue:ToolbarButton>
+            </VisualElement>
         </VisualElement>
+        <VisualElement name="body" class="body" />
     </VisualElement>
-    <VisualElement name="body" class="node body" />
 </UXML>

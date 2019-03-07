@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <UXML xmlns="UnityEngine.Experimental.UIElements" xmlns:ro="RedOwl.Editor">
-    <VisualElement name="workspace" class="float">
-        <ro:HandlesRenderer name="connections" />
-        <VisualElement name="nodes" />
-    </VisualElement>
+    <ro:HandlesRenderer name="connections" class="GraphConnections" />
+    <VisualElement name="nodes" />
 </UXML>

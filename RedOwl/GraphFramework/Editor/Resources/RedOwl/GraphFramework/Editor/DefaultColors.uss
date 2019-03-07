@@ -1,41 +1,37 @@
-.graph {
+.GraphView {
     background-color: rgb(30, 30, 30);
 }
 
-.line {
+.GraphConnections {
     width: 4px;
     background-color: rgb(130, 130, 130);
 }
 
-.node.background {
+.GraphNode .background {
     background-color: rgb(70, 70, 70);
     border-color:  rgb(170, 170, 170);
 }
 
-.node.header {
-    
-}
-
-.node.body {
+.GraphNode .body {
     background-color: rgb(170, 170, 170);
     border-color:  rgb(200, 200, 200);
 }
 
-.port.unconnected {
+.GraphSlot .GraphPort.unconnected {
     border-color: rgb(150, 150, 150);
 }
 
-.port.unconnected:hover {
+.GraphSlot .GraphPort.unconnected:hover {
     background-color: rgb(255, 239, 93);
     border-color: rgb(155, 128, 40);
 }
 
-.port.connected {
+.GraphSlot .GraphPort.connected {
     background-color: rgb(130, 130, 130);
     border-color: rgb(70, 70, 70);
 }
 
-.port.connected:hover {
+.GraphSlot .GraphPort.connected:hover {
     background-color: rgb(150, 35, 35);
     border-color: rgb(70, 5, 5);
 }

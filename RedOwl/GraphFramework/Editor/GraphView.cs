@@ -8,7 +8,7 @@ using RedOwl.Editor;
 
 namespace RedOwl.GraphFramework.Editor
 {
-	[UXML, USS("RedOwl/GraphFramework/Editor/InternalStyles"), USS("RedOwl/GraphFramework/Editor/DefaultColors"), USSClass("workspace", "flexfill", "graph")]
+	[UXML, USSClass("workspace", "flexfill")]
 	public class GraphView : RedOwlVisualElement, IOnMouse, IOnMouseMove, IOnZoom, IOnContextMenu, IHandlesBezier
     {
 		public new class UxmlFactory : UxmlFactory<GraphView> {}
