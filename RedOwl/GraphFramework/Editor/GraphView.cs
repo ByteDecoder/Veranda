@@ -162,7 +162,7 @@ namespace RedOwl.GraphFramework.Editor
 	    	{
 	    		foreach (Tuple<string, Type> item in g.GetNodesTypes())
 	    		{
-	    			evt.menu.AppendAction(item.Item1, (a) => graph.Add(item.Item2, lastMousePosition), DropdownMenu.MenuAction.AlwaysEnabled);
+	    			evt.menu.AppendAction(item.Item1, (a) => graph.Add(item.Item2, workspace.WorldToLocal(lastMousePosition)), DropdownMenu.MenuAction.AlwaysEnabled);
 	    		}
 	    	}
 	    }
