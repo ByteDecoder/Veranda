@@ -6,6 +6,11 @@
     right:0;
 }
 
+.GraphView #workspace {
+    width: 0;
+    height: 0;
+}
+
 .GraphNode .background {
     width: 200;
     border-radius: 7;
