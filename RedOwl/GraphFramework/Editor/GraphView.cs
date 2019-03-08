@@ -100,7 +100,7 @@ namespace RedOwl.GraphFramework.Editor
 		private void OnConnectionsRemoved(Connection connection)
 		{
 			nodeTable[connection.input.node].DisconnectInput(connection.input.port);
-			nodeTable[connection.output.node].DisconnectOutput(connection.output.port);
+			if (!graph.IsConnected(connection.output.port, false)) nodeTable[connection.output.node].DisconnectOutput(connection.output.port);
 			connections.MarkDirtyRepaint();
 		}
 	    

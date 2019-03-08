@@ -100,16 +100,19 @@ namespace RedOwl.GraphFramework
 		/// <param name="id">The idea of the node to remove</param>
 		public void Remove(Guid id)
 		{
+			Node node = this[id];
+			Connection connection;
 			for (int i = connections.Count - 1; i >= 0; i--)
 			{
-				if (connections[i].input.node == id || connections[i].output.node == id)
+				connection = connections[i];
+				if (connection.input.node == id || connection.output.node == id)
 				{
-					FireConnectionRemoved(connections[i]);
 					connections.RemoveAt(i);
+					FireConnectionRemoved(connection);
 				}
 			}
-			FireNodeRemoved(this[id]);
 			nodes.Remove(id);
+			FireNodeRemoved(node);
 			RemoveSubAsset(id);
 		}
 
@@ -213,6 +216,32 @@ namespace RedOwl.GraphFramework
 			{
 				if ((isInput && connection.input.port == port.id) || (connection.output.port == port.id)) yield return connection;
 			}
+		}
+
+		/// <summary>
+		/// Returns true if the given port is still connected
+		/// </summary>
+		/// <param name="port">the port to search for in the connections</param>
+		/// <param name="isInput">if true treat the port as an input port</param>
+		/// <returns></returns>
+		public bool IsConnected(Port port, bool isInput)
+		{
+			return IsConnected(port.id, isInput);
+		}
+
+		/// <summary>
+		/// Returns true if the given port is still connected
+		/// </summary>
+		/// <param name="port">the port to search for in the connections</param>
+		/// <param name="isInput">if true treat the port as an input port</param>
+		/// <returns></returns>
+		public bool IsConnected(Guid port, bool isInput)
+		{
+			foreach (var connection in connections)
+			{
+				if ((isInput && connection.input.port == port) || connection.output.port == port) return true;
+			}
+			return false;
 		}
 	}
 }

@@ -3,7 +3,6 @@
     <ue:Toolbar name="toolbar">
         <VisualElement name="breadcrumbs" />
         <ue:ToolbarSpacer />
-        <ue:ToolbarButton text="Test" />
         <ue:ToolbarFlexSpacer />
         <ue:ToolbarButton text="Zoom" />
     </ue:Toolbar>

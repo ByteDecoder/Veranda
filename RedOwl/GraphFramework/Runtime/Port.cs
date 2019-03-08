@@ -23,7 +23,7 @@ namespace RedOwl.GraphFramework
         protected object _data;
         internal object data {
             get { return _data; }
-            set { _data = Convert.ChangeType(value, type); }
+            set { _data = Convert.ChangeType(value, type); FireValueChanged(); }
         }
 
         public readonly Guid id;
@@ -90,7 +90,12 @@ namespace RedOwl.GraphFramework
         public override Type type { get { return typeof(T); } }
         
 #if UNITY_EDITOR
-        public override PropertyFieldX GetField() => new PropertyFieldX<T>(ObjectNames.NicifyVariableName(name), () => { return value; }, (data) => { value = data; FireValueChanged(); });
+        public override PropertyFieldX GetField()
+        {
+            var field = new PropertyFieldX<T>(ObjectNames.NicifyVariableName(name), () => { return value; }, (data) => { value = data; });
+            OnValueChanged += (value) => { field.UpdateField(); };
+            return field;
+        }
 #endif
     }
 }

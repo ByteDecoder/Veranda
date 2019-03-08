@@ -124,6 +124,7 @@ namespace RedOwl.GraphFramework.Editor
 			body.Clear();
 			body.RemoveFromClassList("centered");
 			body.Add(field);
+			field.UpdateField();
 		}
 		
 		public void DisconnectOutput()

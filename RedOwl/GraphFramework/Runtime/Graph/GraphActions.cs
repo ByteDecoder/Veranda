@@ -27,8 +27,9 @@ namespace RedOwl.GraphFramework
 
         internal void RemoveConnection(int index)
         {
-            FireConnectionRemoved(connections[index]);
+            Connection connection = connections[index];
             connections.RemoveAt(index);
+            FireConnectionRemoved(connection);
 			MarkDirty();
         }
     }
