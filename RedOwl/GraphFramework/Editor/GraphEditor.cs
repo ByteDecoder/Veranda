@@ -7,9 +7,9 @@ using RedOwl.GraphFramework;
 namespace RedOwl.GraphFramework.Editor
 {
 	[CustomEditor(typeof(Graph), true)]
-	public class GraphEditor : RedOwlEditor
+	public class GraphEditor : RedOwlEditor<Graph>
 	{
-		public override void OnInspectorGUI()
+		protected override void OnGUI()
 		{
 			if (GUILayout.Button("Open Graph Editor", GUILayout.Height(25)))
 			{

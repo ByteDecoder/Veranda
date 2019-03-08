@@ -8,37 +8,30 @@ using RedOwl.GraphFramework;
 namespace RedOwl.GraphFramework.Editor
 {
 	[CustomEditor(typeof(Node), true)]
-	public class NodeEditor : RedOwlEditor
+	public class NodeEditor : RedOwlEditor<Node>
 	{
-		protected override string[] GetInvisibleInDefaultInspector()
-		{
-			var filters = new List<string>();
-			filters.Add("m_Script");
-			foreach (var item in ((Node)target))
+		protected override IEnumerable<string> GetHiddenFields()
+		{			
+			foreach (var item in Target)
 			{
-				filters.Add(item.name);
+				yield return item.name;
 			}
-			return filters.ToArray();
 		}
 		
 		protected override void OnBeforeDefaultInspector()
 		{
-			EditorGUIUtility.labelWidth = ((Node)target).view.labelWidth;
-			EditorGUI.BeginChangeCheck();
+			EditorGUIUtility.labelWidth = Target.view.labelWidth;
 		}
-		
-		protected override void OnAfterDefaultInspector()
+
+        protected override void OnAfterDefaultInspector()
 		{
-			if (EditorGUI.EndChangeCheck())
-			{
-				Node node = target as Node;
-				if (node != null) 
-				{
-					EditorUtility.SetDirty(node);
-					if (node.graph.AutoExecute) node.graph.Execute();
-				}
-			}
 			EditorGUIUtility.labelWidth = 0;
+		}
+
+        protected override void OnChange()
+		{
+			EditorUtility.SetDirty(Target);
+			if (Target.graph.AutoExecute) Target.graph.Execute();
 		}
 	}
 }

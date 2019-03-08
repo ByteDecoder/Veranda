@@ -90,6 +90,8 @@ namespace RedOwl.GraphFramework
 					type.WithAttr<NodeTitleAttribute>(a => { name = a.title; });
 					nodeTypes.Add(new Tuple<string, Type>(ObjectNames.NicifyVariableName(name), type));
 				}
+                nodeTypes.Add(new Tuple<string, Type>("Sub Graph", typeof(SubGraphNode)));
+                // Add Builtin Types here
 			}
 			foreach (var item in nodeTypes)
 			{
