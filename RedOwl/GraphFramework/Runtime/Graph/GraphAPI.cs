@@ -156,6 +156,22 @@ namespace RedOwl.GraphFramework
 		}
 
 		/// <summary>
+		/// Disconnects the connections to a given port with respect to only one side of the connection
+		/// </summary>
+		/// <param name="port">the port to disconnect to/from</param>
+		/// <param name="isInput">if true treats the port as an input port to limit disconnecting only one side of an InOut port</param>
+		public void Disconnect(Port port, bool isInput)
+		{
+			for (int i = connections.Count - 1; i >= 0; i--)
+			{
+				if ((isInput && connections[i].input.port == port.id) || (!isInput && connections[i].output.port == port.id))
+				{
+					RemoveConnection(i);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Disconnects any connections involving both of these ports
 		/// </summary>
 		/// <param name="portA">The input/output port to disconnect</param>
@@ -239,7 +255,7 @@ namespace RedOwl.GraphFramework
 		{
 			foreach (var connection in connections)
 			{
-				if ((isInput && connection.input.port == port) || connection.output.port == port) return true;
+				if ((isInput && connection.input.port == port) || (!isInput && connection.output.port == port)) return true;
 			}
 			return false;
 		}

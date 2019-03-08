@@ -18,7 +18,8 @@ namespace RedOwl.GraphFramework.Editor
 	    
 	    [UXMLReference]
 	    VisualElement nodes;
-		private Dictionary<Guid, GraphNode> nodeTable = new Dictionary<Guid, GraphNode>(); 
+		private Dictionary<Guid, GraphNode> nodeTable = new Dictionary<Guid, GraphNode>();
+		private Dictionary<Guid, GraphSlot> portTable = new Dictionary<Guid, GraphSlot>(); 
 
 		[UXMLReference]
 	    HandlesRenderer connections;
@@ -39,14 +40,24 @@ namespace RedOwl.GraphFramework.Editor
 			    );
 	    	}
 	    
-	    	if (outputPortReady)
+	    	if (clickedOnce)
 	    	{
-		    	yield return new Tuple<Vector2, Vector2, Color, float> (
-			    	nodeTable[outputPort.Item1].GetOutputAnchor(outputPort.Item2.id),
-			    	lastMousePosition,
-					Color.yellow,
-					3f
-		    	);
+				if (clickedDirection.IsInput())
+				{
+					yield return new Tuple<Vector2, Vector2, Color, float> (
+						lastMousePosition,
+						nodeTable[clickedPort.Item1].GetInputAnchor(clickedPort.Item2.id),
+						Color.yellow,
+						3f
+					);
+				} else {
+					yield return new Tuple<Vector2, Vector2, Color, float> (
+						nodeTable[clickedPort.Item1].GetOutputAnchor(clickedPort.Item2.id),
+						lastMousePosition,
+						Color.yellow,
+						3f
+					);
+				}
 	    	}
 	    }
 	    
@@ -107,19 +118,28 @@ namespace RedOwl.GraphFramework.Editor
 	    public void OnMouseMove(MouseMoveEvent evt)
 	    {
 	    	lastMousePosition = evt.mousePosition;
-	    	if (outputPortReady) connections.MarkDirtyRepaint();
+	    	if (clickedOnce) connections.MarkDirtyRepaint();
 	    }
 	    
 	    public bool IsContentDragger { get { return true; } }
 	    
 	    public IEnumerable<MouseFilter> MouseFilters {
 		    get {
-			    yield return new MouseFilter { 
+				yield return new MouseFilter { 
+				    button = MouseButton.LeftMouse,
+				    OnDown = OnLeftDown
+                };
+			    yield return new MouseFilter {
 				    button = MouseButton.MiddleMouse,
 				    OnMove = OnPan
                 };
 		    }
 	    }
+
+		public void OnLeftDown(MouseDownEvent evt)
+		{
+			if (clickedOnce) clickedOnce = false;
+		}
         
 	    public void OnPan(MouseMoveEvent evt, Vector3 delta)
 	    {
@@ -137,11 +157,6 @@ namespace RedOwl.GraphFramework.Editor
 	    
 	    public void OnContextMenu(ContextualMenuPopulateEvent evt)
 	    {
-	    	if (outputPortReady) 
-	    	{
-	    		outputPortReady = false;
-	    		connections.MarkDirtyRepaint();
-	    	}
 			IGraph g = graph as IGraph;
 	    	if (g != null)
 	    	{
@@ -164,22 +179,26 @@ namespace RedOwl.GraphFramework.Editor
 			nodes.Remove(nodeTable[node.id]);
 		}
 	    
-	    private bool outputPortReady = false;
-		private Tuple<Guid, Port> outputPort;
-	    public bool ClickOutputPort(Guid node, Port port)
+	    private bool clickedOnce = false;
+		private PortDirections clickedDirection;
+		private Tuple<Guid, Port> clickedPort;
+	    public void ClickedPort(PortDirections direction, Node node, Port port)
 	    {
-		    if (outputPortReady) return false;
-			outputPort = new Tuple<Guid, Port>(node, port);
-		    outputPortReady = true;
-		    return true;
-	    }
-	    
-	    public bool ClickInputPort(Port port)
-	    {
-		    if (!outputPortReady) return false;
-			graph.Connect(outputPort.Item2, port);
-		    outputPortReady = false;
-		    return true;
+		    if (clickedOnce)
+			{
+				if (clickedDirection == direction) return;
+				if (direction.IsInput())
+				{
+					graph.Connect(clickedPort.Item2, port);
+				} else {
+					graph.Connect(port, clickedPort.Item2);
+				}
+				clickedOnce = false;
+			} else {
+				clickedDirection = direction;
+				clickedPort = new Tuple<Guid, Port>(node.id, port);
+				clickedOnce = true;
+			}
 	    }
     }
 }

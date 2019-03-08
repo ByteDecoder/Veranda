@@ -69,7 +69,7 @@ namespace RedOwl.GraphFramework.Editor
 					button = MouseButton.LeftMouse,
 					OnUp = OnLeftMouseUp
                 };
-				yield return new MouseFilter { 
+				yield return new MouseFilter {
 					button = MouseButton.RightMouse,
 					OnUp = OnRightMouseUp
                 };
@@ -80,12 +80,12 @@ namespace RedOwl.GraphFramework.Editor
 		{
 			if (isInput && input.ContainsPoint(this.ChangeCoordinatesTo(input, evt.localMousePosition)))
 			{
-				view.ClickInputPort(port);
+				view.ClickedPort(PortDirections.Input, node, port);
 			}
 			
 			if (isOutput && output.ContainsPoint(this.ChangeCoordinatesTo(output, evt.localMousePosition)))
 			{
-				view.ClickOutputPort(node.id, port);
+				view.ClickedPort(PortDirections.Output, node, port);
 			}
 		}
 		
@@ -93,12 +93,12 @@ namespace RedOwl.GraphFramework.Editor
 		{
 			if (isInput && input.ContainsPoint(this.ChangeCoordinatesTo(input, evt.localMousePosition)))
 			{
-				view.graph.Disconnect(port);
+				view.graph.Disconnect(port, true);
 			}
 			
 			if (isOutput && output.ContainsPoint(this.ChangeCoordinatesTo(output, evt.localMousePosition)))
 			{
-				view.graph.Disconnect(port);
+				view.graph.Disconnect(port, false);
 			}
 		}
 		
