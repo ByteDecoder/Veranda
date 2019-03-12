@@ -13,7 +13,7 @@ using RedOwl.GraphFramework;
 namespace RedOwl.GraphFramework.Editor
 {
 	[UXML, USSClass("float", "background")]
-	public class GraphNode : RedOwlVisualElement, IOnMouse
+	public class NodeView : RedOwlVisualElement, IOnMouse
 	{
 		[UXMLReference]
 		private ToolbarButton collapse;
@@ -35,13 +35,13 @@ namespace RedOwl.GraphFramework.Editor
 		
 		private InspectorElement properties;
 		private VisualElement ports;
-		private Dictionary<Guid, GraphSlot> portTable = new Dictionary<Guid, GraphSlot>(); 
+		private Dictionary<Guid, SlotView> portTable = new Dictionary<Guid, SlotView>(); 
 		
 		private GraphView view;		
 		private Node node;
 		private SerializedObject target;
 		    	
-		public GraphNode(GraphView view, Node node) : base()
+		public NodeView(GraphView view, Node node) : base()
 		{
 			this.view = view;
 			this.node = node;
@@ -56,9 +56,9 @@ namespace RedOwl.GraphFramework.Editor
 
 			ports = new VisualElement();
 			ports.name = "ports";
-			foreach (Port item in node)
+			foreach (Port item in node.ports)
 			{
-				var port = new GraphSlot(view, node, item);
+				var port = new SlotView(view, node, item);
 				ports.Add(port);
 				portTable.Add(item.id, port);
 			}
@@ -171,7 +171,7 @@ namespace RedOwl.GraphFramework.Editor
 		
 		private void Delete()
 		{
-			view.graph.Remove(node.id);
+			view.graph.RemoveNode(node.id);
 		}
 		
 		public Vector2 GetInputAnchor(Guid key)

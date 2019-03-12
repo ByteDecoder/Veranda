@@ -16,8 +16,13 @@ namespace RedOwl.GraphFramework
         IEnumerable<Tuple<string, Type>> GetNodesTypes();
     }
 
-    public abstract partial class Graph : SerializedScriptableObject, IEnumerable<Node>
+    public abstract partial class Graph : Node
     {
+        public bool AutoExecute;
+
+		[HideInInspector]
+        public List<Connection> connections = new List<Connection>();
+
 #if UNITY_EDITOR
         [DidReloadScripts]
         [InitializeOnLoadMethod]
@@ -40,37 +45,20 @@ namespace RedOwl.GraphFramework
             }
         }
 
-        [NonSerialized]
-		private bool IsInitialized;
-
-        internal void Initialize()
+        internal void AddConnection(Connection connection)
         {
-            if (IsInitialized) return;
-            Debug.LogFormat("Initialize Graph: {0}", name);
-            foreach (var node in nodes.Values)
-            {
-                node.Initialize();
-            }
-            IsInitialized = true;
+			connections.Add(connection);
+			FireConnectionAdded(connection);
+            MarkDirty();
         }
 
-        IEnumerator<Node> IEnumerable<Node>.GetEnumerator()
+        internal void RemoveConnection(int index)
         {
-            foreach (var node in nodes.Values)
-            {
-                yield return node;
-            }
+            Connection connection = connections[index];
+            connections.RemoveAt(index);
+            FireConnectionRemoved(connection);
+			MarkDirty();
         }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            foreach (var node in nodes.Values)
-            {
-                yield return node;
-            }
-        }
-
-        public override string ToString() => this.name;
     }
 
     public abstract class Graph<T> : Graph, IGraph where T : Node
@@ -90,7 +78,9 @@ namespace RedOwl.GraphFramework
 					type.WithAttr<NodeTitleAttribute>(a => { name = a.title; });
 					nodeTypes.Add(new Tuple<string, Type>(ObjectNames.NicifyVariableName(name), type));
 				}
-                nodeTypes.Add(new Tuple<string, Type>("Sub Graph", typeof(SubGraphNode)));
+                nodeTypes.Add(new Tuple<string, Type>("Sub Graph", this.GetType()));
+                nodeTypes.Add(new Tuple<string, Type>("Graph Input - float", typeof(FloatGraphInput)));
+                nodeTypes.Add(new Tuple<string, Type>("Graph Output - float", typeof(FloatGraphOutput)));
                 // Add Builtin Types here
 			}
 			foreach (var item in nodeTypes)

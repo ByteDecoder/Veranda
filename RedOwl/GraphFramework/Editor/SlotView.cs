@@ -10,11 +10,10 @@ using RedOwl.Editor;
 namespace RedOwl.GraphFramework.Editor
 {
 	[UXML]
-	public class GraphSlot : RedOwlVisualElement, IOnMouse
+	public class SlotView : RedOwlVisualElement, IOnMouse
 	{
 		[UXMLReference]
 		private VisualElement body;
-		private LabelX label;
 		private PropertyFieldX field;
 		
 		[UXMLReference]
@@ -29,25 +28,25 @@ namespace RedOwl.GraphFramework.Editor
 
 		private bool isInput;
 		private bool isOutput;
+		private bool isGraphPort;
     	
-		public GraphSlot(GraphView view, Node node, Port port) : base()
+		public SlotView(GraphView view, Node node, Port port) : base()
 		{
 			this.view = view;
 			this.node = node;
 			this.port = port;
-			port.OnValueChanged += (data) => { if (node.graph.AutoExecute) node.graph.Execute(); };
+			port.OnValueChanged += (data) => { GraphWindow.instance.Execute(); };
 
-			label = new LabelX(port.name);
-			label.AddToClassList("centered");
-			label.style.width = node.view.labelWidth;
+			isInput = port.direction.IsInput();
+			isOutput = port.direction.IsOutput();
+			isGraphPort = typeof(IGraphPort).IsAssignableFrom(node.GetType());
 
 			field = port.GetField();
 			field.label.style.width = node.view.labelWidth;
 
 			body.Add(field);
 
-			isInput = port.direction.IsInput();
-			isOutput = port.direction.IsOutput();
+			field.SetEnabled(!isGraphPort);
 
 			input.Show(isInput);
 			input.name = port.type.Name;
@@ -106,9 +105,7 @@ namespace RedOwl.GraphFramework.Editor
 		{
 			input.RemoveFromClassList("unconnected");
 			input.AddToClassList("connected");
-			body.Clear();
-			body.AddToClassList("centered");
-			body.Add(label);
+			if (!isGraphPort) field.SetEnabled(false);
 		}
 		
 		public void ConnectOutput()
@@ -121,9 +118,7 @@ namespace RedOwl.GraphFramework.Editor
 		{
 			input.RemoveFromClassList("connected");
 			input.AddToClassList("unconnected");
-			body.Clear();
-			body.RemoveFromClassList("centered");
-			body.Add(field);
+			if (!isGraphPort) field.SetEnabled(true);
 			field.UpdateField();
 		}
 		

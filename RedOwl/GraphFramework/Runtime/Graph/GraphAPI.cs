@@ -6,24 +6,11 @@ namespace RedOwl.GraphFramework
 {
 	public abstract partial class Graph
 	{
-		/// <summary>
-		/// Returns the number of nodes in the graph
-		/// </summary>
-		/// <value></value>
-		public int Count {
-			get { return nodes.Count; }
-		}
-
-		/// <summary>
-		/// Removes all nodes and connections from the graph
-		/// </summary>
-		public void Clear()
+		public override void Clear()
 		{
+			base.Clear();
 			AutoExecute = false;
-			nodes.Clear();
 			connections.Clear();
-			ClearSubAssets();
-			MarkDirty();
 			FireCleared();
 		}
 
@@ -32,9 +19,9 @@ namespace RedOwl.GraphFramework
 		/// </summary>
 		/// <typeparam name="T">Node Type to instantiate</typeparam>
 		/// <returns></returns>
-		public T Add<T>() where T : Node
+		public T AddNode<T>() where T : Node
 		{
-			return (T)Add(typeof(T), Vector2.zero);
+			return (T)AddNode(typeof(T), Vector2.zero);
 		}
 
 		/// <summary>
@@ -44,9 +31,9 @@ namespace RedOwl.GraphFramework
 		/// <param name="y">The y position of the node</param>
 		/// <typeparam name="T">Node Type to instantiate</typeparam>
 		/// <returns></returns>
-		public T Add<T>(float x, float y) where T : Node
+		public T AddNode<T>(float x, float y) where T : Node
 		{
-			return (T)Add(typeof(T), new Vector2(x, y));
+			return (T)AddNode(typeof(T), new Vector2(x, y));
 		}
 
 		/// <summary>
@@ -55,24 +42,22 @@ namespace RedOwl.GraphFramework
 		/// <param name="position">The position in graph space to place the node</param>
 		/// <typeparam name="T">Node Type to instantiate</typeparam>
 		/// <returns></returns>
-		public T Add<T>(Vector2 position) where T : Node
+		public T AddNode<T>(Vector2 position) where T : Node
 		{
-			return (T)Add(typeof(T), position);
+			return (T)AddNode(typeof(T), position);
 		}
 
-		/// <summary>
-		/// Creates and returns a node of type and adds it to the graph at the specified position
-		/// </summary>
-		/// <param name="nodeType">Node Type to instantiate</param>
-		/// <param name="position">The position in graph space to place the node</param>
-		/// <returns></returns>
-		internal Node Add(Type nodeType, Vector2 position)
+		internal Node AddNode(Type nodeType, Vector2 position)
 		{
 			Node node = (Node)CreateInstance(nodeType);
-			AddNode(node, position);
+			node.view.collapsed = false;
+			node.view.layout = new Rect(position.x, position.y, 150, 0);
+			AddChild(node);
+			FireNodeAdded(node);
 			return node;
 		}
 
+		/*
 		/// <summary>
 		/// Duplicate a node, add it to the graph and return it
 		/// </summary>
@@ -84,23 +69,23 @@ namespace RedOwl.GraphFramework
 			dup.Duplicate(node);
 			return dup;
 		}
-
-		/// <summary>
-		/// Removes the node from the graph
-		/// </summary>
-		/// <param name="node">Node to remove</param>
-		public void Remove<T>(T node) where T : Node
-		{
-			Remove(node.id);
-		}
+		*/
 
 		/// <summary>
 		/// Removes the node from the graph with the given id
 		/// </summary>
 		/// <param name="id">The idea of the node to remove</param>
-		public void Remove(Guid id)
+		public void RemoveNode(Guid id)
 		{
-			Node node = this[id];
+			RemoveNode(this[id]);
+		}
+
+		/// <summary>
+		/// Removes the node from the graph
+		/// </summary>
+		/// <param name="node">Node to remove</param>
+		public void RemoveNode<T>(T node) where T : Node
+		{
 			Connection connection;
 			for (int i = connections.Count - 1; i >= 0; i--)
 			{
@@ -111,9 +96,8 @@ namespace RedOwl.GraphFramework
 					FireConnectionRemoved(connection);
 				}
 			}
-			nodes.Remove(id);
+			RemoveChild(node);
 			FireNodeRemoved(node);
-			RemoveSubAsset(id);
 		}
 
 		/// <summary>
@@ -210,9 +194,9 @@ namespace RedOwl.GraphFramework
 		/// <returns>Returns the node which has ownership of the given port</returns>
 		public Node FindNodeWithPort(Port port)
 		{
-			foreach (var node in nodes.Values)
+			foreach (var node in this)
 			{
-				foreach (var item in node)
+				foreach (var item in node.ports)
 				{
 					if (item.id == port.id) return node;
 				}

@@ -16,12 +16,10 @@ namespace RedOwl.GraphFramework
 		public Rect layout;
     }
 
-    public abstract class Node : RedOwl.Serialization.SerializedScriptableObject, IEnumerable<Port>
+    public abstract class Node : ScriptableObjectTree<Node>
     {
-        [HideInInspector]
-        public Guid id;
-        [HideInInspector]
-        public Graph graph;
+        //[HideInInspector]
+        //public Graph graph;
 
         [HideInInspector]
         public NodeViewData view;
@@ -29,8 +27,9 @@ namespace RedOwl.GraphFramework
         [NonSerialized]
         public Dictionary<Guid, PortInfo> portInfos;
 
-        private Port GetPort(PortInfo info)
+        public Port GetPort(Guid portId)
         {
+            PortInfo info = portInfos[portId];
             Port port = info.Get(this);
             port.name = info.name;
             port.direction = info.direction;
@@ -38,40 +37,18 @@ namespace RedOwl.GraphFramework
             return port;
         }
 
-        /// <summary>
-        /// Returns the port with the given GUID
-        /// </summary>
-        /// <value>GUID</value>
-        public Port this[Guid key]
-        {
-            get
-            {
-                return GetPort(portInfos[key]);
+        public IEnumerable<Port> ports {
+            get {
+                foreach (var id in portInfos.Keys)
+                {
+                    yield return GetPort(id);
+                }
             }
         }
 
-        IEnumerator<Port> IEnumerable<Port>.GetEnumerator()
+        internal override void OnInit()
         {
-            foreach (var port in portInfos.Values)
-            {
-                yield return GetPort(port);
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            foreach (var port in portInfos.Values)
-            {
-                yield return GetPort(port);
-            }
-        }
-
-        [NonSerialized]
-        private bool IsInitialized;
-
-        internal void Initialize()
-        {
-            if (IsInitialized) return;
+            base.OnInit();
             Type type = this.GetType();
             view.title = type.Name.Replace("Node", "");
             view.labelWidth = 80;
@@ -86,7 +63,6 @@ namespace RedOwl.GraphFramework
                 port = info.Get(this);
                 portInfos.Add(port.id, info);
             }
-            IsInitialized = true;
         }
 
         public void Duplicate(Node orig)
@@ -103,10 +79,7 @@ namespace RedOwl.GraphFramework
             view.collapsed = collapse;
         }
 
-        public override string ToString()
-        {
-            return this.GetType().Name;
-        }
+        public override string ToString() => this.GetType().Name;
 
         //Contract
         public virtual void OnExecute() { }

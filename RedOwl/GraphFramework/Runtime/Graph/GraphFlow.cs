@@ -12,10 +12,9 @@ namespace RedOwl.GraphFramework
 		public void Execute()
 		{
 			evaluatedNodes = new List<Guid>(this.Count);
-			var nodes = this.nodes.Values.ToArray();
 			var maxIterations = this.Count + 1;
 			for (var i = 1; i <= maxIterations; i++)
-				if (ExecuteLoop(i, nodes)) break;
+				if (ExecuteLoop(i, this.ToArray())) break;
 		}
 
 		private bool ExecuteLoop(int iteration, Node[] nodes)
@@ -63,7 +62,7 @@ namespace RedOwl.GraphFramework
 				if (connection.output.node == node.id)
 				{
 					//Debug.LogFormat("     Shelping: {0} | {1} => {2}", this[connection.output.node], this[connection.output.node][connection.output.port].id, this[connection.input.node][connection.input.port].id);
-					this[connection.input.node][connection.input.port].data = this[connection.output.node][connection.output.port].data;
+					this[connection.input.node].GetPort(connection.input.port).data = this[connection.output.node].GetPort(connection.output.port).data;
 				}
 			}
 			evaluatedNodes.Add(node.id);

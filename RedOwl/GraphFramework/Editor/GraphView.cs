@@ -18,8 +18,8 @@ namespace RedOwl.GraphFramework.Editor
 	    
 	    [UXMLReference]
 	    VisualElement nodes;
-		private Dictionary<Guid, GraphNode> nodeTable = new Dictionary<Guid, GraphNode>();
-		private Dictionary<Guid, GraphSlot> portTable = new Dictionary<Guid, GraphSlot>(); 
+		private Dictionary<Guid, NodeView> nodeTable = new Dictionary<Guid, NodeView>();
+		private Dictionary<Guid, SlotView> portTable = new Dictionary<Guid, SlotView>(); 
 
 		[UXMLReference]
 	    HandlesRenderer connections;
@@ -162,14 +162,14 @@ namespace RedOwl.GraphFramework.Editor
 	    	{
 	    		foreach (Tuple<string, Type> item in g.GetNodesTypes())
 	    		{
-	    			evt.menu.AppendAction(item.Item1, (a) => graph.Add(item.Item2, workspace.WorldToLocal(lastMousePosition)), DropdownMenu.MenuAction.AlwaysEnabled);
+	    			evt.menu.AppendAction(item.Item1, (a) => graph.AddNode(item.Item2, workspace.WorldToLocal(lastMousePosition)), DropdownMenu.MenuAction.AlwaysEnabled);
 	    		}
 	    	}
 	    }
 
 		public void AddNode(Node node)
 		{
-			var view = new GraphNode(this, node);
+			var view = new NodeView(this, node);
 		    nodes.Add(view);
 			nodeTable.Add(node.id, view);
 		}

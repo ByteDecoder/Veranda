@@ -42,5 +42,11 @@ namespace RedOwl.GraphFramework.Editor
             breadcrumbBar.AddBreadcrumb(graph);
             view.Load(graph);
         }
+
+        public void Execute()
+        {
+            // TODO - this won't execute the full graph tree if the view's graph is a nested graph - need to walk back upwards to the parent then execute
+            if (view.graph.AutoExecute) view.graph.Execute();
+        }
     }
 }

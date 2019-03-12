@@ -7,31 +7,31 @@
     background-color: rgb(130, 130, 130);
 }
 
-.GraphNode .background {
+.NodeView .background {
     background-color: rgb(70, 70, 70);
     border-color:  rgb(170, 170, 170);
 }
 
-.GraphNode .body {
+.NodeView .body {
     background-color: rgb(170, 170, 170);
     border-color:  rgb(200, 200, 200);
 }
 
-.GraphSlot .GraphPort.unconnected {
+.SlotView .PortView.unconnected {
     border-color: rgb(150, 150, 150);
 }
 
-.GraphSlot .GraphPort.unconnected:hover {
+.SlotView .PortView.unconnected:hover {
     background-color: rgb(255, 239, 93);
     border-color: rgb(155, 128, 40);
 }
 
-.GraphSlot .GraphPort.connected {
+.SlotView .PortView.connected {
     background-color: rgb(130, 130, 130);
     border-color: rgb(70, 70, 70);
 }
 
-.GraphSlot .GraphPort.connected:hover {
+.SlotView .PortView.connected:hover {
     background-color: rgb(150, 35, 35);
     border-color: rgb(70, 5, 5);
 }

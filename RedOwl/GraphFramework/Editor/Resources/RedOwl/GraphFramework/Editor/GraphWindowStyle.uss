@@ -11,7 +11,7 @@
     height: 0;
 }
 
-.GraphNode .background {
+.NodeView .background {
     width: 200;
     border-radius: 7;
     border-left-width: 0.5;
@@ -20,7 +20,7 @@
     border-bottom-width: 0.5;
 }
 
-.GraphNode .body {
+.NodeView .body {
     margin-left: -0.5px;
     margin-right: -0.5px;
     margin-bottom: 8px;
@@ -28,11 +28,11 @@
     border-bottom-width: 1;
 }
 
-.GraphNode .body.hide {
+.NodeView .body.hide {
     margin-bottom: 0px;
 }
 
-.GraphSlot {
+.SlotView {
     margin-left: -17px;
     margin-right: -17px;
     flex-direction: row;
@@ -41,7 +41,7 @@
     justify-content: space-between;
 }
 
-.GraphSlot .GraphPort {
+.SlotView .PortView {
     width: 14;
     height: 14;
     border-radius: 10;

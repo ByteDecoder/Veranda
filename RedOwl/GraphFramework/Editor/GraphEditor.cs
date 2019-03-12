@@ -11,14 +11,23 @@ namespace RedOwl.GraphFramework.Editor
 	{
 		protected override void OnGUI()
 		{
-			if (GUILayout.Button("Open Graph Editor", GUILayout.Height(25)))
+			if (Target.parent == null)
 			{
-				GraphWindow.Open();
-				GraphWindow.instance.Load((Graph)target);
-			}
-			if (GUILayout.Button("Execute Graph", GUILayout.Height(25)))
-			{
-				((Graph)target).Execute();
+				if (GUILayout.Button("Open Editor", GUILayout.Height(25)))
+				{
+					GraphWindow.Open();
+					GraphWindow.instance.Load(Target);
+				}
+				if (GUILayout.Button("Execute", GUILayout.Height(25)))
+				{
+					Target.Execute();
+				}
+			} else {
+				if (GUILayout.Button("Open Graph", GUILayout.Height(25)))
+				{
+					GraphWindow.Open();
+					GraphWindow.instance.LoadSubGraph(Target);
+				}
 			}
 		}
 	}

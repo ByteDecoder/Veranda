@@ -31,7 +31,7 @@ namespace RedOwl.GraphFramework.Editor
         protected override void OnChange()
 		{
 			EditorUtility.SetDirty(Target);
-			if (Target.graph.AutoExecute) Target.graph.Execute();
+			GraphWindow.instance.Execute();
 		}
 	}
 }
