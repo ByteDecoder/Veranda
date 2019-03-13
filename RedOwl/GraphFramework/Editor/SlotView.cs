@@ -24,11 +24,6 @@ namespace RedOwl.GraphFramework.Editor
     	
 		public SlotView() : base() {}
 
-		public void RegisterField(Port port, bool isGraphPort)
-		{
-
-		}
-
 		public Tuple<PortView, PortView> RegisterPortView(Port port, bool isGraphPort)
 		{
 			var field = port.GetField();
