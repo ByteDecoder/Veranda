@@ -59,6 +59,21 @@ namespace RedOwl.GraphFramework
             FireConnectionRemoved(connection);
 			MarkDirty();
         }
+
+        internal override void OnInit()
+        {
+            base.OnInit();
+            foreach (var node in nodes)
+            {
+                if (typeof(IGraphPort).IsAssignableFrom(node.GetType()))
+                {
+                    foreach (var keypair in node.portInfos)
+                    {
+                        portInfos.Add(keypair.Key, keypair.Value);
+                    }
+                }
+            }
+        }
     }
 
     public abstract class Graph<T> : Graph, IGraph where T : Node

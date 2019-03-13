@@ -35,7 +35,7 @@ namespace RedOwl.GraphFramework
         public void Initialize()
         {
             if (IsInitialized) return;
-            UnityEngine.Debug.LogFormat("Initializing {0}", this);
+            //UnityEngine.Debug.LogFormat("Initializing {0}", this);
             this.OnInit();
             IsInitialized = true;
         }

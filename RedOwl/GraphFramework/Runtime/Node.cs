@@ -37,6 +37,15 @@ namespace RedOwl.GraphFramework
             return port;
         }
 
+        public IEnumerable<Node> nodes {
+            get {
+                foreach (var node in children.Values)
+                {
+                    yield return node;
+                }
+            }
+        }
+
         public IEnumerable<Port> ports {
             get {
                 foreach (var id in portInfos.Keys)

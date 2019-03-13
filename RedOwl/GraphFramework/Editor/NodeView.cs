@@ -58,7 +58,6 @@ namespace RedOwl.GraphFramework.Editor
 			{
 				item.OnValueChanged += (data) => { GraphWindow.instance.Execute(); };
 				CreatePortViews(item);
-				CreatePortViews(item);
 			}
 		}
 
