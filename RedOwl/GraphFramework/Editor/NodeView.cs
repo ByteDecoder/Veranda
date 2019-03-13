@@ -32,14 +32,19 @@ namespace RedOwl.GraphFramework.Editor
 
 		[UXMLReference]
 		private VisualElement body;
-		
+
+		[UXMLReference]
+		private VisualElement slots;
+
+		[UXMLReference]
 		private InspectorElement properties;
-		private VisualElement ports;
-		private Dictionary<Guid, SlotView> portTable = new Dictionary<Guid, SlotView>(); 
+
+
+		private Dictionary<string, SlotView> slotTable = new Dictionary<string, SlotView>();
+		private Dictionary<Guid, Tuple<PortView, PortView>> portTable = new Dictionary<Guid, Tuple<PortView, PortView>>(); 
 		
 		private GraphView view;		
 		private Node node;
-		private SerializedObject target;
 		    	
 		public NodeView(GraphView view, Node node) : base()
 		{
@@ -47,21 +52,32 @@ namespace RedOwl.GraphFramework.Editor
 			this.node = node;
 			this.name = node.GetType().Name;
 
-			//style.width = node.view.layout.width;
-			//style.backgroundColor = node.view.color;
+			properties.Bind(new SerializedObject(node));
 
-			target = new SerializedObject(node);
-			properties = new InspectorElement();
-			properties.Bind(target);
-
-			ports = new VisualElement();
-			ports.name = "ports";
 			foreach (Port item in node.ports)
 			{
-				var port = new SlotView(view, node, item);
-				ports.Add(port);
-				portTable.Add(item.id, port);
+				item.OnValueChanged += (data) => { GraphWindow.instance.Execute(); };
+				CreatePortViews(item);
+				CreatePortViews(item);
 			}
+		}
+
+		private SlotView GetOrCreateSlotView(Port port)
+		{
+			SlotView slot = null;
+			if (!slotTable.TryGetValue(port.name, out slot))
+			{
+				slot = new SlotView();
+				slots.Add(slot);
+				slotTable[port.name] = slot;
+			}
+			return slot;
+		}
+
+		private void CreatePortViews(Port port)
+		{
+			SlotView slot = GetOrCreateSlotView(port);
+			portTable[port.id] = slot.RegisterPortView(port, typeof(IGraphPort).IsAssignableFrom(this.node.GetType()));
 		}
 
 		[UICallback(1, true)]
@@ -85,7 +101,7 @@ namespace RedOwl.GraphFramework.Editor
 		private void ShowBody()
 		{
 			body.Add(properties);
-			body.Add(ports);
+			body.Add(slots);
 			collapseIcon.icon = "fa-chevron-down";
 			body.Show();
 		}
@@ -99,22 +115,22 @@ namespace RedOwl.GraphFramework.Editor
 
 		public void ConnectInput(Guid id)
 		{
-			portTable[id].ConnectInput();
+			portTable[id].Item1.ConnectInput();
 		}
 		
 		public void ConnectOutput(Guid id)
 		{
-			portTable[id].ConnectOutput();
+			portTable[id].Item2.ConnectOutput();
 		}
 
 		public void DisconnectInput(Guid id)
 		{
-			portTable[id].DisconnectInput();
+			portTable[id].Item1.DisconnectInput();
 		}
 		
 		public void DisconnectOutput(Guid id)
 		{
-			portTable[id].DisconnectOutput();
+			portTable[id].Item2.DisconnectOutput();
 		}
 	    
 		public bool IsContentDragger { get { return false; } }
@@ -180,7 +196,7 @@ namespace RedOwl.GraphFramework.Editor
 			{
 				return this.LocalToWorld(layout.position + new Vector2(1, layout.height * 0.5f));
 			} else {
-				return portTable[key].GetInputAnchor();
+				return portTable[key].Item1.GetAnchor();
 			}
 		}
 		
@@ -190,7 +206,7 @@ namespace RedOwl.GraphFramework.Editor
 			{
 				return this.LocalToWorld(layout.position + new Vector2(layout.width - 1, layout.height * 0.5f));
 			} else {
-				return portTable[key].GetOutputAnchor();
+				return portTable[key].Item2.GetAnchor();
 			}
 		}
     }

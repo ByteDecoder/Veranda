@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 #pragma warning disable 0649 // UXMLReference variable declared but not assigned to.
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -9,134 +10,45 @@ using RedOwl.Editor;
 
 namespace RedOwl.GraphFramework.Editor
 {
-	[UXML]
-	public class SlotView : RedOwlVisualElement, IOnMouse
+	[UXML, USSClass("container", "row")]
+	public class SlotView : RedOwlVisualElement
 	{
 		[UXMLReference]
 		private VisualElement body;
-		private PropertyFieldX field;
 		
 		[UXMLReference]
-		private VisualElement input;
+		private VisualElement inputs;
 		
 		[UXMLReference]
-		private VisualElement output;
-		
-		private GraphView view;
-		private Node node;
-		private Port port;
-
-		private bool isInput;
-		private bool isOutput;
-		private bool isGraphPort;
+		private VisualElement outputs;
     	
-		public SlotView(GraphView view, Node node, Port port) : base()
+		public SlotView() : base() {}
+
+		public void RegisterField(Port port, bool isGraphPort)
 		{
-			this.view = view;
-			this.node = node;
-			this.port = port;
-			port.OnValueChanged += (data) => { GraphWindow.instance.Execute(); };
 
-			isInput = port.direction.IsInput();
-			isOutput = port.direction.IsOutput();
-			isGraphPort = typeof(IGraphPort).IsAssignableFrom(node.GetType());
+		}
 
-			field = port.GetField();
-			field.label.style.width = node.view.labelWidth;
-
+		public Tuple<PortView, PortView> RegisterPortView(Port port, bool isGraphPort)
+		{
+			var field = port.GetField();
 			body.Add(field);
+			if (isGraphPort) field.SetEnabled(false);
 
-			field.SetEnabled(!isGraphPort);
-
-			input.Show(isInput);
-			input.name = port.type.Name;
-			output.Show(isOutput);
-			output.name = port.type.Name;
-		}
-
-		protected override void BuildUI()
-		{
-			body.style.paddingLeft = 13;
-			body.style.paddingRight = 3;
-		}
-		
-		public bool IsContentDragger { get { return false; } }
-	    
-		public IEnumerable<MouseFilter> MouseFilters {
-			get {
-				yield return new MouseFilter { 
-					button = MouseButton.LeftMouse,
-					OnUp = OnLeftMouseUp
-                };
-				yield return new MouseFilter {
-					button = MouseButton.RightMouse,
-					OnUp = OnRightMouseUp
-                };
-			}
-		}
-        
-		public void OnLeftMouseUp(MouseUpEvent evt)
-		{
-			if (isInput && input.ContainsPoint(this.ChangeCoordinatesTo(input, evt.localMousePosition)))
+			PortView input = null;
+			PortView output = null;
+			if (port.direction.IsInput())
 			{
-				view.ClickedPort(PortDirections.Input, node, port);
+				input = new PortView(field, port, PortDirections.Input, isGraphPort);
+				inputs.Add(input);
 			}
-			
-			if (isOutput && output.ContainsPoint(this.ChangeCoordinatesTo(output, evt.localMousePosition)))
+			if (port.direction.IsOutput())
 			{
-				view.ClickedPort(PortDirections.Output, node, port);
+				output = new PortView(field, port, PortDirections.Output, isGraphPort);
+				outputs.Add(output);
 			}
+			return new Tuple<PortView, PortView>(input, output);
 		}
-		
-		public void OnRightMouseUp(MouseUpEvent evt)
-		{
-			if (isInput && input.ContainsPoint(this.ChangeCoordinatesTo(input, evt.localMousePosition)))
-			{
-				view.graph.Disconnect(port, true);
-			}
-			
-			if (isOutput && output.ContainsPoint(this.ChangeCoordinatesTo(output, evt.localMousePosition)))
-			{
-				view.graph.Disconnect(port, false);
-			}
-		}
-		
-		public void ConnectInput()
-		{
-			input.RemoveFromClassList("unconnected");
-			input.AddToClassList("connected");
-			if (!isGraphPort) field.SetEnabled(false);
-		}
-		
-		public void ConnectOutput()
-		{
-			output.RemoveFromClassList("unconnected");
-			output.AddToClassList("connected");
-		}
-
-		public void DisconnectInput()
-		{
-			input.RemoveFromClassList("connected");
-			input.AddToClassList("unconnected");
-			if (!isGraphPort) field.SetEnabled(true);
-			field.UpdateField();
-		}
-		
-		public void DisconnectOutput()
-		{
-			output.RemoveFromClassList("connected");
-			output.AddToClassList("unconnected");
-		}
-		
-		public Vector2 GetInputAnchor()
-		{
-			return input.LocalToWorld(input.transform.position + (Vector3)(input.layout.size * 0.5f));
-		}
-		
-		public Vector2 GetOutputAnchor()
-		{
-			return output.LocalToWorld(output.transform.position + (Vector3)(input.layout.size * 0.5f));
-		}
-    }
+	}
 }
 #endif

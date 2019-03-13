@@ -182,7 +182,7 @@ namespace RedOwl.GraphFramework.Editor
 	    private bool clickedOnce = false;
 		private PortDirections clickedDirection;
 		private Tuple<Guid, Port> clickedPort;
-	    public void ClickedPort(PortDirections direction, Node node, Port port)
+	    public void ClickedPort(PortDirections direction, Port port)
 	    {
 		    if (clickedOnce)
 			{
@@ -196,7 +196,7 @@ namespace RedOwl.GraphFramework.Editor
 				clickedOnce = false;
 			} else {
 				clickedDirection = direction;
-				clickedPort = new Tuple<Guid, Port>(node.id, port);
+				clickedPort = new Tuple<Guid, Port>(graph.FindNodeWithPort(port).id, port);
 				clickedOnce = true;
 			}
 	    }

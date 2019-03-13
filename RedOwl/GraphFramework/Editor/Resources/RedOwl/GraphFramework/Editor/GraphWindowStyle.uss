@@ -50,3 +50,15 @@
     border-right-width: 0.5;
     border-bottom-width: 0.5;
 }
+
+.SlotView #inputs {
+    min-width: 14;
+    min-height: 14;
+    margin-right: 5px;
+}
+
+.SlotView #outputs {
+    min-width: 14;
+    min-height: 14;
+    margin-left: 5px;
+}

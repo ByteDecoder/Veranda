@@ -11,6 +11,9 @@
                 </VisualElement>
             </VisualElement>
         </VisualElement>
-        <VisualElement name="body" class="body" />
+        <VisualElement name="body" class="body">
+            <ue:InspectorElement name="properties" />
+            <VisualElement name="slots" />
+        </VisualElement>
     </VisualElement>
 </UXML>
