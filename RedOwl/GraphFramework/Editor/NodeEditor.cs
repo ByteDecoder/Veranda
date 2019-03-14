@@ -30,8 +30,7 @@ namespace RedOwl.GraphFramework.Editor
 
         protected override void OnChange()
 		{
-			EditorUtility.SetDirty(Target);
-			GraphWindow.instance.Execute();
+			GraphWindow.MarkDirty();
 		}
 	}
 }

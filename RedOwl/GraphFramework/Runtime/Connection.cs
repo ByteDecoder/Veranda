@@ -17,11 +17,13 @@ namespace RedOwl.GraphFramework
 
     public struct Connection
     {
+        public Guid id;
         public Slot input;
         public Slot output;
 
         public Connection(Node outputNode, Port outputPort, Node inputNode, Port inputPort)
         {
+            this.id = Guid.NewGuid();
             this.input = new Slot(inputNode, inputPort);
             this.output = new Slot(outputNode, outputPort);
         }

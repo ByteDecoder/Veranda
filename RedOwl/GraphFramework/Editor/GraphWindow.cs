@@ -11,11 +11,15 @@ namespace RedOwl.GraphFramework.Editor
     public class GraphWindow : RedOwlAssetEditor<Graph, GraphWindow>
 	{
 		[UXMLReference]
-		public GraphView view;
+		protected GraphView view;
+
+        protected Graph graph {
+            get { return view.graph; }
+        }
 
         [UXMLReference]
-        public VisualElement breadcrumbs;
-        private GraphBreadcrumbBar breadcrumbBar;
+        protected VisualElement breadcrumbs;
+        protected GraphBreadcrumbBar breadcrumbBar;
 
         public static void Open() => EnsureWindow();
 
@@ -32,21 +36,51 @@ namespace RedOwl.GraphFramework.Editor
 
         public override void Load(Graph graph)
         {
-            breadcrumbBar.ClearBreadcrumbs();
-            breadcrumbBar.AddBreadcrumb(graph);
-            view.Load(graph);
+            GraphWindow.LoadGraph(graph);
         }
 
-        public void LoadSubGraph(Graph graph)
+        // API
+        internal static void LoadGraph(Graph graph)
         {
-            breadcrumbBar.AddBreadcrumb(graph);
-            view.Load(graph);
+            instance.breadcrumbBar.ClearBreadcrumbs();
+            instance.breadcrumbBar.AddBreadcrumb(graph);
+            instance.view.Load(graph);
         }
 
-        public void Execute()
+        internal static void LoadSubGraph(Graph graph)
         {
-            // TODO - this won't execute the full graph tree if the view's graph is a nested graph - need to walk back upwards to the parent then execute
-            if (view.graph.AutoExecute) view.graph.Execute();
+            instance.breadcrumbBar.AddBreadcrumb(graph);
+            instance.view.Load(graph);
+        }
+
+        internal static void MarkDirty()
+        {
+            instance.graph.MarkDirty();
+        }
+
+		internal static void DuplicateNode(Node node)
+		{
+			instance.graph.DuplicateNode(node);
+		}
+		
+		internal static void RemoveNode(Node node)
+		{
+			instance.graph.RemoveNode(node);
+		}
+
+        internal static void Disconnect(Port port, bool isInput)
+        {
+            instance.graph.Disconnect(port, isInput);
+        }
+
+        internal static void ClickedPort(PortDirections direction, Port port)
+        {
+            instance.view.ClickedPort(direction, port);
+        }
+
+        internal static void Execute()
+        {
+            instance.view.graph.Execute();
         }
     }
 }

@@ -68,8 +68,8 @@ namespace RedOwl.GraphFramework.Editor
 			if (this.graph != null)
 			{
 				this.graph.OnCleared -= OnClear;
-				this.graph.OnNodeAdded -= AddNode;
-				this.graph.OnNodeRemoved -= RemoveNode;
+				this.graph.OnChildAdded -= AddNode;
+				this.graph.OnChildRemoved -= RemoveNode;
 				this.graph.OnConnectionAdded -= OnConnectionsAdded;
 				this.graph.OnConnectionRemoved -= OnConnectionsRemoved;
 			}
@@ -88,8 +88,8 @@ namespace RedOwl.GraphFramework.Editor
 			}
 			connections.Load(this);
 			graph.OnCleared += OnClear;
-			graph.OnNodeAdded += AddNode;
-			graph.OnNodeRemoved += RemoveNode;
+			graph.OnChildAdded += AddNode;
+			graph.OnChildRemoved += RemoveNode;
 			graph.OnConnectionAdded += OnConnectionsAdded;
 			graph.OnConnectionRemoved += OnConnectionsRemoved;
 	    }
@@ -169,7 +169,7 @@ namespace RedOwl.GraphFramework.Editor
 
 		public void AddNode(Node node)
 		{
-			var view = new NodeView(this, node);
+			var view = new NodeView(node);
 		    nodes.Add(view);
 			nodeTable.Add(node.id, view);
 		}

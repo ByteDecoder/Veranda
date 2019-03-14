@@ -20,8 +20,22 @@ namespace RedOwl.GraphFramework
     {
         public bool AutoExecute;
 
-		[HideInInspector]
-        public List<Connection> connections = new List<Connection>();
+		public delegate void ConnectionAdded(Connection connection);
+		public event ConnectionAdded OnConnectionAdded;
+
+		public delegate void ConnectionRemoved(Connection connection);
+		public event ConnectionRemoved OnConnectionRemoved;
+
+		[SerializeField, HideInInspector]
+        private Dictionary<Guid, Connection> _connections = new Dictionary<Guid, Connection>();
+        public IEnumerable<Connection> connections {
+            get {
+                foreach (var connection in _connections.Values)
+                {
+                    yield return connection;
+                }
+            }
+        }
 
 #if UNITY_EDITOR
         [DidReloadScripts]
@@ -47,32 +61,26 @@ namespace RedOwl.GraphFramework
 
         internal void AddConnection(Connection connection)
         {
-			connections.Add(connection);
-			FireConnectionAdded(connection);
+			_connections.Add(connection.id, connection);
             MarkDirty();
+            OnConnectionAdded?.Invoke(connection);
         }
 
-        internal void RemoveConnection(int index)
+        internal void RemoveConnection(Connection connection)
         {
-            Connection connection = connections[index];
-            connections.RemoveAt(index);
-            FireConnectionRemoved(connection);
+            _connections.Remove(connection.id);
 			MarkDirty();
+            OnConnectionRemoved?.Invoke(connection);
         }
 
         internal override void OnInit()
         {
             base.OnInit();
-            foreach (var node in nodes)
-            {
-                if (typeof(IGraphPort).IsAssignableFrom(node.GetType()))
-                {
-                    foreach (var keypair in node.portInfos)
-                    {
-                        portInfos.Add(keypair.Key, keypair.Value);
-                    }
-                }
-            }
+        }
+
+        public override void OnDirty()
+        {
+            if (parent == null && AutoExecute) Execute();
         }
     }
 

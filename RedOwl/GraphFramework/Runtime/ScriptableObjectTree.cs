@@ -14,6 +14,7 @@ namespace RedOwl.GraphFramework
     {
         void Initialize();
     }
+
     public abstract class ScriptableObjectTree : SerializedScriptableObject, IInitializable
     {
         /// <summary>
@@ -47,11 +48,22 @@ namespace RedOwl.GraphFramework
         [Conditional("UNITY_EDITOR")]
 		public void MarkDirty()
 		{
-            if (parent != null) parent.MarkDirty();
 			EditorUtility.SetDirty(this);
             OnDirty();
+            if (parent != null) parent.MarkDirty();
 		}
         public virtual void OnDirty() {}
+
+		public void Execute()
+		{
+			if (parent == null)
+			{
+				InternalExecute();
+			} else {
+				parent.Execute();
+			}
+		}
+        protected virtual void InternalExecute() {}
     }
 
     public abstract class ScriptableObjectTree<T> : ScriptableObjectTree, IEnumerable<T> where T : ScriptableObjectTree
@@ -63,6 +75,15 @@ namespace RedOwl.GraphFramework
         /// <typeparam name="T">The type of the children</typeparam>
         /// <returns></returns>
         public Dictionary<Guid, T> children = new Dictionary<Guid, T>();
+
+		public delegate void Cleared();
+		public event Cleared OnCleared;
+
+		public delegate void ChildAdded(T child);
+		public event ChildAdded OnChildAdded;
+
+		public delegate void ChildRemoved(T child);
+		public event ChildRemoved OnChildRemoved;
 
 		/// <summary>
 		/// Returns the number of nodes in the graph
@@ -113,6 +134,7 @@ namespace RedOwl.GraphFramework
 		{
 			children.Clear();
 			ClearSubAssets<T>();
+            OnCleared?.Invoke();
 		}
 
         /// <summary>
@@ -126,6 +148,7 @@ namespace RedOwl.GraphFramework
             child.Initialize();
             children.Add(child.id, child);
             AddSubAsset(child);
+            OnChildAdded?.Invoke(child);
         }
 
         /// <summary>
@@ -145,6 +168,7 @@ namespace RedOwl.GraphFramework
         {
 			children.Remove(child.id);
 			RemoveSubAsset(child.id.ToString());
+            OnChildRemoved?.Invoke(child);
         }
 
 		[Conditional("UNITY_EDITOR")]

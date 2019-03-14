@@ -43,12 +43,10 @@ namespace RedOwl.GraphFramework.Editor
 		private Dictionary<string, SlotView> slotTable = new Dictionary<string, SlotView>();
 		private Dictionary<Guid, Tuple<PortView, PortView>> portTable = new Dictionary<Guid, Tuple<PortView, PortView>>(); 
 		
-		private GraphView view;		
 		private Node node;
 		    	
-		public NodeView(GraphView view, Node node) : base()
+		public NodeView(Node node) : base()
 		{
-			this.view = view;
 			this.node = node;
 			this.name = node.GetType().Name;
 
@@ -56,7 +54,6 @@ namespace RedOwl.GraphFramework.Editor
 
 			foreach (Port item in node.ports)
 			{
-				item.OnValueChanged += (data) => { GraphWindow.instance.Execute(); };
 				CreatePortViews(item);
 			}
 		}
@@ -85,8 +82,8 @@ namespace RedOwl.GraphFramework.Editor
 			title.text = node.view.title;
 			
 			collapse.clickable.clicked += ToggleCollapse;
-			duplicate.clickable.clicked += Duplicate;
-			delete.clickable.clicked += Delete;
+			duplicate.clickable.clicked += () => { GraphWindow.DuplicateNode(node); };
+			delete.clickable.clicked += () => { GraphWindow.RemoveNode(node); };
 			
 			if (!node.view.collapsed)
 			{
@@ -114,22 +111,22 @@ namespace RedOwl.GraphFramework.Editor
 
 		public void ConnectInput(Guid id)
 		{
-			portTable[id].Item1.ConnectInput();
+			portTable[id].Item1.Connect();
 		}
 		
 		public void ConnectOutput(Guid id)
 		{
-			portTable[id].Item2.ConnectOutput();
+			portTable[id].Item2.Connect();
 		}
 
 		public void DisconnectInput(Guid id)
 		{
-			portTable[id].Item1.DisconnectInput();
+			portTable[id].Item1.Disconnect();
 		}
 		
 		public void DisconnectOutput(Guid id)
 		{
-			portTable[id].Item2.DisconnectOutput();
+			portTable[id].Item2.Disconnect();
 		}
 	    
 		public bool IsContentDragger { get { return false; } }
@@ -159,7 +156,7 @@ namespace RedOwl.GraphFramework.Editor
 		private void Save()
 		{
 			node.view.layout.position = transform.position;
-			view.graph.MarkDirty();
+			GraphWindow.MarkDirty();
 		}
 		
 		private void Load()
@@ -177,16 +174,6 @@ namespace RedOwl.GraphFramework.Editor
 				ShowBody();
 			}
 			Save();
-		}
-
-		private void Duplicate()
-		{
-			view.graph.Duplicate(node);
-		}
-		
-		private void Delete()
-		{
-			view.graph.RemoveNode(node.id);
 		}
 		
 		public Vector2 GetInputAnchor(Guid key)

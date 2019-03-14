@@ -43,38 +43,24 @@ namespace RedOwl.GraphFramework.Editor
 
 		public void OnLeftMouseUp(MouseUpEvent evt)
 		{
-			GraphWindow.instance.view.ClickedPort(direction, port);
+			GraphWindow.ClickedPort(direction, port);
 		}
 		
 		public void OnRightMouseUp(MouseUpEvent evt)
 		{
-			GraphWindow.instance.view.graph.Disconnect(port, direction.IsInput());
+			GraphWindow.Disconnect(port, direction.IsInput());
 		}
-		public void ConnectInput()
-		{
-			RemoveFromClassList("unconnected");
-			AddToClassList("connected");
-			if (!isGraphPort) field.SetEnabled(false);
-		}
-		
-		public void ConnectOutput()
+		public void Connect()
 		{
 			RemoveFromClassList("unconnected");
 			AddToClassList("connected");
 		}
 
-		public void DisconnectInput()
+		public void Disconnect()
 		{
 			RemoveFromClassList("connected");
 			AddToClassList("unconnected");
-			if (!isGraphPort) field.SetEnabled(true);
 			field.UpdateField();
-		}
-		
-		public void DisconnectOutput()
-		{
-			RemoveFromClassList("connected");
-			AddToClassList("unconnected");
 		}
 		
 		public Vector2 GetAnchor()

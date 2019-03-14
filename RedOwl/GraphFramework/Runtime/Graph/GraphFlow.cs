@@ -9,7 +9,7 @@ namespace RedOwl.GraphFramework
 	{
 		private static List<Guid> evaluatedNodes;
 		
-		public void Execute()
+		protected override void InternalExecute()
 		{
 			evaluatedNodes = new List<Guid>(this.Count);
 			var maxIterations = this.Count + 1;

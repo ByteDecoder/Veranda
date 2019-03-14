@@ -16,17 +16,17 @@ namespace RedOwl.GraphFramework.Editor
 				if (GUILayout.Button("Open Editor", GUILayout.Height(25)))
 				{
 					GraphWindow.Open();
-					GraphWindow.instance.Load(Target);
+					GraphWindow.LoadGraph(Target);
 				}
 				if (GUILayout.Button("Execute", GUILayout.Height(25)))
 				{
-					Target.Execute();
+					GraphWindow.Execute();
 				}
 			} else {
 				if (GUILayout.Button("Open Graph", GUILayout.Height(25)))
 				{
 					GraphWindow.Open();
-					GraphWindow.instance.LoadSubGraph(Target);
+					GraphWindow.LoadSubGraph(Target);
 				}
 			}
 		}

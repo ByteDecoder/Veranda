@@ -12,7 +12,7 @@ namespace RedOwl.GraphFramework.Editor
 	{
 		protected override void OnBreadcrumbClicked(Graph item)
 		{
-			GraphWindow.instance.view.Load(item);
+			GraphWindow.LoadGraph(item);
 		}
 	}
 }
