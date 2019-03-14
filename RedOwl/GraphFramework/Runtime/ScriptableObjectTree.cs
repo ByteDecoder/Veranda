@@ -40,6 +40,18 @@ namespace RedOwl.GraphFramework
             IsInitialized = true;
         }
         internal virtual void OnInit() {}
+
+        /// <summary>
+        /// Tell unity to mark this asset as dirty and all parent objects up the tree
+        /// </summary>
+        [Conditional("UNITY_EDITOR")]
+		public void MarkDirty()
+		{
+            if (parent != null) parent.MarkDirty();
+			EditorUtility.SetDirty(this);
+            OnDirty();
+		}
+        public virtual void OnDirty() {}
     }
 
     public abstract class ScriptableObjectTree<T> : ScriptableObjectTree, IEnumerable<T> where T : ScriptableObjectTree
@@ -101,7 +113,6 @@ namespace RedOwl.GraphFramework
 		{
 			children.Clear();
 			ClearSubAssets<T>();
-			MarkDirty();
 		}
 
         /// <summary>
@@ -136,31 +147,6 @@ namespace RedOwl.GraphFramework
 			RemoveSubAsset(child.id.ToString());
         }
 
-        /// <summary>
-        /// Tell unity to mark this asset as dirty
-        /// </summary>
-        /// <param name="children">If true all the children will be marked dirty too</param>
-        /// <param name="all">If true all the children will be marked dirty too</param>
-        [Conditional("UNITY_EDITOR")]
-		public void MarkDirty(bool children = false, bool all = false)
-		{
-			EditorUtility.SetDirty(this);
-            if (all)
-            {
-                var subAssets = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(this));
-                for (int i = 0; i < subAssets.Length; i++)
-                {
-                    EditorUtility.SetDirty(subAssets[i]);
-                }
-            } else if (children)
-            {
-                foreach (var item in this.children.Values)
-                {
-                    EditorUtility.SetDirty(item);
-                }
-            }
-		}
-
 		[Conditional("UNITY_EDITOR")]
 		internal void ClearSubAssets<TAsset>()
 		{
@@ -169,7 +155,7 @@ namespace RedOwl.GraphFramework
 			{ // Delete all subassets except the main one to preserve references
 				if (subAssets[i] != this && subAssets[i].GetType() == typeof(TAsset)) DestroyImmediate(subAssets[i], true);
 			}
-			EditorUtility.SetDirty(this);
+			MarkDirty();
 		}
 		
 		[Conditional("UNITY_EDITOR")]
@@ -178,8 +164,8 @@ namespace RedOwl.GraphFramework
 			obj.name = obj.id.ToString();
 			AssetDatabase.AddObjectToAsset(obj, this);
 			obj.hideFlags = HideFlags.HideInHierarchy;
-			EditorUtility.SetDirty(this);
-			EditorUtility.SetDirty(obj);
+            EditorUtility.SetDirty(obj);
+			MarkDirty();
 		}
 
 		[Conditional("UNITY_EDITOR")]
@@ -190,7 +176,7 @@ namespace RedOwl.GraphFramework
 			{
 				if (subAssets[i] != this && subAssets[i].name == name) DestroyImmediate(subAssets[i], true);
 			}
-			EditorUtility.SetDirty(this);
+			MarkDirty();
 		}
     }
 }
