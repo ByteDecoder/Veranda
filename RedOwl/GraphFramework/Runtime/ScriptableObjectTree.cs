@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using UnityEngine;
 using RedOwl.Serialization;
 #if UNITY_EDITOR
@@ -105,17 +106,17 @@ namespace RedOwl.GraphFramework
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            foreach (var item in children.Values)
+            foreach (var key in children.Keys.ToList())
             {
-                yield return item;
+                yield return children[key];
             }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var item in children.Values)
+            foreach (var key in children.Keys.ToList())
             {
-                yield return item;
+                yield return children[key];
             }
         }
 

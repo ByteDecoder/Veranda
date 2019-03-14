@@ -1,7 +1,8 @@
 using System;
-using System.Collections.Generic;
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -30,9 +31,9 @@ namespace RedOwl.GraphFramework
         private Dictionary<Guid, Connection> _connections = new Dictionary<Guid, Connection>();
         public IEnumerable<Connection> connections {
             get {
-                foreach (var connection in _connections.Values)
+                foreach (var key in _connections.Keys.ToList())
                 {
-                    yield return connection;
+                    yield return _connections[key];
                 }
             }
         }
