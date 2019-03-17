@@ -96,16 +96,18 @@ namespace RedOwl.GraphFramework
 			{
 				nodeTypes = new List<Tuple<string, Type>>();
 				string name;
+                nodeTypes.Add(new Tuple<string, Type>("Sub Graph", this.GetType()));
 				foreach (Type type in Extensions.ForAllTypes<T>())
 				{
 					name = type.Name.Replace("Node", "");
 					type.WithAttr<NodeTitleAttribute>(a => { name = a.title; });
-					nodeTypes.Add(new Tuple<string, Type>(ObjectNames.NicifyVariableName(name), type));
+					nodeTypes.Add(new Tuple<string, Type>(string.Format("Nodes/{0}", ObjectNames.NicifyVariableName(name)), type));
 				}
-                nodeTypes.Add(new Tuple<string, Type>("Sub Graph", this.GetType()));
-                nodeTypes.Add(new Tuple<string, Type>("Graph Input - float", typeof(FloatGraphInput)));
-                nodeTypes.Add(new Tuple<string, Type>("Graph Output - float", typeof(FloatGraphOutput)));
-                // Add Builtin Types here
+				foreach (Type type in Extensions.ForAllTypes<IGraphPort>())
+				{
+					name = type.Name.Replace("GraphInput", "Graph Input/").Replace("GraphOutput", "Graph Ouput/");
+					nodeTypes.Add(new Tuple<string, Type>(name, type));
+				}
 			}
 			foreach (var item in nodeTypes)
 			{

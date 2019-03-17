@@ -26,7 +26,8 @@ namespace RedOwl.GraphFramework
             set { _data = Convert.ChangeType(value, type); FireValueChanged(); }
         }
 
-        public readonly Guid id;
+        [SerializeField]
+        public Guid id { get; protected set; }
 
         internal string name;
         internal PortDirections direction;
@@ -39,13 +40,6 @@ namespace RedOwl.GraphFramework
                 if (_converter == null) _converter = TypeDescriptor.GetConverter(type);
                 return _converter;
             }
-        }
-
-        public Port(object value, PortDirections direction)
-        {
-            this._data = value;
-            this.id = Guid.NewGuid();
-            this.direction = direction;
         }
 
         public override string ToString() => _data.ToString();
@@ -67,7 +61,12 @@ namespace RedOwl.GraphFramework
         }
 
         public Port(PortDirections direction) : this(default(T), direction) {}
-        public Port(T value, PortDirections direction) : base(value, direction) {}
+        public Port(T value, PortDirections direction)
+        {
+            this.value = value;
+            this.id = Guid.NewGuid();
+            this.direction = direction;
+        }
 
         // Contract
         public override bool CanConnectPort(Port port)
