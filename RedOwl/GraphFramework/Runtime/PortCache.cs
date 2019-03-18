@@ -10,34 +10,19 @@ namespace RedOwl.GraphFramework
         internal string name;
         internal PortDirections direction;
         internal FieldInfo field;
-        internal PropertyInfo property;
 
-		public PortInfo(Type type, FieldInfo info) : this(type, info.Name)
+		public PortInfo(Type type, FieldInfo field)
 		{
+			this.name = field.Name;
 			var direction = PortDirections.None;
-			info.FieldType.WithAttr<PortDirectionAttribute>(a => { direction = a.direction; });
+			field.FieldType.WithAttr<PortDirectionAttribute>(a => { direction = a.direction; });
 			this.direction = direction;
-		}
-
-		public PortInfo(Type type, PropertyInfo info) : this(type, info.Name)
-		{
-			var direction = PortDirections.None;
-			info.PropertyType.WithAttr<PortDirectionAttribute>(a => { direction = a.direction; });
-			this.direction = direction;
-		}
-        
-		public PortInfo(Type type, string name)
-		{
-            this.name = name;
-			this.direction = PortDirections.None;
-			field = type.GetField(name);
-			property = type.GetProperty(name);
-            //Debug.LogFormat("Creating PortInfo for {0} | {1}.{2}", Field == null ? "Property" : "Field", type.Name, name);
+			this.field = field;
 		}
         
         public Port Get(object instance)
         {
-            return (Port)(field == null ? property.GetValue(instance, null) : field.GetValue(instance));
+            return (Port)field.GetValue(instance);
         }
     }
 
@@ -113,11 +98,6 @@ using UnityEditor.Callbacks;
                 if (typeof(Port).IsAssignableFrom(info.FieldType))
                     ports.Add(new PortInfo(nodeType, info));
             }
-			foreach (PropertyInfo info in nodeType.GetProperties(PortFlags))
-			{
-                if (typeof(Port).IsAssignableFrom(info.PropertyType) && !(info.GetIndexParameters().Length > 0))
-                    ports.Add(new PortInfo(nodeType, info));
-			}
 			_cache[nodeType] = ports;
 		}
 	}

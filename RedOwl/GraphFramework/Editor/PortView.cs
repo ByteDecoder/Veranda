@@ -11,14 +11,12 @@ namespace RedOwl.GraphFramework.Editor
 {
 	public class PortView : RedOwlVisualElement, IOnMouse
 	{
-        private PropertyFieldX field;
 		private Port port;
         private PortDirections direction;
         private bool isGraphPort;
 
-		public PortView(PropertyFieldX field, Port port, PortDirections direction, bool isGraphPort) : base()
+		public PortView(Port port, PortDirections direction, bool isGraphPort) : base()
 		{
-            this.field = field;
             this.port = port;
             this.direction = direction;
             this.isGraphPort = isGraphPort;
@@ -60,7 +58,6 @@ namespace RedOwl.GraphFramework.Editor
 		{
 			RemoveFromClassList("connected");
 			AddToClassList("unconnected");
-			field.UpdateField();
 		}
 		
 		public Vector2 GetAnchor()

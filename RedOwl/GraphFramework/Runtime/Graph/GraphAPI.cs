@@ -87,6 +87,14 @@ namespace RedOwl.GraphFramework
 				if (connection.input.node == node.id || connection.output.node == node.id)
 					RemoveConnection(connection);
 			}
+            if (parent != null && typeof(Graph).IsAssignableFrom(parent.GetType()))
+            {
+				Graph parentGraph = parent as Graph;
+				foreach (var port in node.ports)
+				{
+					parentGraph.Disconnect(port);
+				}
+            }
 			RemoveChild(node);
 		}
 

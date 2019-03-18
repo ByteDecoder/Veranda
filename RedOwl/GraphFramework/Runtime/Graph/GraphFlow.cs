@@ -7,7 +7,12 @@ namespace RedOwl.GraphFramework
 {
 	public abstract partial class Graph
 	{
-		private static List<Guid> evaluatedNodes;
+		private List<Guid> evaluatedNodes;
+
+		public override void OnExecute()
+		{
+			InternalExecute();
+		}
 		
 		protected override void InternalExecute()
 		{
@@ -20,6 +25,7 @@ namespace RedOwl.GraphFramework
 		private bool ExecuteLoop(int iteration, Node[] nodes)
 		{
 			var count = this.Count;
+			//Debug.LogFormat("On loop {0} for {1}", iteration, name);
 			foreach (Node node in nodes)
 			{
 				if (evaluatedNodes.Contains(node.id)) continue;
@@ -61,8 +67,8 @@ namespace RedOwl.GraphFramework
 			{
 				if (connection.output.node == node.id)
 				{
-					//Debug.LogFormat("     Shelping: {0} | {1} => {2}", this[connection.output.node], this[connection.output.node][connection.output.port].id, this[connection.input.node][connection.input.port].id);
-					this[connection.input.node].GetPort(connection.input.port).data = this[connection.output.node].GetPort(connection.output.port).data;
+					//Debug.LogFormat("     Shelping: {0}.{1} {2} => {3}.{4}", this[connection.output.node], this[connection.output.node].GetPort(connection.output.port).name, this[connection.output.node].GetPort(connection.output.port).GetData(), this[connection.input.node], this[connection.input.node].GetPort(connection.input.port).name);
+					this[connection.input.node].GetPort(connection.input.port).SetData(this[connection.output.node].GetPort(connection.output.port).GetData());
 				}
 			}
 			evaluatedNodes.Add(node.id);

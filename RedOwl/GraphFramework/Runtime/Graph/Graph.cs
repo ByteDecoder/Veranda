@@ -77,11 +77,30 @@ namespace RedOwl.GraphFramework
         internal override void OnInit()
         {
             base.OnInit();
+            CacheGraphPorts();
         }
 
         public override void OnDirty()
         {
+            CacheGraphPorts();
             if (parent == null && AutoExecute) Execute();
+        }
+
+        private void CacheGraphPorts()
+        {
+            extraPorts = new Dictionary<Guid, Port>();
+            foreach (var node in nodes)
+            {
+                if (typeof(GraphPortNode).IsAssignableFrom(node.GetType()))
+                {
+                    GraphPortNode portNode = node as GraphPortNode;
+                    foreach (var info in node.portInfos.Values)
+                    {
+                        var port = info.Get(portNode);
+                        extraPorts.Add(port.id, new GraphPort(portNode.label, node, info));
+                    }
+                }
+            }
         }
     }
 
@@ -103,7 +122,7 @@ namespace RedOwl.GraphFramework
 					type.WithAttr<NodeTitleAttribute>(a => { name = a.title; });
 					nodeTypes.Add(new Tuple<string, Type>(string.Format("Nodes/{0}", ObjectNames.NicifyVariableName(name)), type));
 				}
-				foreach (Type type in Extensions.ForAllTypes<IGraphPort>())
+				foreach (Type type in Extensions.ForAllTypes<GraphPortNode>())
 				{
 					name = type.Name.Replace("GraphInput", "Graph Input/").Replace("GraphOutput", "Graph Ouput/");
 					nodeTypes.Add(new Tuple<string, Type>(name, type));

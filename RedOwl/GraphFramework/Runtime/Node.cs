@@ -25,16 +25,26 @@ namespace RedOwl.GraphFramework
         public NodeViewData view;
 
         [NonSerialized]
-        public Dictionary<Guid, PortInfo> portInfos;
+        internal Dictionary<Guid, PortInfo> portInfos = new Dictionary<Guid, PortInfo>();
+        [NonSerialized]
+        internal Dictionary<Guid, Port> extraPorts = new Dictionary<Guid, Port>();
 
         public Port GetPort(Guid portId)
         {
-            PortInfo info = portInfos[portId];
-            Port port = info.Get(this);
-            port.name = info.name;
-            port.direction = info.direction;
-            //Debug.LogFormat("Port {0}.{1} has {2} | {3}", GetType().Name, port.name, port.direction, port.style);
-            return port;
+            if (portInfos.ContainsKey(portId))
+            {
+                PortInfo info = portInfos[portId];
+                Port port = info.Get(this);
+                port.name = info.name;
+                port.direction = info.direction;
+                //Debug.LogFormat("Port {0}.{1} has {2} | {3}", GetType().Name, port.name, port.direction, port.style);
+                return port;
+            }
+            if (extraPorts.ContainsKey(portId))
+            {
+                return extraPorts[portId];
+            }
+            return null;
         }
 
         public IEnumerable<Node> nodes {
@@ -51,6 +61,10 @@ namespace RedOwl.GraphFramework
                 foreach (var id in portInfos.Keys)
                 {
                     yield return GetPort(id);
+                }
+                foreach (var port in extraPorts.Values)
+                {
+                    yield return port;
                 }
             }
         }

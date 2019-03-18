@@ -11,7 +11,7 @@ namespace RedOwl.GraphFramework.Editor
     public class GraphWindow : RedOwlAssetEditor<Graph, GraphWindow>
 	{
 		[UXMLReference]
-		protected GraphView view;
+		internal GraphView view;
 
         protected Graph graph {
             get { return view.graph; }

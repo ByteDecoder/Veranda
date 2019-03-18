@@ -73,7 +73,7 @@ namespace RedOwl.GraphFramework.Editor
 		private void CreatePortViews(Port port)
 		{
 			SlotView slot = GetOrCreateSlotView(port);
-			portTable[port.id] = slot.RegisterPortView(port, typeof(IGraphPort).IsAssignableFrom(this.node.GetType()));
+			portTable[port.id] = slot.RegisterPortView(port, typeof(GraphPortNode).IsAssignableFrom(this.node.GetType()));
 		}
 
 		[UICallback(1, true)]

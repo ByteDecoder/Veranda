@@ -9,19 +9,30 @@ namespace RedOwl.GraphFramework
 {
     public class GraphPort : Port
     {
-        private Port proxy;
+        private object instance;
+        private PortInfo info;
 
-        new internal object data {
-            get { return proxy.data; }
-            set { proxy.data = value; }
+        internal Port port {
+            get { return info.Get(instance); }
         }
 
-        public GraphPort(string name, Port proxy)
+        public override object GetData()
         {
-            this.proxy = proxy;
-            this.id = proxy.id;
+            return port.GetData();
+        }
+
+        public override void SetData(object value)
+        {
+            port.SetData(value);
+        }
+
+        public GraphPort(string name, object instance, PortInfo info)
+        {
+            this.instance = instance;
+            this.info = info;
+            this.id = port.id;
             this.name = name;
-            if (proxy.direction.IsInput())
+            if (info.direction.IsInput())
             {
                 this.direction = PortDirections.Output;
             } else {
@@ -34,18 +45,18 @@ namespace RedOwl.GraphFramework
             if (type == port.type) return true;
             if (converter.CanConvertFrom(port.type))
             {
-                if ((proxy.direction.IsOutput() && port.direction.IsOutput()) || proxy.direction.IsInput() && port.direction.IsInput())
+                if ((info.direction.IsOutput() && port.direction.IsOutput()) || info.direction.IsInput() && port.direction.IsInput())
                 {
                     return true;
                 }
             }
             return false;
         }
-        public override Type type { get { return proxy.type; } }
+        public override Type type { get { return port.type; } }
 #if UNITY_EDITOR
         public override PropertyFieldX GetField()
         {
-            PropertyFieldX field = proxy.GetField();
+            PropertyFieldX field = port.GetField();
             field.label.text = this.name;
             return field;
         }

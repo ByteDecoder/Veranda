@@ -21,9 +21,16 @@ namespace RedOwl.GraphFramework
 
         [SerializeField]
         protected object _data;
-        internal object data {
-            get { return _data; }
-            set { _data = Convert.ChangeType(value, type); FireValueChanged(); }
+
+        public virtual object GetData()
+        {
+            return _data;
+        }
+
+        public virtual void SetData(object value)
+        {
+            _data = Convert.ChangeType(value, type);
+            FireValueChanged();
         }
 
         [SerializeField]
@@ -56,8 +63,8 @@ namespace RedOwl.GraphFramework
     public abstract class Port<T> : Port
     {
         public T value {
-            get { return (T)data; }
-            set { data = value; }
+            get { return (T)GetData(); }
+            set { SetData(value); }
         }
 
         public Port(PortDirections direction) : this(default(T), direction) {}
