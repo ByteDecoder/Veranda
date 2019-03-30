@@ -65,6 +65,10 @@ namespace RedOwl.GraphFramework
 			}
 		}
         protected virtual void InternalExecute() {}
+
+        public virtual void OnCreate() {}
+        public virtual void OnExecute() {}
+        public virtual void OnDelete() {}
     }
 
     public abstract class ScriptableObjectTree<T> : ScriptableObjectTree, IEnumerable<T> where T : ScriptableObjectTree
@@ -145,10 +149,12 @@ namespace RedOwl.GraphFramework
         public void AddChild(T child)
         {
             child.id = Guid.NewGuid();
+            child.name = child.id.ToString();
 			child.parent = this;
-            child.Initialize();
             children.Add(child.id, child);
             AddSubAsset(child);
+            child.OnCreate();
+            child.Initialize();
             OnChildAdded?.Invoke(child);
         }
 
@@ -168,12 +174,13 @@ namespace RedOwl.GraphFramework
         public void RemoveChild(T child)
         {
 			children.Remove(child.id);
-			RemoveSubAsset(child.id.ToString());
+            child.OnDelete();
+			RemoveSubAsset(child);
             OnChildRemoved?.Invoke(child);
         }
 
 		[Conditional("UNITY_EDITOR")]
-		internal void ClearSubAssets<TAsset>()
+		protected void ClearSubAssets<TAsset>() where TAsset : UnityEngine.Object
 		{
 			var subAssets = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(this));
 			for (int i = subAssets.Length; i >= 0; i--)
@@ -181,27 +188,42 @@ namespace RedOwl.GraphFramework
 				if (subAssets[i] != this && subAssets[i].GetType() == typeof(TAsset)) DestroyImmediate(subAssets[i], true);
 			}
 			MarkDirty();
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 		}
 		
 		[Conditional("UNITY_EDITOR")]
-		internal void AddSubAsset(T obj)
+		protected void AddSubAsset<TAsset>(TAsset obj) where TAsset : UnityEngine.Object
 		{
-			obj.name = obj.id.ToString();
+            if (string.IsNullOrEmpty(obj.name)) obj.name = string.Format("{0}_{1}", id.ToString(), typeof(TAsset).Name);
 			AssetDatabase.AddObjectToAsset(obj, this);
 			obj.hideFlags = HideFlags.HideInHierarchy;
             EditorUtility.SetDirty(obj);
 			MarkDirty();
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 		}
 
 		[Conditional("UNITY_EDITOR")]
-		internal void RemoveSubAsset(string name)
+		protected void RemoveSubAsset(string name)
 		{
 			var subAssets = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(this));
-			for (int i = 0; i < subAssets.Length; i++)
+			for (int i = subAssets.Length - 1; i >= 0 ; i--)
 			{
-				if (subAssets[i] != this && subAssets[i].name == name) DestroyImmediate(subAssets[i], true);
+                var asset = subAssets[i];
+				if (asset != this && asset.name == name) RemoveSubAsset(asset);
 			}
-			MarkDirty();
+		}
+
+		[Conditional("UNITY_EDITOR")]
+		protected void RemoveSubAsset<TAsset>(TAsset obj) where TAsset : UnityEngine.Object
+		{
+            MarkDirty();
+			EditorApplication.delayCall += () => {
+                DestroyImmediate(obj, true);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            };
 		}
     }
 }

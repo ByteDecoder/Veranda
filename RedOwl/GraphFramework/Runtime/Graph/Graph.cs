@@ -88,7 +88,7 @@ namespace RedOwl.GraphFramework
 
         private void CacheGraphPorts()
         {
-            extraPorts = new Dictionary<Guid, Port>();
+            dynamicPorts = new Dictionary<Guid, Port>();
             foreach (var node in nodes)
             {
                 if (typeof(GraphPortNode).IsAssignableFrom(node.GetType()))
@@ -97,7 +97,7 @@ namespace RedOwl.GraphFramework
                     foreach (var info in node.portInfos.Values)
                     {
                         var port = info.Get(portNode);
-                        extraPorts.Add(port.id, new GraphPort(portNode.label, node, info));
+                        dynamicPorts.Add(port.id, new GraphPort(portNode.label, node, info));
                     }
                 }
             }

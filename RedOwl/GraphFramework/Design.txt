@@ -1,0 +1,4 @@
+- Each Graph should track its own zoom and pan amounts so when the graph is loaded back up it returns to that spot
+- Nodes need a way to hook into their SO and add/remove sub assets to embed the graph asset (this also might be needed by tile architect for textures)
+- [Feature(HARD!!)] click and drag handle for connecting - down on port and then up on different port
+- [Feature] ports with wrong types should hide themselves during connection flow

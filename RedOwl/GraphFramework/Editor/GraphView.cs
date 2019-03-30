@@ -19,7 +19,7 @@ namespace RedOwl.GraphFramework.Editor
 	    [UXMLReference]
 	    VisualElement nodes;
 		private Dictionary<Guid, NodeView> nodeTable = new Dictionary<Guid, NodeView>();
-		private Dictionary<Guid, SlotView> portTable = new Dictionary<Guid, SlotView>(); 
+		private Dictionary<Guid, PortView> portTable = new Dictionary<Guid, PortView>(); 
 
 		[UXMLReference]
 	    HandlesRenderer connections;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace RedOwl.GraphFramework
@@ -95,6 +96,14 @@ namespace RedOwl.GraphFramework
 					parentGraph.Disconnect(port);
 				}
             }
+			Graph subGraph = node as Graph;
+			if (subGraph != null)
+			{
+				foreach (var subNode in subGraph.children.Values.ToArray())
+				{
+					subGraph.RemoveNode(subNode);
+				}
+			}
 			RemoveChild(node);
 		}
 

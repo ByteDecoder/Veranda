@@ -27,7 +27,7 @@ namespace RedOwl.GraphFramework
         [NonSerialized]
         internal Dictionary<Guid, PortInfo> portInfos = new Dictionary<Guid, PortInfo>();
         [NonSerialized]
-        internal Dictionary<Guid, Port> extraPorts = new Dictionary<Guid, Port>();
+        internal Dictionary<Guid, Port> dynamicPorts = new Dictionary<Guid, Port>();
 
         public Port GetPort(Guid portId)
         {
@@ -40,9 +40,9 @@ namespace RedOwl.GraphFramework
                 //Debug.LogFormat("Port {0}.{1} has {2} | {3}", GetType().Name, port.name, port.direction, port.style);
                 return port;
             }
-            if (extraPorts.ContainsKey(portId))
+            if (dynamicPorts.ContainsKey(portId))
             {
-                return extraPorts[portId];
+                return dynamicPorts[portId];
             }
             return null;
         }
@@ -62,7 +62,7 @@ namespace RedOwl.GraphFramework
                 {
                     yield return GetPort(id);
                 }
-                foreach (var port in extraPorts.Values)
+                foreach (var port in dynamicPorts.Values)
                 {
                     yield return port;
                 }
@@ -103,8 +103,5 @@ namespace RedOwl.GraphFramework
         }
 
         public override string ToString() => this.GetType().Name;
-
-        //Contract
-        public virtual void OnExecute() { }
     }
 }
