@@ -26,6 +26,11 @@
     border-color: rgb(155, 128, 40);
 }
 
+.SlotView .PortView.connecting {
+    background-color: rgb(255, 239, 93);
+    border-color: rgb(155, 128, 40);
+}
+
 .SlotView .PortView.connected {
     background-color: rgb(130, 130, 130);
     border-color: rgb(70, 70, 70);

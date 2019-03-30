@@ -68,14 +68,14 @@ namespace RedOwl.GraphFramework.Editor
 			instance.graph.RemoveNode(node);
 		}
 
-        internal static void Disconnect(Port port, bool isInput)
+        internal static void Disconnect(PortView view)
         {
-            instance.graph.Disconnect(port, isInput);
+            instance.graph.Disconnect(view.port, view.direction.IsInput());
         }
 
-        internal static void ClickedPort(PortDirections direction, Port port)
+        internal static void ClickedPort(PortView view)
         {
-            instance.view.ClickedPort(direction, port);
+            instance.view.ClickedPort(view);
         }
 
         internal static void Execute()

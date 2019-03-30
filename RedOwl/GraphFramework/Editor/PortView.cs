@@ -11,8 +11,8 @@ namespace RedOwl.GraphFramework.Editor
 {
 	public class PortView : RedOwlVisualElement, IOnMouse
 	{
-		private Port port;
-        private PortDirections direction;
+		public readonly Port port;
+        public readonly PortDirections direction;
         private bool isGraphPort;
 
 		public PortView(Port port, PortDirections direction, bool isGraphPort) : base()
@@ -41,16 +41,28 @@ namespace RedOwl.GraphFramework.Editor
 
 		public void OnLeftMouseUp(MouseUpEvent evt)
 		{
-			GraphWindow.ClickedPort(direction, port);
+			GraphWindow.ClickedPort(this);
 		}
 		
 		public void OnRightMouseUp(MouseUpEvent evt)
 		{
-			GraphWindow.Disconnect(port, direction.IsInput());
+			GraphWindow.Disconnect(this);
 		}
+
+		public void StartConnecting()
+		{
+			AddToClassList("connecting");
+		}
+
+		public void ClearConnecting()
+		{
+			RemoveFromClassList("connecting");
+		}
+
 		public void Connect()
 		{
 			RemoveFromClassList("unconnected");
+			RemoveFromClassList("connecting");
 			AddToClassList("connected");
 		}
 

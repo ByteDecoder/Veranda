@@ -138,7 +138,11 @@ namespace RedOwl.GraphFramework.Editor
 
 		public void OnLeftDown(MouseDownEvent evt)
 		{
-			if (clickedOnce) clickedOnce = false;
+			if (clickedOnce)
+			{
+				clickedPort.Item3.ClearConnecting();
+				clickedOnce = false;
+			}
 		}
         
 	    public void OnPan(MouseMoveEvent evt, Vector3 delta)
@@ -181,9 +185,11 @@ namespace RedOwl.GraphFramework.Editor
 	    
 	    private bool clickedOnce = false;
 		private PortDirections clickedDirection;
-		private Tuple<Guid, Port> clickedPort;
-	    public void ClickedPort(PortDirections direction, Port port)
+		private Tuple<Guid, Port, PortView> clickedPort;
+	    internal void ClickedPort(PortView view)
 	    {
+			var port = view.port;
+			var direction = view.direction;
 		    if (clickedOnce)
 			{
 				if (clickedDirection == direction) return;
@@ -193,11 +199,13 @@ namespace RedOwl.GraphFramework.Editor
 				} else {
 					graph.Connect(port, clickedPort.Item2);
 				}
+				clickedPort.Item3.ClearConnecting();
 				clickedOnce = false;
 			} else {
 				clickedDirection = direction;
-				clickedPort = new Tuple<Guid, Port>(graph.FindNodeWithPort(port).id, port);
+				clickedPort = new Tuple<Guid, Port, PortView>(graph.FindNodeWithPort(port).id, port, view);
 				clickedOnce = true;
+				view.StartConnecting();
 			}
 	    }
     }
