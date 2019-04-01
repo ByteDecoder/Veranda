@@ -43,6 +43,11 @@ namespace RedOwl.GraphFramework
         public override bool CanConnectPort(Port port)
         {
             if (type == port.type) return true;
+            Type unity = typeof(UnityEngine.Object);
+            if (unity.IsAssignableFrom(type) && unity.IsAssignableFrom(port.type))
+            {
+                if (port.type.IsAssignableFrom(type)) return true;
+            }
             if (converter.CanConvertFrom(port.type))
             {
                 if ((info.direction.IsOutput() && port.direction.IsOutput()) || info.direction.IsInput() && port.direction.IsInput())

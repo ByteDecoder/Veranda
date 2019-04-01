@@ -29,7 +29,14 @@ namespace RedOwl.GraphFramework
 
         public virtual void SetData(object value)
         {
-            _data = Convert.ChangeType(value, type);
+            try
+            {
+                _data = Convert.ChangeType(value, type);
+            }
+            catch (System.Exception)
+            {
+                _data = value;
+            }
             FireValueChanged();
         }
 
@@ -79,6 +86,11 @@ namespace RedOwl.GraphFramework
         public override bool CanConnectPort(Port port)
         {
             if (type == port.type) return true;
+            Type unity = typeof(UnityEngine.Object);
+            if (unity.IsAssignableFrom(type) && unity.IsAssignableFrom(port.type))
+            {
+                if (port.type.IsAssignableFrom(type)) return true;
+            }
             if (converter.CanConvertFrom(port.type))
             {
                 if ((direction.IsInput() && port.direction.IsOutput()) || direction.IsOutput() && port.direction.IsInput())
