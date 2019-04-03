@@ -14,10 +14,5 @@
     "unity3d-package",
     "graph", "uielements"
   ],
-  "category": "RedOwl",
-  "dependencies":
-    {
-      "com.redowl.editor.uiex": "ssh://git@github.com/rocktavious/uiex.git",
-      "com.redowl.redowl-serialization": "ssh://git@github.com/rocktavious/redowl-serialization.git"
-    }
+  "category": "RedOwl"
 }
