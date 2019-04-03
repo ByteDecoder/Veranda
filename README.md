@@ -91,6 +91,25 @@ using RedOwl.GraphFramework;
 
 namespace RedOwl.Demo
 {
+    public class MultiplyNode : DemoNode
+    {
+        public float factor;
+
+        public InOutPort<float> Data = new InOutPort<float>();
+
+        public override void OnExecute()
+        {
+            Data.value *= factor;
+        }
+    }
+}
+```
+
+```cs
+using RedOwl.GraphFramework;
+
+namespace RedOwl.Demo
+{
     public class DebugNode : DemoNode
     {
         public InputPort<string> Data = new InputPort<string>();
