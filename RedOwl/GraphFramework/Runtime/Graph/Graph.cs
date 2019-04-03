@@ -74,9 +74,9 @@ namespace RedOwl.GraphFramework
             OnConnectionRemoved?.Invoke(connection);
         }
 
-        internal override void OnInit()
+        internal override void InternalInit()
         {
-            base.OnInit();
+            base.InternalInit();
             CacheGraphPorts();
         }
 

@@ -4,6 +4,8 @@
         <VisualElement name="breadcrumbs" />
         <ue:ToolbarSpacer />
         <ue:ToolbarFlexSpacer />
+        <ue:ToolbarToggle name="autoexecute" label="Auto Execute" binding-path="AutoExecute" />
+        <ue:ToolbarFlexSpacer />
         <ue:ToolbarButton text="Zoom" />
     </ue:Toolbar>
     <rog:GraphView name="view" />

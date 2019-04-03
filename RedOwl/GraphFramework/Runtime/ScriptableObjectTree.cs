@@ -33,15 +33,16 @@ namespace RedOwl.GraphFramework
         public override string ToString() => this.name;
 
         [NonSerialized]
-		private bool IsInitialized;
+		internal bool IsInitialized;
         public void Initialize()
         {
             if (IsInitialized) return;
             //UnityEngine.Debug.LogFormat("Initializing {0}", this);
+            this.InternalInit();
             this.OnInit();
             IsInitialized = true;
         }
-        internal virtual void OnInit() {}
+        internal virtual void InternalInit() {}
 
         /// <summary>
         /// Tell unity to mark this asset as dirty and all parent objects up the tree
@@ -66,7 +67,9 @@ namespace RedOwl.GraphFramework
 		}
         protected virtual void InternalExecute() {}
 
+        // Contract
         public virtual void OnCreate() {}
+        public virtual void OnInit() {}
         public virtual void OnExecute() {}
         public virtual void OnDelete() {}
     }
@@ -112,7 +115,7 @@ namespace RedOwl.GraphFramework
         {
             foreach (var key in children.Keys.ToList())
             {
-                yield return children[key];
+                if (children[key].IsInitialized) yield return children[key];
             }
         }
 
@@ -120,11 +123,11 @@ namespace RedOwl.GraphFramework
         {
             foreach (var key in children.Keys.ToList())
             {
-                yield return children[key];
+                if (children[key].IsInitialized) yield return children[key];
             }
         }
 
-        internal override void OnInit()
+        internal override void InternalInit()
         {
             foreach (var item in children.Values)
             {

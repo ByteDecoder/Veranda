@@ -39,7 +39,6 @@ namespace RedOwl.GraphFramework.Editor
 		[UXMLReference]
 		private InspectorElement properties;
 
-
 		private Dictionary<string, SlotView> slotTable = new Dictionary<string, SlotView>();
 		private Dictionary<Guid, Tuple<PortView, PortView>> portTable = new Dictionary<Guid, Tuple<PortView, PortView>>(); 
 		

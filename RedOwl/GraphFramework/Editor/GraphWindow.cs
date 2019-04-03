@@ -1,8 +1,10 @@
+#if UNITY_EDITOR
 #pragma warning disable 0649 // UXMLReference variable declared but not assigned to.
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine.Experimental.UIElements;
+using UnityEditor.Experimental.UIElements;
 using RedOwl.Editor;
 
 namespace RedOwl.GraphFramework.Editor
@@ -13,12 +15,13 @@ namespace RedOwl.GraphFramework.Editor
 		[UXMLReference]
 		internal GraphView view;
 
-        protected Graph graph {
+        [UXMLReference]
+        private ToolbarToggle autoexecute;
+
+        public Graph graph {
             get { return view.graph; }
         }
 
-        [UXMLReference]
-        protected VisualElement breadcrumbs;
         protected GraphBreadcrumbBar breadcrumbBar;
 
         public static void Open() => EnsureWindow();
@@ -28,15 +31,17 @@ namespace RedOwl.GraphFramework.Editor
 
         public override string GetWindowTitle() => "Graph Editor";
 
-        protected override void BuildUI()
+        [Q("breadcrumbs")]
+        protected void CreateBreadcrumbsBar(VisualElement element)
         {
             breadcrumbBar = new GraphBreadcrumbBar();
-            breadcrumbs.Add(breadcrumbBar);
+            element.Add(breadcrumbBar);
         }
 
         public override void Load(Graph graph)
         {
             GraphWindow.LoadGraph(graph);
+            autoexecute.Bind(new SerializedObject(graph));
         }
 
         // API
@@ -84,3 +89,4 @@ namespace RedOwl.GraphFramework.Editor
         }
     }
 }
+#endif

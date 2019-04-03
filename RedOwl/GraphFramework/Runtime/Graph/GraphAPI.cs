@@ -50,6 +50,7 @@ namespace RedOwl.GraphFramework
 		internal Node AddNode(Type nodeType, Vector2 position)
 		{
 			Node node = (Node)CreateInstance(nodeType);
+			node.Graph = this;
 			node.view.collapsed = false;
 			node.view.layout = new Rect(position.x, position.y, 150, 0);
 			AddChild(node);

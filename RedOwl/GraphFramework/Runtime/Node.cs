@@ -18,8 +18,12 @@ namespace RedOwl.GraphFramework
 
     public abstract class Node : ScriptableObjectTree<Node>
     {
-        //[HideInInspector]
-        //public Graph graph;
+        [SerializeField, HideInInspector]
+        protected Graph _graph;
+        public Graph Graph {
+            get { return _graph; }
+            set { _graph = value; }
+        }
 
         [HideInInspector]
         public NodeViewData view;
@@ -69,9 +73,9 @@ namespace RedOwl.GraphFramework
             }
         }
 
-        internal override void OnInit()
+        internal override void InternalInit()
         {
-            base.OnInit();
+            base.InternalInit();
             Type type = this.GetType();
             view.title = type.Name.Replace("Node", "");
             view.labelWidth = 80;

@@ -1,6 +1,6 @@
 ﻿#if UNITY_EDITOR
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEditor;
 using RedOwl.Editor;
 using RedOwl.GraphFramework;
