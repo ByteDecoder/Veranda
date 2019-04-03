@@ -1,5 +1,5 @@
 <h1 align="center">Sleipnir</h1>
-<h4 align="center">A Graph editor framework for Unity's new UIElements system.</h4>
+<h4 align="center">A graph editor framework for Unity's new UIElements system.</h4>
 
 <p align="center">
     <a href="#introduction">Introduction</a> •
@@ -9,9 +9,10 @@
 
 # Key Features
 
+* Easier to use the Unity UIElements graph framework
 * Focus on the logic of your graph based tool not the graph editor code that enables it
-* Built on top of Unity's UIElements framework (Runtime UI will come when unity makes UIElements work in the runtime)
-* Graph data is available for runtime use
+* Built on top of Unity's UIElements framework 
+* Graph data is available for runtime use (Runtime UI will come when unity makes UIElements work in the runtime - 2020)
 
 #### NOTE: This is a library for coders to help them make graph based tools in Unity easier and faster
 
@@ -22,12 +23,12 @@
 
 # Introduction
 
-First lets start out with an example graph tool that does some simple math to show you how to get started
-
-<details>
-  <summary>Example Arthmetic Graph (click to open)</summary><p>
+Lets start out with an example graph tool that does some simple math to show you how to get started.
 
 First you must define a base node all your nodes will inhert from and a graph class for those nodes
+
+<details>
+  <summary>Example Arthmetic Graph Code (click to open)</summary><p>
 
 ```cs
 using RedOwl.GraphFramework;
@@ -53,7 +54,7 @@ namespace RedOwl.Demo
 Once have you defined the base classes now you can being designing your node classes
 
 <details>
-  <summary>Example Arthmetic Nodes (click to open)</summary><p>
+  <summary>Example Arthmetic Nodes Code (click to open)</summary><p>
 
 ```cs
 using RedOwl.GraphFramework;
