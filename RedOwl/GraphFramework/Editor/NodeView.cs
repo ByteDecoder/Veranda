@@ -49,6 +49,9 @@ namespace RedOwl.GraphFramework.Editor
 			this.node = node;
 			this.name = node.GetType().Name;
 
+			if (typeof(GraphPortNode).IsAssignableFrom(this.node.GetType())) AddToClassList("GraphPort");
+			if (typeof(Graph).IsAssignableFrom(this.node.GetType())) AddToClassList("SubGraph");
+
 			properties.Bind(new SerializedObject(node));
 
 			foreach (Port item in node.ports)

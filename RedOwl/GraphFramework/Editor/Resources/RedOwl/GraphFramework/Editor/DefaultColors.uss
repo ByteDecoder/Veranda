@@ -7,14 +7,14 @@
     background-color: rgb(130, 130, 130);
 }
 
-.NodeView .background {
+.NodeView {
     background-color: rgb(70, 70, 70);
     border-color:  rgb(170, 170, 170);
 }
 
 .NodeView .body {
     background-color: rgb(170, 170, 170);
-    border-color:  rgb(200, 200, 200);
+    border-color:  rgb(210, 210, 210);
 }
 
 .SlotView .PortView.unconnected {
@@ -39,4 +39,14 @@
 .SlotView .PortView.connected:hover {
     background-color: rgb(150, 35, 35);
     border-color: rgb(70, 5, 5);
+}
+
+.SubGraph {
+    background-color: rgb(80, 160, 200);
+    border-color: rgb(120, 240, 255);
+}
+
+.GraphPort {
+    background-color: rgb(80, 200, 150);
+    border-color: rgb(120, 255, 200);
 }

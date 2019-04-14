@@ -78,7 +78,7 @@ namespace RedOwl.GraphFramework
             base.InternalInit();
             Type type = this.GetType();
             view.title = type.Name.Replace("Node", "");
-            view.labelWidth = 80;
+            view.labelWidth = 60;
             view.color = Color.gray;
             type.WithAttr<NodeTitleAttribute>(a => { view.title = a.title; });
             type.WithAttr<NodeLabelWidthAttribute>(a => { view.labelWidth = a.width; });

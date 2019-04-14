@@ -11,8 +11,8 @@
     height: 0;
 }
 
-.NodeView .background {
-    width: 200;
+.NodeView {
+    width: 200px;
     border-radius: 7;
     border-left-width: 0.5;
     border-top-width: 0.5;
@@ -20,18 +20,25 @@
     border-bottom-width: 0.5;
 }
 
-.NodeView .body {
+.NodeView .background {
     margin-left: -0.5px;
-    margin-right: -0.5px;
+}
+
+.NodeView .body {
     margin-bottom: 8px;
     padding-left: 3px;
     padding-right: 3px;
-    border-top-width: 1;
-    border-bottom-width: 1;
+    padding-bottom: 3px;
+    border-top-width: 0.5;
+    border-bottom-width: 0.5;
 }
 
 .NodeView .body.hide {
     margin-bottom: 0px;
+}
+
+.NodeView .background #body #properties .unity-inspector-custom {
+    margin-left: -11px;
 }
 
 .SlotView {
@@ -44,7 +51,7 @@
 }
 
 .SlotView #body {
-    padding-left: 15px;
+    padding-left: 4px;
     padding-right: 4px;
 }
 
