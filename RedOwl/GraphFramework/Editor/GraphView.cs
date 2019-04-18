@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.UIElements;
+using UnityEngine.UIElements;
 using RedOwl.Editor;
 
 namespace RedOwl.GraphFramework.Editor
@@ -74,7 +74,7 @@ namespace RedOwl.GraphFramework.Editor
 				this.graph.OnConnectionRemoved -= OnConnectionsRemoved;
 			}
 		    this.graph = graph;
-			this.AddStyleSheetPath(string.Format("{0}/GraphStyles", graph.GetType().Namespace));
+			this.styleSheets.Add(Resources.Load<StyleSheet>(string.Format("{0}/GraphStyles", graph.GetType().Namespace)));
 			nodes.Clear();
 			nodeTable.Clear();
 		    foreach (Node node in graph)
@@ -166,7 +166,7 @@ namespace RedOwl.GraphFramework.Editor
 	    	{
 	    		foreach (Tuple<string, Type> item in g.GetNodesTypes())
 	    		{
-	    			evt.menu.AppendAction(item.Item1, (a) => graph.AddNode(item.Item2, workspace.WorldToLocal(lastMousePosition)), DropdownMenu.MenuAction.AlwaysEnabled);
+	    			evt.menu.AppendAction(item.Item1, (a) => graph.AddNode(item.Item2, workspace.WorldToLocal(lastMousePosition)), DropdownMenuAction.AlwaysEnabled);
 	    		}
 	    	}
 	    }
