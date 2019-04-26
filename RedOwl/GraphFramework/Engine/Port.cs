@@ -42,8 +42,8 @@ namespace RedOwl.GraphFramework
         [SerializeField]
         public Guid id { get; protected set; }
 
-        internal string name;
-        internal PortDirections direction;
+        public string name;
+        public PortDirections direction;
 
         private TypeConverter _converter;
         protected TypeConverter converter

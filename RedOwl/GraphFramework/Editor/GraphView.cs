@@ -74,7 +74,8 @@ namespace RedOwl.GraphFramework.Editor
 				this.graph.OnConnectionRemoved -= OnConnectionsRemoved;
 			}
 		    this.graph = graph;
-			this.styleSheets.Add(Resources.Load<StyleSheet>(string.Format("{0}/GraphStyles", graph.GetType().Namespace)));
+			var sheet = Resources.Load<StyleSheet>(string.Format("{0}/GraphStyles", graph.GetType().Namespace));
+			if (sheet != null) this.styleSheets.Add(sheet);
 			nodes.Clear();
 			nodeTable.Clear();
 		    foreach (Node node in graph)

@@ -1,0 +1,18 @@
+{
+    "name": "RedOwl.GraphFramework.Editor",
+    "references": [
+        "GUID:dbe38944675c409488fcbfa7a87ff1fb",
+        "GUID:e00c3b41950b40f40bd7abfba377c0d1"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

@@ -1,7 +1,7 @@
 {
-    "name": "RedOwl.GraphFramework",
+    "name": "RedOwl.GraphFramework.Engine",
     "references": [
-        "RedOwl.UIEX"
+        "GUID:dbe38944675c409488fcbfa7a87ff1fb"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
@@ -10,5 +10,6 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": []
 }

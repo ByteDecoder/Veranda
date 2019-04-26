@@ -47,7 +47,7 @@ namespace RedOwl.GraphFramework
 			return (T)AddNode(typeof(T), position);
 		}
 
-		internal Node AddNode(Type nodeType, Vector2 position)
+		public Node AddNode(Type nodeType, Vector2 position)
 		{
 			Node node = (Node)CreateInstance(nodeType);
 			node.Graph = this;
