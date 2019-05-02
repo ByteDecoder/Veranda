@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 #if UNITY_EDITOR
-using UnityEditor.UIElements;
+using RedOwl.Editor;
 #endif
 
 namespace RedOwl.GraphFramework
@@ -58,12 +58,10 @@ namespace RedOwl.GraphFramework
         }
         public override Type type { get { return port.type; } }
 #if UNITY_EDITOR
-        public override PropertyField GetField()
+        public override PropertyFieldX GetField()
         {
-            return new PropertyField();
-            //PropertyFieldX field = port.GetField();
-            //field.label.text = this.name;
-            //return field;
+            PropertyFieldX field = port.GetField();
+            return field;
         }
 #endif
     }

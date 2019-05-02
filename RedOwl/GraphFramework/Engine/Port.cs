@@ -3,7 +3,8 @@ using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UIElements;
 #if UNITY_EDITOR
-using UnityEditor.UIElements;
+using UnityEditor;
+using RedOwl.Editor;
 #endif
 
 namespace RedOwl.GraphFramework
@@ -61,7 +62,7 @@ namespace RedOwl.GraphFramework
         public abstract bool CanConnectPort(Port port);
         public abstract Type type { get; }
 #if UNITY_EDITOR
-        public abstract PropertyField GetField();
+        public abstract PropertyFieldX GetField();
 #endif
     }
 
@@ -107,12 +108,11 @@ namespace RedOwl.GraphFramework
         public override Type type { get { return typeof(T); } }
         
 #if UNITY_EDITOR
-        public override PropertyField GetField()
+        public override PropertyFieldX GetField()
         {
-            return new PropertyField();
-            //var field = new PropertyFieldX<T>(ObjectNames.NicifyVariableName(name), () => { return value; }, (data) => { value = data; });
-            //OnValueChanged += (value) => { field.UpdateField(); };
-            //return field;
+            var field = new PropertyFieldX<T>(ObjectNames.NicifyVariableName(name), () => { return value; }, (data) => { value = data; });
+            OnValueChanged += (value) => { field.UpdateField(); };
+            return field;
         }
 #endif
     }

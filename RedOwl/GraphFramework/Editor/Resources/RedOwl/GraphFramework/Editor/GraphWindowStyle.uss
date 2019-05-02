@@ -26,9 +26,7 @@
 
 .NodeView .body {
     margin-bottom: 8px;
-    padding-left: 3px;
-    padding-right: 3px;
-    padding-bottom: 3px;
+    padding: 3px;
     border-top-width: 0.5;
     border-bottom-width: 0.5;
 }
@@ -37,8 +35,11 @@
     margin-bottom: 0px;
 }
 
-.NodeView .background #body #properties .unity-inspector-custom {
-    margin-left: -11px;
+.NodeView .background #body #properties .unity-inspector-element__custom-inspector-container {
+    margin-left: -10px;
+}
+.NodeView .background #body #slots .unity-base-field__label {
+    min-width: 60px;
 }
 
 .SlotView {
