@@ -16,6 +16,8 @@ namespace RedOwl.GraphFramework.Editor
 		internal GraphView view;
 
         [UXMLReference]
+        private Toolbar toolbar;
+
         private ToolbarToggle autoexecute;
 
         public Graph graph {
@@ -23,6 +25,14 @@ namespace RedOwl.GraphFramework.Editor
         }
 
         protected GraphBreadcrumbBar breadcrumbBar;
+
+        protected override void BuildUI()
+        {
+            toolbar.Add(new ToolbarSpacer());
+            toolbar.Add(new ToolbarSpacer { flex = true });
+            autoexecute = new ToolbarToggle { text = "Auto Execute", bindingPath = "AutoExecute" };
+            toolbar.Add(autoexecute);
+        }
 
         public static void Open() => EnsureWindow();
 

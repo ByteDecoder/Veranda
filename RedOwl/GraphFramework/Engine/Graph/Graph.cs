@@ -46,7 +46,7 @@ namespace RedOwl.GraphFramework
             foreach (string guid in AssetDatabase.FindAssets("t:Graph"))
             {
                 var asset = AssetDatabase.LoadAssetAtPath<Graph>(AssetDatabase.GUIDToAssetPath(guid));
-                asset.Initialize();
+                if (asset != null) asset.Initialize();
             }
         }
 #endif

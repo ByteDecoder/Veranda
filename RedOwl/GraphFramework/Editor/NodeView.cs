@@ -49,6 +49,20 @@ namespace RedOwl.GraphFramework.Editor
 			this.node = node;
 			this.name = node.GetType().Name;
 
+			title.text = node.view.title;
+			
+			collapse.clickable.clicked += ToggleCollapse;
+			duplicate.clickable.clicked += () => { GraphWindow.DuplicateNode(node); };
+			delete.clickable.clicked += () => { GraphWindow.RemoveNode(node); };
+			
+			if (!node.view.collapsed)
+			{
+				ShowBody();
+			} else {
+				HideBody();
+			}
+			Load();
+
 			if (typeof(GraphPortNode).IsAssignableFrom(this.node.GetType())) AddToClassList("GraphPort");
 			if (typeof(Graph).IsAssignableFrom(this.node.GetType())) AddToClassList("SubGraph");
 
@@ -76,24 +90,6 @@ namespace RedOwl.GraphFramework.Editor
 		{
 			SlotView slot = GetOrCreateSlotView(port);
 			portTable[port.id] = slot.RegisterPortView(port, typeof(GraphPortNode).IsAssignableFrom(this.node.GetType()));
-		}
-
-		[UICallback(1, true)]
-		private void CreateUI()
-		{
-			title.text = node.view.title;
-			
-			collapse.clickable.clicked += ToggleCollapse;
-			duplicate.clickable.clicked += () => { GraphWindow.DuplicateNode(node); };
-			delete.clickable.clicked += () => { GraphWindow.RemoveNode(node); };
-			
-			if (!node.view.collapsed)
-			{
-				ShowBody();
-			} else {
-				HideBody();
-			}
-			Load();
 		}
 
 		private void ShowBody()
