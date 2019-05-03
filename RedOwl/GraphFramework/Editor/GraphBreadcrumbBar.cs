@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-#pragma warning disable 0649 // UXMLReference variable declared but not assigned to.
+﻿#pragma warning disable 0649 // UXMLReference variable declared but not assigned to.
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -16,4 +15,3 @@ namespace RedOwl.GraphFramework.Editor
 		}
 	}
 }
-#endif

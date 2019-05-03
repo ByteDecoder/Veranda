@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-#pragma warning disable 0649 // UXMLReference variable declared but not assigned to.
+﻿#pragma warning disable 0649 // UXMLReference variable declared but not assigned to.
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +14,11 @@ namespace RedOwl.GraphFramework.Editor
 
 		[UXMLReference]
 		VisualElement workspace;
+
+		[UXMLReference]
+		DragSelector selector;
+		[UXMLReference]
+		DragSelector toggleSelector;
 	    
 	    [UXMLReference]
 	    VisualElement nodes;
@@ -61,7 +65,12 @@ namespace RedOwl.GraphFramework.Editor
 	    	}
 	    }
 	    
-	    public GraphView() : base() {}
+	    public GraphView() : base()
+		{
+			selector.OnComplete += DoSelection;
+			toggleSelector.OnComplete += DoSelectionToggle;
+			toggleSelector.color = new Color(1.0f, 1.0f, 0f, 0.25f);
+		}
 	    
 	    public void Load(Graph graph)
 	    {
@@ -128,12 +137,26 @@ namespace RedOwl.GraphFramework.Editor
 		    get {
 				yield return new MouseFilter { 
 				    button = MouseButton.LeftMouse,
-				    OnDown = OnLeftDown
+				    OnDown = OnLeftDown,
+					OnUp = OnLeftUp,
                 };
 			    yield return new MouseFilter {
 				    button = MouseButton.MiddleMouse,
 				    OnMove = OnPan
                 };
+				yield return new MouseFilter {
+				    button = MouseButton.LeftMouse,
+				    OnDown = selector.OnDown,
+					OnUp = selector.OnUp,
+					OnMove = selector.OnMove
+				};
+				yield return new MouseFilter {
+				    button = MouseButton.LeftMouse,
+					modifiers = EventModifiers.Control,
+				    OnDown = toggleSelector.OnDown,
+					OnUp = toggleSelector.OnUp,
+					OnMove = toggleSelector.OnMove
+				};
 		    }
 	    }
 
@@ -143,6 +166,38 @@ namespace RedOwl.GraphFramework.Editor
 			{
 				clickedPort.Item3.ClearConnecting();
 				clickedOnce = false;
+			}
+		}
+
+		public void OnLeftUp(MouseUpEvent evt)
+		{
+			GraphWindow.UnselectNodes();
+		}
+
+		internal IEnumerable<NodeView> CaclulateSelectedNodes(Rect rect)
+		{
+			Rect localRect;
+			foreach (var view in nodeTable.Values)
+			{
+				localRect = workspace.ChangeCoordinatesTo(view, rect);
+				if (view.Overlaps(localRect)) yield return view;
+			}
+		}
+
+		internal void DoSelection(Rect rect)
+		{
+			GraphWindow.UnselectNodes();
+			foreach (var view in CaclulateSelectedNodes(rect))
+			{
+				GraphWindow.ToggleSelectNode(view);
+			}
+		}
+
+		internal void DoSelectionToggle(Rect rect)
+		{
+			foreach (var view in CaclulateSelectedNodes(rect))
+			{
+				GraphWindow.ToggleSelectNode(view);
 			}
 		}
         
@@ -211,4 +266,3 @@ namespace RedOwl.GraphFramework.Editor
 	    }
     }
 }
-#endif

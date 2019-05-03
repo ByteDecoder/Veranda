@@ -1,5 +1,7 @@
-#if UNITY_EDITOR
 #pragma warning disable 0649 // UXMLReference variable declared but not assigned to.
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -20,18 +22,37 @@ namespace RedOwl.GraphFramework.Editor
 
         private ToolbarToggle autoexecute;
 
+        private List<NodeView> currentSelection;
+        private IEnumerable<Node> selectedNodes {
+            get {
+                foreach (var item in currentSelection)
+                {
+                    yield return item.node;
+                }
+            }
+        }
+
         public Graph graph {
             get { return view.graph; }
         }
 
         protected GraphBreadcrumbBar breadcrumbBar;
 
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            Selection.selectionChanged -= OnSelectionChanged;
+        }
+
         protected override void BuildUI()
         {
+            currentSelection = new List<NodeView>();
             toolbar.Add(new ToolbarSpacer());
             toolbar.Add(new ToolbarSpacer { flex = true });
             autoexecute = new ToolbarToggle { text = "Auto Execute", bindingPath = "AutoExecute" };
             toolbar.Add(autoexecute);
+            toolbar.Add(new ToolbarSpacer());
+            toolbar.Add(new ToolbarButton(Execute) { text = "Execute"});
         }
 
         public static void Open() => EnsureWindow();
@@ -73,6 +94,47 @@ namespace RedOwl.GraphFramework.Editor
             instance.graph.MarkDirty();
         }
 
+        internal static void ToggleSelectNode(NodeView view)
+        {
+            if (instance.currentSelection.Contains(view))
+            {
+                view.RemoveFromClassList("Selected");
+                instance.currentSelection.Remove(view);
+            } else {
+                view.AddToClassList("Selected");
+                instance.currentSelection.Add(view);
+            }
+            Selection.objects = instance.selectedNodes.ToArray();
+        }
+
+        internal static void SelectNode(NodeView view)
+        {
+            if (instance.currentSelection.Contains(view)) return;
+            UnselectNodes();
+            view.AddToClassList("Selected");
+            instance.currentSelection.Add(view);
+            Selection.objects = new UnityEngine.Object[] {view.node};
+        }
+
+        internal static void UnselectNodes()
+        {
+            foreach (var item in instance.currentSelection)
+            {
+                item.RemoveFromClassList("Selected");
+            }
+            instance.currentSelection.Clear();
+            Selection.objects = null;
+        }
+
+        internal static void DragNodes(Vector3 delta)
+        {
+            foreach (var item in instance.currentSelection)
+            {
+                item.DragNode(delta);
+            }
+            MarkDirty();
+        }
+
 		internal static void DuplicateNode(Node node)
 		{
 			instance.graph.DuplicateNode(node);
@@ -99,4 +161,3 @@ namespace RedOwl.GraphFramework.Editor
         }
     }
 }
-#endif

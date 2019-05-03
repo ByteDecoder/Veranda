@@ -2,6 +2,8 @@
 <UXML xmlns="UnityEngine.UIElements" xmlns:ro="RedOwl.Editor">
     <VisualElement name="workspace">
         <ro:HandlesRenderer name="connections" class="GraphConnections" />
+        <ro:DragSelector name="selector" />
+        <ro:DragSelector name="toggleSelector" />
         <VisualElement name="nodes" />
     </VisualElement>
 </UXML>

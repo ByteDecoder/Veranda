@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using RedOwl.Editor;
@@ -34,4 +33,3 @@ namespace RedOwl.GraphFramework.Editor
 		}
 	}
 }
-#endif

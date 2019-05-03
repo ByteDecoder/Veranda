@@ -1,9 +1,0 @@
-#FloatGraphInput .background {
-    background-color: rgb(67, 199, 95);
-    border-color:  rgb(188, 255, 203);
-}
-
-#FloatGraphOutput .background {
-    background-color: rgb(67, 199, 95);
-    border-color:  rgb(188, 255, 203);
-}

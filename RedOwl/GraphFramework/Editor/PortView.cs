@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 #pragma warning disable 0649 // UXMLReference variable declared but not assigned to.
 using System.Collections.Generic;
 using UnityEngine;
@@ -78,4 +77,3 @@ namespace RedOwl.GraphFramework.Editor
 		}
     }
 }
-#endif

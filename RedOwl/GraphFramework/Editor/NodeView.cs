@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-#pragma warning disable 0649 // UXMLReference variable declared but not assigned to.
+﻿#pragma warning disable 0649 // UXMLReference variable declared but not assigned to.
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -42,7 +41,7 @@ namespace RedOwl.GraphFramework.Editor
 		private Dictionary<string, SlotView> slotTable = new Dictionary<string, SlotView>();
 		private Dictionary<Guid, Tuple<PortView, PortView>> portTable = new Dictionary<Guid, Tuple<PortView, PortView>>(); 
 		
-		private Node node;
+		public readonly Node node;
 		    	
 		public NodeView(Node node) : base()
 		{
@@ -136,25 +135,40 @@ namespace RedOwl.GraphFramework.Editor
 					OnDown = OnDown,
 				    OnMove = OnDrag
                 };
+				yield return new MouseFilter {
+					button = MouseButton.LeftMouse,
+					modifiers = EventModifiers.Control,
+					OnDown = OnAddSelect
+				};
 		    }
 	    }
+
+		public void OnAddSelect(MouseDownEvent evt)
+		{
+			GraphWindow.ToggleSelectNode(this);
+		}
 
 		public void OnDown(MouseDownEvent evt)
 		{
 			BringToFront();
+			GraphWindow.SelectNode(this);
 		}
         
 		public void OnDrag(MouseMoveEvent evt, Vector3 delta)
 		{
-			transform.position += delta;
 			BringToFront();
+			GraphWindow.DragNodes(delta);
+		}
+
+		public void DragNode(Vector3 delta)
+		{
+			transform.position += delta;
 			Save();
 		}
 		
 		private void Save()
 		{
 			node.view.layout.position = transform.position;
-			GraphWindow.MarkDirty();
 		}
 		
 		private void Load()
@@ -195,4 +209,3 @@ namespace RedOwl.GraphFramework.Editor
 		}
     }
 }
-#endif

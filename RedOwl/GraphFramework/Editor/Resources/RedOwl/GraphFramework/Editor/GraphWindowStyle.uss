@@ -14,10 +14,10 @@
 .NodeView {
     width: 200px;
     border-radius: 7;
-    border-left-width: 0.5;
-    border-top-width: 0.5;
-    border-right-width: 0.5;
-    border-bottom-width: 0.5;
+    border-left-width: 1;
+    border-top-width: 1;
+    border-right-width: 1;
+    border-bottom-width: 1;
 }
 
 .NodeView .background {

@@ -12,6 +12,14 @@
     border-color:  rgb(170, 170, 170);
 }
 
+.NodeView:hover {
+    border-color: rgb(255, 255, 255);
+}
+
+.NodeView.Selected {
+    border-color: rgb(255, 239, 93);
+}
+
 .NodeView .body {
     background-color: rgb(170, 170, 170);
     border-color:  rgb(210, 210, 210);
