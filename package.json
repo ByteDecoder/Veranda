@@ -1,7 +1,7 @@
 {
   "name": "com.redowl.sleipnir",
   "displayName": "RedOwl - Sleipnir",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "A graph editor framework for Unity's new UIElements system",
   "repository": {
     "type": "git",
