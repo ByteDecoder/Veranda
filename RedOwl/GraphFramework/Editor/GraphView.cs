@@ -8,9 +8,12 @@ using RedOwl.Editor;
 namespace RedOwl.GraphFramework.Editor
 {
 	[UXML, USSClass("workspace")]
-	public class GraphView : RedOwlVisualElement, IOnMouse, IOnMouseMove, IOnZoom, IOnContextMenu, IHandlesBezier
+	public class GraphView : RedOwlVisualElement, IOnKeyboard, IOnMouse, IOnMouseMove, IOnZoom, IOnContextMenu, IHandlesBezier
     {
 		public new class UxmlFactory : UxmlFactory<GraphView> {}
+
+		[UXMLReference]
+		GridSheet grid;
 
 		[UXMLReference]
 		VisualElement workspace;
@@ -34,13 +37,14 @@ namespace RedOwl.GraphFramework.Editor
 
 	    public IEnumerable<Tuple<Vector2, Vector2, Color, float>> GetBezierPoints()
 	    {
+			float curveThickness = workspace.transform.scale.x < 0.3f ? 8f : 3f;
 	    	foreach (var conn in graph.connections)
 	    	{
 		    	yield return new Tuple<Vector2, Vector2, Color, float>(
 			    	nodeTable[conn.output.node].GetOutputAnchor(conn.output.port),
 			    	nodeTable[conn.input.node].GetInputAnchor(conn.input.port),
 					Color.gray,
-					3f
+					curveThickness
 			    );
 	    	}
 	    
@@ -52,14 +56,14 @@ namespace RedOwl.GraphFramework.Editor
 						lastMousePosition,
 						nodeTable[clickedPort.Item1].GetInputAnchor(clickedPort.Item2.id),
 						Color.yellow,
-						3f
+						curveThickness
 					);
 				} else {
 					yield return new Tuple<Vector2, Vector2, Color, float> (
 						nodeTable[clickedPort.Item1].GetOutputAnchor(clickedPort.Item2.id),
 						lastMousePosition,
 						Color.yellow,
-						3f
+						curveThickness
 					);
 				}
 	    	}
@@ -130,6 +134,22 @@ namespace RedOwl.GraphFramework.Editor
 	    	lastMousePosition = evt.mousePosition;
 	    	if (clickedOnce) connections.MarkDirtyRepaint();
 	    }
+
+		public IEnumerable<KeyboardFilter> KeyboardFilters {
+			get {
+				yield return new KeyboardFilter {
+					key = KeyCode.F,
+					OnDown = OnFDown
+				};
+			}
+		}
+
+		public void OnFDown(KeyDownEvent evt)
+		{
+			Debug.Log("here");
+			workspace.transform.scale = Vector3.one;
+			workspace.transform.position = Vector3.zero;
+		}
 	    
 	    public bool IsContentDragger { get { return true; } }
 	    
@@ -204,15 +224,31 @@ namespace RedOwl.GraphFramework.Editor
 	    public void OnPan(MouseMoveEvent evt, Vector3 delta)
 	    {
 		    workspace.transform.position += delta;
+			grid.pan += (Vector2)delta;
 	    }
 	    
-	    public float zoomMinScale { get { return 0.2f; } }
+	    public float zoomMinScale { get { return 0.1f; } }
 	    public float zoomMaxScale { get { return 5f; } }
 	    public float zoomScaleStep { get { return 0.15f; } }
 	    public EventModifiers zoomActivationModifiers { get { return EventModifiers.None; } }		
 	    public void OnZoom(WheelEvent evt, Vector3 scale)
 	    {
 	    	workspace.transform.scale = scale;
+			grid.scale = (Vector2)scale;
+
+			if (scale.x < 0.3f)
+			{
+				Debug.Log("TempCollapse");
+				foreach (var view in nodeTable.Values)
+				{
+					view.MacroView(true);
+				}
+			} else {
+				foreach (var view in nodeTable.Values)
+				{
+					view.MacroView(false);
+				}
+			}
 	    }
 	    
 	    public void OnContextMenu(ContextualMenuPopulateEvent evt)

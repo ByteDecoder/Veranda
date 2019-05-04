@@ -40,6 +40,7 @@ namespace RedOwl.GraphFramework.Editor
 
 		private Dictionary<string, SlotView> slotTable = new Dictionary<string, SlotView>();
 		private Dictionary<Guid, Tuple<PortView, PortView>> portTable = new Dictionary<Guid, Tuple<PortView, PortView>>(); 
+		private bool _macroView;
 		
 		public readonly Node node;
 		    	
@@ -54,12 +55,7 @@ namespace RedOwl.GraphFramework.Editor
 			duplicate.clickable.clicked += () => { GraphWindow.DuplicateNode(node); };
 			delete.clickable.clicked += () => { GraphWindow.RemoveNode(node); };
 			
-			if (!node.view.collapsed)
-			{
-				ShowBody();
-			} else {
-				HideBody();
-			}
+			SetCollapsed();
 			Load();
 
 			if (typeof(GraphPortNode).IsAssignableFrom(this.node.GetType())) AddToClassList("GraphPort");
@@ -175,6 +171,16 @@ namespace RedOwl.GraphFramework.Editor
 		{
 			transform.position = node.view.layout.position;
 		}
+
+		private void SetCollapsed()
+		{
+			if (node.view.collapsed)
+			{
+				HideBody();
+			} else {
+				ShowBody();
+			}
+		}
 	    
 		private void ToggleCollapse()
 		{
@@ -187,10 +193,31 @@ namespace RedOwl.GraphFramework.Editor
 			}
 			Save();
 		}
+
+		public void MacroView(bool value)
+		{
+			if (value)
+			{
+				if (_macroView == false)
+				{
+					_macroView = value;
+					HideBody();
+					// Remove Border
+					// Remove Icons
+					// Remove Title
+				}
+			} else {
+				_macroView = value;
+				SetCollapsed();
+				// Add Border
+				// Add Icons
+				// Add Title
+			}
+		}
 		
 		public Vector2 GetInputAnchor(Guid key)
 		{
-			if (node.view.collapsed)
+			if (node.view.collapsed || _macroView)
 			{
 				return this.LocalToWorld(layout.position + new Vector2(1, layout.height * 0.5f));
 			} else {
@@ -200,7 +227,7 @@ namespace RedOwl.GraphFramework.Editor
 		
 		public Vector2 GetOutputAnchor(Guid key)
 		{
-			if (node.view.collapsed)
+			if (node.view.collapsed || _macroView)
 			{
 				return this.LocalToWorld(layout.position + new Vector2(layout.width - 1, layout.height * 0.5f));
 			} else {

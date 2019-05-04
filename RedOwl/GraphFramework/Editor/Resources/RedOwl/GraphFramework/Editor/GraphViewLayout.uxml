@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <UXML xmlns="UnityEngine.UIElements" xmlns:ro="RedOwl.Editor">
+    <ro:GridSheet name="grid" />
     <VisualElement name="workspace">
         <ro:HandlesRenderer name="connections" class="GraphConnections" />
         <ro:DragSelector name="selector" />
