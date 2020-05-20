@@ -9,10 +9,10 @@
 
 # Key Features
 
-* Easier to use then Unity's UIElements graph framework
+* Easier to use then Unity's graph framework
 * Focus on the logic of your graph based tool not the graph editor code that enables it
-* Built on top of Unity's UIElements framework 
-* Graph data is available for runtime use (Runtime UI will come when unity makes UIElements work in the runtime - 2020)
+* Built on top of Unity's UI Toolkit framework 
+* Graph data is available for runtime use (Runtime UI will come when unity makes UI Toolkit work in the runtime - 2020 & Beyound)
 
 #### NOTE: This is a library for coders to help them make graph based tools in Unity easier and faster
 
