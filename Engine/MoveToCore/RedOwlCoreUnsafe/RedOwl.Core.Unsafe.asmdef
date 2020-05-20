@@ -1,11 +1,9 @@
 {
-    "name": "RedOwl.Sleipnir.Engine",
-    "references": [
-        "RedOwl.Core.Unsafe"
-    ],
+    "name": "RedOwl.Core.Unsafe",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
