@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<UXML xmlns="UnityEngine.UIElements" xmlns:ue="UnityEditor.UIElements" xmlns:ro="RedOwl.Editor">
-    <VisualElement name="inputs" class="container column" />
-    <VisualElement name="body" class="flexfill container column" />
-    <VisualElement name="outputs" class="container column" />
-</UXML>
