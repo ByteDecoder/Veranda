@@ -10,6 +10,9 @@ namespace RedOwl.Sleipnir.Engine
         public static NodeCache Nodes = new NodeCache();
         public static PortCache Ports = new PortCache();
 
+        #if UNITY_EDITOR
+        [UnityEditor.MenuItem("Sleipnir/Initialize")]
+        #endif
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Initialize()
         {
@@ -26,7 +29,7 @@ namespace RedOwl.Sleipnir.Engine
 
         internal static Rect GenerateRect<T>(T _)
         {
-            var attr = typeof(T).GetAttribute<NodeSettingsAttribute>(true);
+            var attr = typeof(T).SafeGetAttribute<NodeSettingsAttribute>(true);
             return new Rect(0, 0, attr.Width, attr.Height);
         }
     }

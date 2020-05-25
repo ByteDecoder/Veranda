@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using RedOwl.Core;
-using UnityEngine;
 
 namespace RedOwl.Sleipnir.Engine
 {
