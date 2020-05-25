@@ -43,10 +43,22 @@ namespace RedOwl.Core
             }
         }
 
-        public static TAttr GetAttribute<TAttr>(this Type self, bool inherit = false) where TAttr : new()
+        public static TAttr SafeGetAttribute<TAttr>(this Type self, bool inherit = false) where TAttr : Attribute, new()
         {
             var attrType = typeof(TAttr);
             return self.IsDefined(attrType, inherit) ? (TAttr)self.GetCustomAttributes(attrType, inherit)[0] : new TAttr();
+        }
+
+        public static bool TryGetAttribute<TAttr>(this FieldInfo self, out TAttr attr, bool inherit = false) where TAttr : Attribute
+        {
+            var attrType = typeof(TAttr);
+            attr = null;
+            bool found = self.IsDefined(attrType, inherit);
+            if (found)
+            {
+                attr = (TAttr) self.GetCustomAttributes(attrType, inherit)[0];
+            }
+            return found;
         }
 
         public static IEnumerable<Type> GetAllTypes<T>()

@@ -5,31 +5,36 @@ using UnityEngine;
 namespace RedOwl.Sleipnir.Engine
 {
     [Serializable, HideReferenceObjectPicker, InlineProperty]
-    public class SubGraphNode : BaseNode, INode, IFlowInNode, IFlowOutNode
+    public class SubGraphNode : Node
     {
         public GraphReference Reference;
-        [SerializeReference]
+        [SerializeReference, HideInInspector]
         public IGraph Data;
-
-        [FlowIn(nameof(OnEnter))]
-        protected FlowPort flowIn;
-        public FlowPort FlowIn => flowIn;
-
-        [FlowOut(nameof(OnExit))]
-        protected FlowPort flowOut;
-        public FlowPort FlowOut => flowOut;
-
-        public void Initialize()
+        
+        public IGraph Graph => Reference == null ? Data : Reference.graph;
+        
+        protected override void Setup()
         {
-            // Build / Reconcile Ports
-            // Graph Nodes that should become ports are built here
-            Debug.Log($"SubGraphNode Initialized!");
+            Graph.Initialize();
+
+            Debug.Log($"Create SubGraph '{Graph.Name}' Symmetrical Flow Ports");
+            _flowPorts.Add(Graph.EndNode.FlowIn.CreateSymmetrical());
+            _flowPorts.Add(Graph.StartNode.FlowOut.CreateSymmetrical());
+
+            foreach (var node in Graph.Nodes)
+            {
+                switch (node)
+                {
+                    case IGraphInput graphInput:
+                        Debug.Log($"Creating Graph Input Node Symmetrical Port: '{node}'");
+                        _dataPorts.Add(graphInput.Data.CreateSymmetrical());
+                        break;
+                    case IGraphOutput graphOutput:
+                        Debug.Log($"Creating Graph Output Node Symmetrical Port: '{node}'");
+                        _dataPorts.Add(graphOutput.Data.CreateSymmetrical());
+                        break;
+                }
+            }
         }
-
-
-        #region API
-        public virtual void OnEnter() {}
-        public virtual void OnExit() {}
-        #endregion
     }
 }

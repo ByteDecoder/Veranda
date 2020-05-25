@@ -23,7 +23,7 @@ namespace RedOwl.Sleipnir.Engine
     [AttributeUsage(AttributeTargets.Field)]
     public class FlowInAttribute : Attribute
     {
-        public string Name;
+        public readonly string Name;
 
         public FlowInAttribute(string name)
         {
@@ -34,7 +34,7 @@ namespace RedOwl.Sleipnir.Engine
     [AttributeUsage(AttributeTargets.Field)]
     public class FlowOutAttribute : Attribute
     {
-        public string Name;
+        public readonly string Name;
 
         public FlowOutAttribute(string name)
         {

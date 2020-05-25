@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace RedOwl.Sleipnir.Engine
 {
     public interface IGraph
     {
+        string Name { get;  }
         EnterNode StartNode { get; }
         ExitNode EndNode { get; }
         
@@ -29,6 +29,7 @@ namespace RedOwl.Sleipnir.Engine
         [SerializeReference] private List<INode> _nodes;
 
         #region IGraph
+        public string Name => GetType().Name;
         public EnterNode StartNode => (EnterNode)_nodes[0];
         public ExitNode EndNode => (ExitNode)_nodes[1];
         public IEnumerable<INode> Nodes => _nodes;
@@ -48,9 +49,10 @@ namespace RedOwl.Sleipnir.Engine
         {
             foreach (var node in _nodes)
             {
+                //Debug.Log($"Initializing Graph Node: '{node}'");
                 node.Initialize();
             }
-            Debug.Log($"GraphType '{GetType().Name}' Initialized!");
+            //Debug.Log($"GraphType '{GetType().Name}' Initialized!");
         }
 
         public TNode Add<TNode>() where TNode : INode, new() => Add(new TNode());
