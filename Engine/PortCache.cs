@@ -6,10 +6,25 @@ using UnityEngine;
 
 namespace RedOwl.Sleipnir.Engine
 {
+    [Flags]
     public enum PortIO
     {
-        In,
-        Out
+        In = 1,
+        Out = 2,
+        InOut = In | Out,
+    }
+
+    public static class PortIOExtensions
+    {
+        public static bool IsInput(this PortIO self)
+        {
+            return self.HasFlag(PortIO.In);
+        }
+
+        public static bool IsOutput(this PortIO self)
+        {
+            return self.HasFlag(PortIO.Out);
+        }
     }
     
     public struct DataPortPrototype
@@ -34,55 +49,23 @@ namespace RedOwl.Sleipnir.Engine
             return RedOwlHash.GetHashId($"{NodeNamespace}.{NodeName}.{nodeId}.{Name}.{Io}");
         }
     }
-    
-    public struct FlowPortPrototype
-    {
-        public string NodeNamespace;
-        public string NodeName;
-        public string Name;
-        public PortIO Io;
-        public FieldInfo Field;
-        public MethodInfo Method;
 
-        public FlowPortPrototype(Type nodeType, PortIO io, FieldInfo field, MethodInfo method)
-        {
-            NodeNamespace = nodeType.Namespace;
-            NodeName = nodeType.Name;
-            Name = field.Name;
-            Io = io;
-            Field = field;
-            Method = method;
-        }
-
-        public string GetHashId(string nodeId)
-        {
-            return RedOwlHash.GetHashId($"{NodeNamespace}.{NodeName}.{nodeId}.{Name}.{Io}");
-        }
-    }
-    
     public class PortCache
     {
         private bool _cacheIsBuilt;
-        private Dictionary<Type, List<DataPortPrototype>> _cacheDataPorts;
-        private Dictionary<Type, List<FlowPortPrototype>> _cacheFlowPorts;
-        private Dictionary<Type, Dictionary<string, MethodInfo>> _cacheFlowCallbacks;
+        private Dictionary<Type, List<DataAttribute>> _cacheDataPorts;
+        private Dictionary<Type, List<FlowAttribute>> _cacheFlowPorts;
         
-        public List<DataPortPrototype> GetDataPorts(Type type)
+        public List<DataAttribute> GetDataPorts(Type type)
         {
             ShouldBuildCache();
-            return _cacheDataPorts.TryGetValue(type, out var output) ? output : new List<DataPortPrototype>();
+            return _cacheDataPorts.TryGetValue(type, out var output) ? output : new List<DataAttribute>();
         }
         
-        public List<FlowPortPrototype> GetFlowPorts(Type type)
+        public List<FlowAttribute> GetFlowPorts(Type type)
         {
             ShouldBuildCache();
-            return _cacheFlowPorts.TryGetValue(type, out var output) ? output : new List<FlowPortPrototype>();
-        }
-        
-        public MethodInfo GetFlowPortCallback(Type type, string name)
-        {
-            ShouldBuildCache();
-            return _cacheFlowCallbacks.TryGetValue(type, out var output) ? output[name] : null;
+            return _cacheFlowPorts.TryGetValue(type, out var output) ? output : new List<FlowAttribute>();
         }
 
         public void ShouldBuildCache()
@@ -92,9 +75,8 @@ namespace RedOwl.Sleipnir.Engine
 
         private void BuildCache()
         {
-            _cacheDataPorts = new Dictionary<Type, List<DataPortPrototype>>();
-            _cacheFlowPorts = new Dictionary<Type, List<FlowPortPrototype>>();
-            _cacheFlowCallbacks = new Dictionary<Type, Dictionary<string, MethodInfo>>();
+            _cacheDataPorts = new Dictionary<Type, List<DataAttribute>>();
+            _cacheFlowPorts = new Dictionary<Type, List<FlowAttribute>>();
 
             var inputAttr = typeof(DataInAttribute);
             var outputAttr = typeof(DataOutAttribute);
@@ -105,60 +87,46 @@ namespace RedOwl.Sleipnir.Engine
             {
                 if (typeof(GraphReference).IsAssignableFrom(type)) continue;
                 var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-                var methodTable = new Dictionary<string, MethodInfo>(methods.Length);
-                var dataPorts = new List<DataPortPrototype>(fields.Length);
-                var flowPorts = new List<FlowPortPrototype>(fields.Length);
-
-                foreach (var method in methods)
-                {
-                    //Debug.Log($"Adding method '{method.Name}' to nodetype '{type.Name}' ");
-                    methodTable.Add(method.Name, method);
-                }
-                _cacheFlowCallbacks.Add(type, methodTable);
+                var dataPorts = new List<DataAttribute>(fields.Length);
+                var flowPorts = new List<FlowAttribute>(fields.Length);
 
                 foreach (var field in fields)
                 {
                     // Data
-                    if (field.IsDefined(inputAttr, false))
+                    if (field.TryGetAttribute(out DataInAttribute dataInAttr, false))
                     {
-                        dataPorts.Add(new DataPortPrototype(type, PortIO.In, field));
+                        dataInAttr.Io = PortIO.In;
+                        dataInAttr.Field = field;
+                        dataPorts.Add(dataInAttr);
                     }
 
-                    if (field.IsDefined(outputAttr, false))
+                    if (field.TryGetAttribute(out DataOutAttribute dataOutAttr, false))
                     {
-                        dataPorts.Add(new DataPortPrototype(type, PortIO.Out, field));
+                        dataOutAttr.Io = PortIO.Out;
+                        dataOutAttr.Field = field;
+                        dataPorts.Add(dataOutAttr);
                     }
 
-                    if (field.IsDefined(inoutAttr, false))
+                    if (field.TryGetAttribute(out DataInOutAttribute dataInOutAttr, false))
                     {
-                        dataPorts.Add(new DataPortPrototype(type, PortIO.In, field));
-                        dataPorts.Add(new DataPortPrototype(type, PortIO.Out, field));
+                        dataInOutAttr.Io = PortIO.InOut;
+                        dataInOutAttr.Field = field;
+                        dataPorts.Add(dataInOutAttr);
                     }
                     
                     // Flow
-                    if (field.TryGetAttribute(out FlowInAttribute inAttr, false))
+                    if (field.TryGetAttribute(out FlowInAttribute flowInAttr, false))
                     {
-                        if (methodTable.TryGetValue(inAttr.Name, out MethodInfo method))
-                        {
-                            flowPorts.Add(new FlowPortPrototype(type, PortIO.In, field, method));
-                        }
-                        else
-                        {
-                            Debug.LogWarning($"Unable to find method '{inAttr.Name}' for port '{field.Name}' on node '{type.Namespace}.{type.Name}'");
-                        }
+                        flowInAttr.Io = PortIO.In;
+                        flowInAttr.Field = field;
+                        flowPorts.Add(flowInAttr);
                     }
 
-                    if (field.TryGetAttribute(out FlowOutAttribute outAttr, false))
+                    if (field.TryGetAttribute(out FlowOutAttribute flowOutAttr, false))
                     {
-                        if (methodTable.TryGetValue(outAttr.Name, out MethodInfo method))
-                        {
-                            flowPorts.Add(new FlowPortPrototype(type, PortIO.Out, field, method));
-                        }
-                        else
-                        {
-                            Debug.LogWarning($"Unable to find method '{outAttr.Name}' for port '{field.Name}' on node '{type.Namespace}.{type.Name}'");
-                        }
+                        flowOutAttr.Io = PortIO.Out;
+                        flowOutAttr.Field = field;
+                        flowPorts.Add(flowOutAttr);
                     }
                 }
 

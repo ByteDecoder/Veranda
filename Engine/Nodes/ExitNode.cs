@@ -8,14 +8,16 @@ namespace RedOwl.Sleipnir.Engine
     [HideReferenceObjectPicker, InlineProperty]
     public class ExitNode : Node, IFlowInNode
     {
-        [FlowIn(nameof(OnEnter))]
+        [SerializeField]
+        [FlowIn] 
         protected FlowPort flowIn;
 
         public FlowPort FlowIn => flowIn;
-        
-        public ExitNode()
+
+        protected override void Setup()
         {
-            flowIn = new FlowPort();
+            base.Setup();
+            flowIn.SetCallback(OnEnter);
         }
 
         public virtual void OnEnter() {}
