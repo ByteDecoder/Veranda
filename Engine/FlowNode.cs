@@ -1,5 +1,6 @@
 using System;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace RedOwl.Sleipnir.Engine
 {
@@ -26,25 +27,30 @@ namespace RedOwl.Sleipnir.Engine
     public abstract class FlowNode : Node, IFlowNode
     {
         #region IFlowNode
-        [FlowIn(nameof(OnEnter))]
+        [SerializeField]
+        [FlowIn]
         protected FlowPort flowIn;
         public FlowPort FlowIn => flowIn;
 
-        [FlowOut(nameof(OnExit))]
+        [SerializeField]
+        [FlowOut]
         protected FlowPort flowOut;
         public FlowPort FlowOut => flowOut;
 
-        private bool active;
-        public bool Active => active;
+        private bool _active;
+        public bool Active => _active;
         #endregion
 
         protected FlowNode()
         {
-            flowIn = new FlowPort();
-            flowOut = new FlowPort();
-            active = false;
+            _active = false;
         }
 
+        protected override void Setup()
+        {
+            flowIn.SetCallback(OnEnter);
+            flowOut.SetCallback(OnExit);
+        }
 
         #region API
         public virtual void OnEnter() {}

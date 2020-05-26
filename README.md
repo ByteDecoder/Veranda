@@ -34,10 +34,6 @@ If you are unsure how to use the new unity package manager with git check it out
 
 # Planning
 
-A Node has N ports
-A Graph is an Adjacency list of Ports
-Ports are dynamically initialized
-but something has to be serialized - maybe a port ID or something
-the graphs adjacency list details how/which ports connect to which
-if a node definition changes the ports have to be reconciled and the adjacency list has to be updated
-A GraphControl performs port initialization
+Next Steps:
+- Start Building the UI
+- Validate graph "flow" and data transformation

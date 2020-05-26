@@ -1,37 +1,61 @@
 using System;
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace RedOwl.Sleipnir.Engine
 {
-    [Serializable, HideReferenceObjectPicker, InlineProperty]
-    public class SubGraphNode : Node
+    public interface ISubGraphNode
     {
-        public GraphReference Reference;
+        IEnumerable<FlowPort> GetDynamicFlowPorts();
+        IEnumerable<DataPort> GetDynamicDataPorts();
+    }
+    
+    [Serializable, HideReferenceObjectPicker, InlineProperty]
+    public class SubGraphNode : Node, ISubGraphNode
+    {
+        public GraphReference reference;
         [SerializeReference, HideInInspector]
-        public IGraph Data;
+        public IGraph data;
         
-        public IGraph Graph => Reference == null ? Data : Reference.graph;
+        public IGraph Graph => reference == null ? data : reference.graph;
         
         protected override void Setup()
         {
             Graph.Initialize();
+        }
 
-            Debug.Log($"Create SubGraph '{Graph.Name}' Symmetrical Flow Ports");
-            _flowPorts.Add(Graph.EndNode.FlowIn.CreateSymmetrical());
-            _flowPorts.Add(Graph.StartNode.FlowOut.CreateSymmetrical());
+        public IEnumerable<FlowPort> GetDynamicFlowPorts()
+        {
+            foreach (var node in Graph.Nodes)
+            {
+                switch (node)
+                {
+                    case EnterNode enterNode:
+                        Debug.Log($"Creating Graph Enter Node Symmetrical Port: '{node}'");
+                        yield return enterNode.FlowOut.CreateSymmetrical();
+                        break;
+                    case ExitNode exitNode:
+                        Debug.Log($"Creating Graph Exit Node Symmetrical Port: '{node}'");
+                        yield return exitNode.FlowIn.CreateSymmetrical();
+                        break;
+                }
+            }
+        }
 
+        public IEnumerable<DataPort> GetDynamicDataPorts()
+        {
             foreach (var node in Graph.Nodes)
             {
                 switch (node)
                 {
                     case IGraphInput graphInput:
                         Debug.Log($"Creating Graph Input Node Symmetrical Port: '{node}'");
-                        _dataPorts.Add(graphInput.Data.CreateSymmetrical());
+                        yield return graphInput.Data.CreateSymmetrical();
                         break;
                     case IGraphOutput graphOutput:
                         Debug.Log($"Creating Graph Output Node Symmetrical Port: '{node}'");
-                        _dataPorts.Add(graphOutput.Data.CreateSymmetrical());
+                        yield return graphOutput.Data.CreateSymmetrical();
                         break;
                 }
             }
