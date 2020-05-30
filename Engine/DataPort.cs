@@ -29,7 +29,7 @@ namespace RedOwl.Sleipnir.Engine
     {
         object Data { get; }
         bool IsExit { get; }
-        IEnumerator Pull(Flow flow);
+        IEnumerator Pull(GraphFlow graphFlow);
     }
     
     [Serializable]
@@ -63,20 +63,17 @@ namespace RedOwl.Sleipnir.Engine
             Node = node;
             Id = RedOwlHash.GetHashId($"{node.Id}.{attr.Field.Name}.{attr.Io}");
             Io = attr.Io;
-
-            //On = (Action)Delegate.CreateDelegate(typeof(Action), Node, Method);
-            //BindSymmetrical();
-            // TODO: Hookup Adjacent Delegates?
         }
 
-        public IEnumerator Pull(Flow flow)
+        public IEnumerator Pull(GraphFlow graphFlow)
         {
-            foreach (var connection in Node.GetDataConnections(Id))
-            {
-                yield return Node.Pull(connection, flow);
-            }
+            throw new NotImplementedException();
+            // foreach (var connection in Node.GetDataConnections(Id))
+            // {
+            //     yield return Node.Pull(connection, graphFlow);
+            // }
         }
-        
+
         public override string ToString()
         {
             return $"{Id}.{Io}";
