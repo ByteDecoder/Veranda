@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using RedOwl.Core;
 using Sirenix.OdinInspector;
-using UnityEngine;
 
 namespace RedOwl.Sleipnir.Engine
 {
@@ -25,9 +23,10 @@ namespace RedOwl.Sleipnir.Engine
     public interface IFlowPort : IPort
     {
         bool IsExit { get; }
-        Func<Flow, IFlowPort> FlowSerial { get; }
-        Func<Flow, IEnumerator> FlowAsync { get; }
-        IEnumerator Run(Flow flow);
+        event Action OnExecute;
+        Func<IGraphFlow, IFlowPort> FlowSerial { get; }
+        Func<IGraphFlow, IEnumerator> FlowAsync { get; }
+        IEnumerator Run(IGraphFlow graphFlow);
     }
     
     [Serializable]
@@ -40,10 +39,10 @@ namespace RedOwl.Sleipnir.Engine
         public PortIO Io { get; private set; }
 
         public bool IsExit => Io.IsOutput();
-
-        public Func<Flow, IFlowPort> FlowSerial { get; private set; }
+        public event Action OnExecute;
+        public Func<IGraphFlow, IFlowPort> FlowSerial { get; private set; }
         public bool IsAsync { get; private set; }
-        public Func<Flow, IEnumerator> FlowAsync { get; private set; }
+        public Func<IGraphFlow, IEnumerator> FlowAsync { get; private set; }
 
         public FlowPort() {}
         
@@ -62,51 +61,28 @@ namespace RedOwl.Sleipnir.Engine
             Node = node;
             Id = RedOwlHash.GetHashId($"{node.Id}.{attr.Field.Name}.{attr.Io}");
             Io = attr.Io;
-            
-            //On = (Action)Delegate.CreateDelegate(typeof(Action), Node, Method);
-            //BindSymmetrical();
-            // TODO: Hookup Adjacent Delegates?
         }
 
         public void SetCallback(Action callback)
         {
-            
+            OnExecute += callback;
         }
 
-        public void SetFlow(Func<Flow, IFlowPort> flow)
+        public void SetFlow(Func<IGraphFlow, IFlowPort> flow)
         {
             IsAsync = false;
             FlowSerial = flow;
         }
 
-        public void SetFlow(Func<Flow, IEnumerator> flow)
+        public void SetFlow(Func<IGraphFlow, IEnumerator> flow)
         {
             IsAsync = true;
             FlowAsync = flow;
         }
 
-        // private void BindSymmetrical()
-        // {
-        //     if (_symmetrical == null) return;
-        //     switch (Io)
-        //     {
-        //         case PortIO.In:
-        //             _symmetrical.On += Invoke;
-        //             break;
-        //         case PortIO.Out:
-        //             On += _symmetrical.Invoke;
-        //             break;
-        //     }
-        // }
-        //
-        // public void Invoke()
-        // {
-        //     On?.Invoke();
-        // }
-        //
-
-        public IEnumerator Run(Flow flow)
+        public IEnumerator Run(IGraphFlow graphFlow)
         {
+            OnExecute?.Invoke();
             throw new NotImplementedException();
             // if (!IsAsync)
             // {
@@ -127,10 +103,7 @@ namespace RedOwl.Sleipnir.Engine
             //     }
             // }
             //
-            // foreach (var connection in node.GetFlowConnections(id))
-            // {
-            //     yield return connection.Run(node.Graph, flow);
-            // }
+            
         }
         
         public override string ToString()

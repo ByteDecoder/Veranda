@@ -10,7 +10,10 @@ namespace RedOwl.Sleipnir.Engine
     {
         string Id { get; }
         Rect Rect { get; }
-        bool IsRoot { get; }
+        IEnumerable<IFlowPort> FlowInPorts { get; }
+        IEnumerable<IFlowPort> FlowOutPorts { get; }
+        IEnumerable<IDataPort> DataInPorts { get; }
+        IEnumerable<IDataPort> DataOutPorts { get; }
         void Initialize(IGraph graph);
         
         IFlowPort GetFlowPort(string id);
@@ -20,11 +23,6 @@ namespace RedOwl.Sleipnir.Engine
 
         void Link(FlowPort outPort, FlowPort inPort);
         void Link<TValue>(DataPort<TValue> outPort, DataPort<TValue> inPort);
-        
-        IEnumerator StartFlow(Flow flow);
-        IEnumerator Run(IFlowPort port, Flow flow);
-        IEnumerator Pull(IDataConnection port, Flow flow);
-        IEnumerator Pull(IDataPort port, Flow flow);
     }
     
     [Serializable, HideReferenceObjectPicker, InlineProperty]
@@ -46,7 +44,6 @@ namespace RedOwl.Sleipnir.Engine
         public Rect Rect => rect;
         
         private IGraph _graph;
-        public bool IsRoot { get; protected set; }
         
         [SerializeReference, HideInInspector]
         private List<IFlowConnection> _flowConnections;
@@ -57,6 +54,11 @@ namespace RedOwl.Sleipnir.Engine
         private Dictionary<string, IFlowPort> _flowOutPorts;
         private Dictionary<string, IDataPort> _dataInPorts;
         private Dictionary<string, IDataPort> _dataOutPorts;
+
+        public IEnumerable<IFlowPort> FlowInPorts => _flowInPorts.Values;
+        public IEnumerable<IFlowPort> FlowOutPorts => _flowOutPorts.Values;
+        public IEnumerable<IDataPort> DataInPorts => _dataInPorts.Values;
+        public IEnumerable<IDataPort> DataOutPorts => _dataOutPorts.Values;
 
         protected Node()
         {
@@ -185,42 +187,37 @@ namespace RedOwl.Sleipnir.Engine
             _dataConnections.Add(new DataConnection(inPort, outPort));
         }
 
-        public IEnumerator StartFlow(Flow flow)
-        {
-            foreach (var port in _flowOutPorts.Values)
-            {
-                yield return port.Run(flow);
-            }
-        }
-
-        public IEnumerator Run(IFlowPort port, Flow flow)
+        public IEnumerator Run(IFlowPort port, GraphFlow graphFlow)
         {
             // Ask DataIn ports to suck in data?
-            yield return port.Run(flow);
+            yield return port.Run(graphFlow);
         }
         
-        public IEnumerator Pull(IDataConnection connection, Flow flow)
+        public IEnumerator Pull(IDataConnection connection, GraphFlow graphFlow)
         {
+            throw new NotImplementedException();
             // TODO: do we need to check if the upstream nodes already had its data pushed into the flow?
-            var nextNode = _graph.GetNode(connection.TargetNode);
-            yield return nextNode.Pull(nextNode.GetDataPort(connection.TargetPort), flow);
+            //var nextNode = _graph.GetNode(connection.TargetNode);
+            //yield return nextNode.Pull(nextNode.GetDataPort(connection.TargetPort), graphFlow);
         }
 
-        public IEnumerator Pull(IDataPort port, Flow flow)
+        public IEnumerator Pull(IDataPort port, GraphFlow graphFlow)
         {
             foreach (var dataInPort in _dataInPorts.Values)
             {
-                yield return dataInPort.Pull(flow);
+                yield return dataInPort.Pull(graphFlow);
             }
-            SetData(flow);
+            SetData(graphFlow);
         }
 
-        private void SetData(Flow flow)
+        private void SetData(IGraphFlow graphFlow)
         {
             foreach (var port in _dataOutPorts.Values)
             {
-                flow.Set(port);
+                graphFlow.Set(port);
             }
+
+            graphFlow.Complete(Id);
         }
 
         public override string ToString()

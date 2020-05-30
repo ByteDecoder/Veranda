@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,24 +11,26 @@ namespace RedOwl.Sleipnir.Engine
         EnterNode EnterNode { get; }
         ExitNode ExitNode { get; }
         
+        int NodeCount { get; }
         IEnumerable<INode> Nodes { get; }
 
         IEnumerable<Type> PossibleNodes { get; }
         void Initialize();
-        void Start(MonoBehaviour behaviour);
-        
-        INode GetNode(string id);
 
+        IEnumerator Execute(IFlowRootNode node);
+
+        IEnumerable<TNode> GetNodes<TNode>() where TNode : INode;
+        INode GetNode(string id);
+        
         TNode Add<TNode>() where TNode : INode, new();
         TNode Add<TNode>(TNode node) where TNode : INode;
-        void Link(IFlowOutNode outNode, IFlowInNode inNode);
         void Link(FlowPort outPort, FlowPort inPort);
         void Link<TValue>(DataPort<TValue> outPort, DataPort<TValue> inPort);
-        void CreateFlow(params IFlowNode[] flow);
+        void Link(params IFlowNode[] flow);
     }
     
     [Serializable]
-    public abstract class Graph<T> : IGraph where T : INode
+    public abstract class Graph<TNode, TFlow> : IGraph where TNode : INode where TFlow : IGraphFlow, new()
     {
         [SerializeReference] private List<INode> _nodes;
         private Dictionary<string, INode> _nodeTable;
@@ -36,16 +39,18 @@ namespace RedOwl.Sleipnir.Engine
         public string Name => GetType().Name;
         public EnterNode EnterNode => (EnterNode)_nodes[0];
         public ExitNode ExitNode => (ExitNode)_nodes[1];
+
+        public int NodeCount => _nodes.Count;
         public IEnumerable<INode> Nodes => _nodes;
-        public IEnumerable<Type> PossibleNodes => Sleipnir.Nodes.Find<T>();
+        public IEnumerable<Type> PossibleNodes => Sleipnir.Nodes.Find<TNode>();
         #endregion
         
         protected Graph()
         {
             _nodes = new List<INode>
             {
-                new EnterNode(),
-                new ExitNode()
+                new StartNode(),
+                new UpdateNode()
             };
         }
 
@@ -60,13 +65,17 @@ namespace RedOwl.Sleipnir.Engine
             }
             //Debug.Log($"GraphType '{GetType().Name}' Initialized!");
         }
-        
-        public void Start(MonoBehaviour behaviour)
+
+        public IEnumerator Execute(IFlowRootNode node)
         {
-            foreach (INode node in _nodes)
+            yield return new TFlow().Execute(this, node);
+        }
+        
+        public IEnumerable<TNode> GetNodes<TNode>() where TNode : INode
+        {
+            foreach (var node in _nodes)
             {
-                if (!node.IsRoot) continue;
-                behaviour.StartCoroutine(node.StartFlow(new Flow()));
+                if (node is TNode value) yield return value;
             }
         }
 
@@ -82,11 +91,6 @@ namespace RedOwl.Sleipnir.Engine
             return node;
         }
 
-        public void Link(IFlowOutNode outNode, IFlowInNode inNode)
-        {
-            Link(outNode.FlowOut, inNode.FlowIn);
-        }
-        
         public void Link(FlowPort outPort, FlowPort inPort)
         {
             outPort.Node.Link(outPort, inPort);
@@ -97,17 +101,18 @@ namespace RedOwl.Sleipnir.Engine
             inPort.Node.Link(outPort, inPort);
         }
 
-        public void CreateFlow(params IFlowNode[] flow)
+        public void Link(params IFlowNode[] flow)
         {
             int count = flow.Length;
-            Link(EnterNode, flow[0]);
+            Link(EnterNode.FlowOut, flow[0].FlowIn);
             for (int i = 1; i < count; i++)
             {
-                Link(flow[i - 1], flow[i]);
+                Link(flow[i - 1].FlowOut, flow[i].FlowIn);
             }
-            Link(flow[count - 1], ExitNode);
+            Link(flow[count - 1].FlowOut, ExitNode.FlowIn);
         }
-
-
     }
+    
+    [Serializable]
+    public abstract class Graph<TNode> : Graph<TNode, GraphFlow> where TNode : INode {}
 }

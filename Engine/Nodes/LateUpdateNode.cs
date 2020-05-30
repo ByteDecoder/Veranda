@@ -6,8 +6,5 @@ namespace RedOwl.Sleipnir.Engine
 {
     [Serializable]
     [HideReferenceObjectPicker, InlineProperty]
-    public class UpdateNode : FlowRootNode, IFlowOutNode
-    {
-
-    }
+    public class LateUpdateNode : FlowRootNode, IFlowOutNode {}
 }

@@ -13,15 +13,8 @@ namespace RedOwl.Sleipnir.Engine
     {
         FlowPort FlowOut { get; }
     }
-
-    public interface IFlowNode : IFlowInNode, IFlowOutNode
-    {
-        bool Active { get; }
-
-        void OnEnter();
-        void OnUpdate();
-        void OnExit();
-    }
+    
+    public interface IFlowNode : IFlowInNode, IFlowOutNode {}
 
     [Serializable, HideReferenceObjectPicker, InlineProperty]
     public abstract class FlowNode : Node, IFlowNode
@@ -36,15 +29,7 @@ namespace RedOwl.Sleipnir.Engine
         [FlowOut]
         protected FlowPort flowOut;
         public FlowPort FlowOut => flowOut;
-
-        private bool _active;
-        public bool Active => _active;
         #endregion
-
-        protected FlowNode()
-        {
-            _active = false;
-        }
 
         protected override void Setup()
         {
