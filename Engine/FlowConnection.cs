@@ -7,7 +7,8 @@ namespace RedOwl.Sleipnir.Engine
     public interface IFlowConnection
     {
         string Port { get; }
-        IEnumerator Run(IGraph graph, GraphFlow graphFlow);
+        string TargetNode { get; }
+        string TargetPort { get; }
     }
     
     [Serializable]
@@ -19,21 +20,17 @@ namespace RedOwl.Sleipnir.Engine
 
         [SerializeField]
         private string targetNode;
+        public string TargetNode => targetNode;
+        
         [SerializeField]
         private string targetPort;
+        public string TargetPort => targetPort;
 
         public FlowConnection(IPort start, IPort target)
         {
             port = start.Id;
             targetNode = target.Node.Id;
             targetPort = target.Id;
-        }
-        
-        public IEnumerator Run(IGraph graph, GraphFlow graphFlow)
-        {
-            throw new NotImplementedException();
-            //var nextNode = graph.GetNode(targetNode);
-            //yield return nextNode.Run(nextNode.GetFlowPort(targetPort), graphFlow);
         }
     }
 }

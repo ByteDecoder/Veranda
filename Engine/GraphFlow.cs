@@ -1,44 +1,140 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace RedOwl.Sleipnir.Engine
 {
     public interface IGraphFlow
     {
-        IEnumerator Execute(IGraph graph, IFlowRootNode node);
-        
+        void Execute(MonoBehaviour behaviour, IGraph graph, IFlowRootNode node);
+
         T Get<T>(DataPort<T> port);
         void Set(IDataPort port);
-        void Complete(string id);
     }
 
     public class GraphFlow : IGraphFlow
     {
-        protected internal Dictionary<string, object> Data;
-        protected internal Dictionary<string, bool> NodeState;
+        private Dictionary<string, object> Data;
+        private Dictionary<string, bool> NodeState;
+        private MonoBehaviour _behaviour;
+        private int _stack;
+        private int _cycles;
 
-        public IEnumerator Execute(IGraph graph, IFlowRootNode rootNode)
+        public void Execute(MonoBehaviour behaviour, IGraph graph, IFlowRootNode node)
         {
-            // Prepare Data
             int count = graph.NodeCount;
             Data = new Dictionary<string, object>(count);
             NodeState = new Dictionary<string, bool>(count);
-            foreach (var node in graph.Nodes)
+            foreach (var n in graph.Nodes)
             {
-                NodeState[node.Id] = false;
+                NodeState[n.Id] = false;
             }
             
-            // Begin Execution of OutPorts
-            // foreach (var port in rootNode.FlowOutPorts)
-            // {
-            //     yield return port.Run(this);
-            // }
-            // Decide which connections to follow and in what order
-            // foreach (var connection in node.GetFlowConnections(id))
-            // {
-            //     yield return connection.Run(node.Graph, flow);
-            // }
-            yield break;
+            _behaviour = behaviour;
+            _stack = 0;
+            _cycles = 0;
+            
+            // Begin Execution of OutPorts on root node
+            behaviour.StartCoroutine(Run(graph, node));
+        }
+
+        private IEnumerator Run(IGraph graph, IFlowRootNode node)
+        {
+            // TODO: there is something strange here with a connected flow of nodes > 800 that causes a crash
+            while (true)
+            {
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+
+                foreach (var port in node.FlowOutPorts)
+                {
+                    yield return FollowConnections(graph, node, port);
+                }
+            
+                stopWatch.Stop();
+                TimeSpan ts = stopWatch.Elapsed;
+                Debug.Log($"RunTime {ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}");
+                yield return new WaitForSeconds(0.2f);
+            }
+        }
+
+        private IEnumerator FollowSuccession(IGraph graph, INode node, IFlowPort port)
+        {
+            PullData(graph, node);
+            //Debug.Log($"Triggering: '{node}.{port}'");
+            port.Trigger(this);
+            if (!port.HasSuccession) yield break;
+            if (port.IsAsync)
+            {
+                var succession = port.AsyncSuccession(this);
+                while (succession.MoveNext())
+                {
+                    if (succession.Current is IFlowPort successionPort)
+                    {
+                        //Debug.Log($"Following Succession from '{node}.{port}' to '{node}.{successionPort}'");
+                        SetData(node);
+                        yield return FollowConnections(graph, node, successionPort);
+                    }
+                    yield return succession.Current;
+                }
+            } 
+            else
+            {
+                var successionPort = port.SerialSuccession(this);
+                //Debug.Log($"Following Succession from '{node}.{port}' to '{node}.{successionPort}'");
+                SetData(node);
+                yield return FollowConnections(graph, node, successionPort);
+            }
+        }
+
+        private IEnumerator FollowConnections(IGraph graph, INode node, IFlowPort port)
+        {
+            //Debug.Log($"Triggering: '{node}.{port}'");
+            port.Trigger(this);
+            foreach (var connection in node.GetFlowConnections(port.Id))
+            {
+                var nextNode = graph.GetNode(connection.TargetNode);
+                var nextPort = nextNode.GetFlowPort(connection.TargetPort);
+                //Debug.Log($"Following Connection from '{node}.{port}' to '{nextNode}.{nextPort}'");
+                _cycles += 1;
+                if (_cycles > 250)
+                {
+                    _cycles = 0;
+                    yield return null;
+                }
+                _stack += 1;
+                yield return FollowSuccession(graph, nextNode, nextPort);
+            }
+        }
+
+        private void PullData(IGraph graph, INode node)
+        {
+            foreach (var port in node.DataInPorts)
+            {
+                foreach (var connection in node.GetDataConnections(port.Id))
+                {
+                    // TODO: Check if upstream dataOutPort has already set it data to the flow and 'continue'
+                    var nextNode = graph.GetNode(connection.TargetNode);
+                    var nextPort = nextNode.GetDataPort(connection.TargetPort);
+                    //Debug.Log($"Following Connection from '{node}.{port}' to '{nextNode}.{nextPort}'");
+                    if (!Data.TryGetValue(connection.TargetPort, out object value)) continue;
+                    //Debug.Log($"Pulling Data '{value}' from '{nextNode}.{nextPort}' to '{node}.{port}'");
+                    port.Data = value;
+                }
+            }
+        }
+
+        private void SetData(INode node)
+        {
+            foreach (var port in node.DataOutPorts)
+            {
+                //Debug.Log($"SetData '{node}.{port}' | {port.Id} = {port.Data}");
+                Set(port);
+            }
         }
 
         public T Get<T>(DataPort<T> port)
@@ -54,11 +150,6 @@ namespace RedOwl.Sleipnir.Engine
         public void Set(IDataPort port)
         {
             Data[port.Id] = port.Data;
-        }
-
-        public void Complete(string id)
-        {
-            NodeState[id] = true;
         }
     }
 }

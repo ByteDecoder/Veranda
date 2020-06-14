@@ -22,45 +22,55 @@ namespace RedOwl.Sleipnir.Engine
     
     public interface IFlowPort : IPort
     {
-        bool IsExit { get; }
         event Action OnExecute;
-        Func<IGraphFlow, IFlowPort> FlowSerial { get; }
-        Func<IGraphFlow, IEnumerator> FlowAsync { get; }
-        IEnumerator Run(IGraphFlow graphFlow);
+        void Initialize(INode node, FlowAttribute attr);
+        void Trigger(IGraphFlow flow);
+        bool HasSuccession { get;  }
+        Func<IGraphFlow, IFlowPort> SerialSuccession { get; }
+        bool IsAsync { get; }
+        Func<IGraphFlow, IEnumerator> AsyncSuccession { get; }
     }
     
-    [Serializable]
+    [Serializable, InlineProperty, HideReferenceObjectPicker]
     public class FlowPort : IFlowPort
     {
         public INode Node { get; private set; }
-
+        public PortIO Io { get; private set; }
+        public string Name { get; private set; }
+        [ShowInInspector, HideLabel]
         public string Id { get; private set; }
 
-        public PortIO Io { get; private set; }
-
-        public bool IsExit => Io.IsOutput();
         public event Action OnExecute;
-        public Func<IGraphFlow, IFlowPort> FlowSerial { get; private set; }
+        public bool HasSuccession { get; private set; }
+        public Func<IGraphFlow, IFlowPort> SerialSuccession { get; private set; }
         public bool IsAsync { get; private set; }
-        public Func<IGraphFlow, IEnumerator> FlowAsync { get; private set; }
+        public Func<IGraphFlow, IEnumerator> AsyncSuccession { get; private set; }
 
         public FlowPort() {}
         
-        internal FlowPort(FlowPort symmetrical)
+        internal FlowPort(IFlowPort symmetrical)
         {
             Node = symmetrical.Node;
-            Io = symmetrical.IsExit ? PortIO.In : PortIO.Out;
-            Id = RedOwlHash.GetHashId($"{Node.Id}.symmetrical");
-            FlowSerial = (flow) => symmetrical;
+            Io = symmetrical.Io.IsOutput() ? PortIO.In : PortIO.Out;
+            Name = symmetrical.Name;
+            Id = RedOwlHash.GetHashId($"{Node.Id}.{Name}.{Io}");
+            SerialSuccession = (flow) => symmetrical;
         }
 
-        public FlowPort CreateSymmetrical() => new FlowPort(this);
+        public IFlowPort CreateSymmetrical() => new FlowPort(this);
 
-        internal void Initialize(INode node, FlowAttribute attr)
+        public void Initialize(INode node, FlowAttribute attr)
         {
             Node = node;
-            Id = RedOwlHash.GetHashId($"{node.Id}.{attr.Field.Name}.{attr.Io}");
             Io = attr.Io;
+            Name = attr.Field.Name;
+            Id = RedOwlHash.GetHashId($"{Node.Id}.{Name}.{Io}");
+            
+        }
+
+        public void Trigger(IGraphFlow flow)
+        {
+            OnExecute?.Invoke();
         }
 
         public void SetCallback(Action callback)
@@ -68,47 +78,31 @@ namespace RedOwl.Sleipnir.Engine
             OnExecute += callback;
         }
 
-        public void SetFlow(Func<IGraphFlow, IFlowPort> flow)
+        public void Succession(Func<IGraphFlow, IFlowPort> flow)
         {
+            HasSuccession = true;
             IsAsync = false;
-            FlowSerial = flow;
+            SerialSuccession = flow;
         }
 
-        public void SetFlow(Func<IGraphFlow, IEnumerator> flow)
+        public void Succession(Func<IGraphFlow, IEnumerator> flow)
         {
+            HasSuccession = true;
             IsAsync = true;
-            FlowAsync = flow;
+            AsyncSuccession = flow;
         }
 
-        public IEnumerator Run(IGraphFlow graphFlow)
-        {
-            OnExecute?.Invoke();
-            throw new NotImplementedException();
-            // if (!IsAsync)
-            // {
-            //     var nextFlowPort = port.FlowSerial(flow);
-            //     SetData(flow);
-            //     yield return nextFlowPort.Run(flow);
-            // }
-            // else
-            // {
-            //     while (port.FlowAsync.MoveNext())
-            //     {
-            //         if (port.FlowAsync.Current is IFlowPort nextFlowPort)
-            //         {
-            //             SetData(flow);
-            //             yield return nextFlowPort.Run(flow);
-            //         }
-            //         yield return port.FlowAsync.Current;
-            //     }
-            // }
-            //
-            
-        }
-        
         public override string ToString()
         {
-            return $"{Id}.{Io}";
+            return $"{Name}.{Io}";
         }
     }
+
+    // TODO: Replace attribute usage with these
+    // public class FlowInPort : FlowPort, IFlowInPort {}
+    //
+    // public class FlowOutPort : FlowPort, IFlowOutPort {}
+    //
+    // public class FlowInOutPort : FlowPort, IFlowInPort, IFlowOutPort {}
+    
 }
