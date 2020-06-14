@@ -4,20 +4,10 @@ using UnityEngine;
 
 namespace RedOwl.Sleipnir.Engine
 {
-    public interface IEnterNode
-    {
-        bool ActivateOnStart { get; }
-    }
-    
     [Serializable]
     [HideReferenceObjectPicker, InlineProperty]
-    public class EnterNode : Node, IFlowOutNode, IEnterNode
+    public class EnterNode : Node, IFlowOutNode
     {
-        [SerializeField]
-        private bool activateOnStart;
-
-        public bool ActivateOnStart => activateOnStart;
-
         [SerializeField]
         [FlowOut]
         protected FlowPort flowOut;

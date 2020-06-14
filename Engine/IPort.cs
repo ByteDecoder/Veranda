@@ -2,8 +2,9 @@ namespace RedOwl.Sleipnir.Engine
 {
     public interface IPort
     {
-        string Id { get; }
-        PortIO Io { get;  }
         INode Node { get; }
+        PortIO Io { get; }
+        string Name { get; }
+        string Id { get; }
     }
 }

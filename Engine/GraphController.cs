@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace RedOwl.Sleipnir.Engine
 {
@@ -34,39 +36,38 @@ namespace RedOwl.Sleipnir.Engine
         [Button]
         private void Start()
         {
-            // TODO: Validate This works
             foreach (var node in _startNodes)
             {
-                StartCoroutine(_data.graph.Execute(node));
+                _data.graph.Execute(this, node);
             }
         }
 
         [Button]
         private void Update()
         {
-            // TODO: Validate This works
-            foreach (var node in _updateNodes)
-            {
-                StartCoroutine(_data.graph.Execute(node));
-            }
+            // TODO: Don't run Execute if node isn't connected
+            // foreach (var node in _updateNodes)
+            // {
+            //     StartCoroutine(_data.graph.Execute(node));
+            // }
         }
 
         [Button]
         private void LateUpdate()
         {
-            foreach (var node in _lateUpdateNodes)
-            {
-                StartCoroutine(_data.graph.Execute(node));
-            }
+            // foreach (var node in _lateUpdateNodes)
+            // {
+            //     StartCoroutine(_data.graph.Execute(node));
+            // }
         }
 
         [Button]
         private void FixedUpdate()
         {
-            foreach (var node in _fixedUpdateNodes)
-            {
-                StartCoroutine(_data.graph.Execute(node));
-            }
+            // foreach (var node in _fixedUpdateNodes)
+            // {
+            //     StartCoroutine(_data.graph.Execute(node));
+            // }
         }
     }
 }

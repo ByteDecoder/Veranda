@@ -7,8 +7,8 @@ namespace RedOwl.Sleipnir.Engine
 {
     public interface ISubGraphNode
     {
-        IEnumerable<FlowPort> GetDynamicFlowPorts();
-        IEnumerable<DataPort> GetDynamicDataPorts();
+        IEnumerable<IFlowPort> GetDynamicFlowPorts();
+        IEnumerable<IDataPort> GetDynamicDataPorts();
     }
     
     [Serializable, HideReferenceObjectPicker, InlineProperty]
@@ -22,10 +22,12 @@ namespace RedOwl.Sleipnir.Engine
         
         protected override void Setup()
         {
+            // TODO: Ensure Graph has Enter & Exit nodes
+            // TODO: Properly Create Succession between Enter & Exit node's ports and the dynamically created symmetrical ports
             Graph.Initialize();
         }
 
-        public IEnumerable<FlowPort> GetDynamicFlowPorts()
+        public IEnumerable<IFlowPort> GetDynamicFlowPorts()
         {
             foreach (var node in Graph.Nodes)
             {
@@ -43,7 +45,7 @@ namespace RedOwl.Sleipnir.Engine
             }
         }
 
-        public IEnumerable<DataPort> GetDynamicDataPorts()
+        public IEnumerable<IDataPort> GetDynamicDataPorts()
         {
             foreach (var node in Graph.Nodes)
             {

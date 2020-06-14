@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using RedOwl.Core;
 using Sirenix.OdinInspector;
@@ -27,56 +26,44 @@ namespace RedOwl.Sleipnir.Engine
     
     public interface IDataPort : IPort
     {
-        object Data { get; }
-        bool IsExit { get; }
-        IEnumerator Pull(GraphFlow graphFlow);
+        object Data { get; set; }
+        void Initialize(INode node, DataAttribute attr);
     }
     
     [Serializable]
     public class DataPort : IDataPort
     {
         public INode Node { get; private set; }
-
+        public PortIO Io { get; private set; }
+        public string Name { get; private set; }
+        
         public string Id { get; private set; }
 
-        public PortIO Io { get; private set; }
+        public object Data { get; set; }
 
-        public bool IsExit => Io.IsOutput();
-
-        [SerializeField, HideInInspector]
-        protected object data;
-        public object Data => data;
-        
         public DataPort() {}
         
-        internal DataPort(DataPort symmetrical)
+        internal DataPort(IDataPort symmetrical)
         {
             Node = symmetrical.Node;
-            Io = symmetrical.IsExit ? PortIO.In : PortIO.Out;
-            Id = RedOwlHash.GetHashId($"{symmetrical.Id}.symmetrical");
+            Io = symmetrical.Io.IsOutput() ? PortIO.In : PortIO.Out;
+            Name = symmetrical.Name;
+            Id = RedOwlHash.GetHashId($"{Node.Id}.{Name}.{Io}");
         }
 
         public DataPort CreateSymmetrical() => new DataPort(this);
         
-        internal void Initialize(INode node, DataAttribute attr)
+        public void Initialize(INode node, DataAttribute attr)
         {
             Node = node;
-            Id = RedOwlHash.GetHashId($"{node.Id}.{attr.Field.Name}.{attr.Io}");
             Io = attr.Io;
-        }
-
-        public IEnumerator Pull(GraphFlow graphFlow)
-        {
-            throw new NotImplementedException();
-            // foreach (var connection in Node.GetDataConnections(Id))
-            // {
-            //     yield return Node.Pull(connection, graphFlow);
-            // }
+            Name = attr.Field.Name;
+            Id = RedOwlHash.GetHashId($"{Node.Id}.{Name}.{Io}");
         }
 
         public override string ToString()
         {
-            return $"{Id}.{Io}";
+            return $"{Name}.{Io}";
         }
     }
     
@@ -89,22 +76,25 @@ namespace RedOwl.Sleipnir.Engine
         [ShowInInspector, HideLabel]
         public T Value
         {
-            get => _value;
-            set
-            {
-                data = value;
-                _value = value;
-            }
+            get => _value = (T)Data;
+            set => Data = _value = value;
         }
 
         public void OnBeforeSerialize()
         {
-            data = _value;
+            Data = _value;
         }
 
         public void OnAfterDeserialize()
         {
-            data = _value;
+            Data = _value;
         }
     }
+    
+    // TODO: Replace attribute usage with these
+    // public class DataInPort<T> : DataPort<T>, IDataInPort {}
+    //
+    // public class DataOutPort<T> : DataPort<T>, IDataOutPort {}
+    //
+    // public class DataInOutPort<T> : DataPort<T>, IDataInPort, IDataOutPort {}
 }

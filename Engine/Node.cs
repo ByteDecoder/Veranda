@@ -31,9 +31,7 @@ namespace RedOwl.Sleipnir.Engine
         [HideLabel, PropertyOrder(-1000)]
         public string name;
         
-        [SerializeField]
-        [HideInInspector]
-        //[DisplayAsString, HideLabel, Title("@Name")]
+        [SerializeField]//, HideInInspector]
         private string id;
         
         public string Id => id;
@@ -93,11 +91,11 @@ namespace RedOwl.Sleipnir.Engine
 
         private void BuildFlowPortList(Type nodeType)
         {
-            var flowPorts = new List<FlowPort>(6);
+            var flowPorts = new List<IFlowPort>(6);
             foreach (var attr in Sleipnir.Ports.GetFlowPorts(nodeType))
             {
                 //Debug.Log($"Initializing FlowPort: {name}.{attr.Field.Name}");
-                var port = (FlowPort) attr.Field.GetValue(this);
+                var port = (IFlowPort) attr.Field.GetValue(this);
                 port.Initialize(this, attr);
                 flowPorts.Add(port);
             }
@@ -106,7 +104,7 @@ namespace RedOwl.Sleipnir.Engine
             BuildFlowPortLookupTable(flowPorts);
         }
         
-        private void BuildFlowPortLookupTable(List<FlowPort> flowPorts)
+        private void BuildFlowPortLookupTable(IReadOnlyCollection<IFlowPort> flowPorts)
         {
             int count = flowPorts.Count;
             _flowInPorts = new Dictionary<string, IFlowPort>(count);
@@ -116,17 +114,17 @@ namespace RedOwl.Sleipnir.Engine
                 if (port.Io.IsInput())
                     _flowInPorts.Add(port.Id, port);
                 if (port.Io.IsOutput())
-                    _flowInPorts.Add(port.Id, port);
+                    _flowOutPorts.Add(port.Id, port);
             }
         }
 
         private void BuildDataPortList(Type nodeType)
         {
-            var dataPorts = new List<DataPort>(20);
+            var dataPorts = new List<IDataPort>(20);
             foreach (var attr in Sleipnir.Ports.GetDataPorts(nodeType))
             {
                 //Debug.Log($"Initializing DataPort: {name}.{attr.Field.Name}");
-                var port = (DataPort) attr.Field.GetValue(this);
+                var port = (IDataPort) attr.Field.GetValue(this);
                 port.Initialize(this, attr);
                 dataPorts.Add(port);
             }
@@ -135,7 +133,7 @@ namespace RedOwl.Sleipnir.Engine
             BuildDataPortLookupTable(dataPorts);
         }
 
-        private void BuildDataPortLookupTable(List<DataPort> dataPorts)
+        private void BuildDataPortLookupTable(IReadOnlyCollection<IDataPort> dataPorts)
         {
             int count = dataPorts.Count;
             _dataInPorts = new Dictionary<string, IDataPort>(count);
@@ -161,6 +159,7 @@ namespace RedOwl.Sleipnir.Engine
 
         public IEnumerable<IFlowConnection> GetFlowConnections(string id)
         {
+            // TODO: Sort flow connections left to right based on Rect Position
             foreach (var connection in _flowConnections)
             {
                 if (connection.Port != id) continue;
@@ -187,42 +186,9 @@ namespace RedOwl.Sleipnir.Engine
             _dataConnections.Add(new DataConnection(inPort, outPort));
         }
 
-        public IEnumerator Run(IFlowPort port, GraphFlow graphFlow)
-        {
-            // Ask DataIn ports to suck in data?
-            yield return port.Run(graphFlow);
-        }
-        
-        public IEnumerator Pull(IDataConnection connection, GraphFlow graphFlow)
-        {
-            throw new NotImplementedException();
-            // TODO: do we need to check if the upstream nodes already had its data pushed into the flow?
-            //var nextNode = _graph.GetNode(connection.TargetNode);
-            //yield return nextNode.Pull(nextNode.GetDataPort(connection.TargetPort), graphFlow);
-        }
-
-        public IEnumerator Pull(IDataPort port, GraphFlow graphFlow)
-        {
-            foreach (var dataInPort in _dataInPorts.Values)
-            {
-                yield return dataInPort.Pull(graphFlow);
-            }
-            SetData(graphFlow);
-        }
-
-        private void SetData(IGraphFlow graphFlow)
-        {
-            foreach (var port in _dataOutPorts.Values)
-            {
-                graphFlow.Set(port);
-            }
-
-            graphFlow.Complete(Id);
-        }
-
         public override string ToString()
         {
-            return $"{name}[{Id}]";
+            return $"{name}";
         }
 
         #region API
