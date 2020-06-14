@@ -26,7 +26,9 @@ namespace RedOwl.Sleipnir.Engine
         TNode Add<TNode>() where TNode : INode, new();
         TNode Add<TNode>(TNode node) where TNode : INode;
         void Link<T>(IFlowInNode inNode) where T : IFlowOutNode;
+        void Link<T>(FlowIn inPort) where T : IFlowOutNode;
         void Link<T>(IFlowOutNode outNode) where T : IFlowInNode;
+        void Link<T>(FlowOut outPort) where T : IFlowInNode;
         void Link(FlowPort outPort, FlowPort inPort);
         void Link<TValue>(DataPort<TValue> outPort, DataPort<TValue> inPort);
         void Link(IFlowOutNode outNode, IFlowInNode inNode);
@@ -125,11 +127,27 @@ namespace RedOwl.Sleipnir.Engine
             }
         }
         
+        public void Link<T>(FlowIn inPort) where T : IFlowOutNode
+        {
+            foreach (var node in _nodes)
+            {
+                if (node is T value) Link(value.FlowOut, inPort);
+            }
+        }
+        
         public void Link<T>(IFlowOutNode outNode) where T : IFlowInNode
         {
             foreach (var node in _nodes)
             {
                 if (node is T value) Link(outNode.FlowOut, value.FlowIn);
+            }
+        }
+        
+        public void Link<T>(FlowOut outPort) where T : IFlowInNode
+        {
+            foreach (var node in _nodes)
+            {
+                if (node is T value) Link(outPort, value.FlowIn);
             }
         }
 

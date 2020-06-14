@@ -32,7 +32,7 @@ namespace RedOwl.Sleipnir.Engine
         protected override void Setup()
         {
             flowIn.SetCallback(OnEnter);
-            flowIn.Succession((flow) => flowOut);
+            flowIn.Succession(flow => flowOut);
             flowOut.SetCallback(OnExit);
         }
 
