@@ -27,45 +27,28 @@ namespace RedOwl.Sleipnir.Engine
         }
     }
     
-    public struct DataPortPrototype
+    public class PortInfo
     {
-        public string NodeNamespace;
-        public string NodeName;
-        public string Name;
         public PortIO Io;
         public FieldInfo Field;
-
-        public DataPortPrototype(Type nodeType, PortIO io, FieldInfo field)
-        {
-            NodeNamespace = nodeType.Namespace;
-            NodeName = nodeType.Name;
-            Name = field.Name;
-            Io = io;
-            Field = field;
-        }
-
-        public string GetHashId(string nodeId)
-        {
-            return RedOwlHash.GetHashId($"{NodeNamespace}.{NodeName}.{nodeId}.{Name}.{Io}");
-        }
     }
 
     public class PortCache
     {
         private bool _cacheIsBuilt;
-        private Dictionary<Type, List<DataAttribute>> _cacheDataPorts;
-        private Dictionary<Type, List<FlowAttribute>> _cacheFlowPorts;
+        private Dictionary<Type, List<PortInfo>> _cacheDataPorts;
+        private Dictionary<Type, List<PortInfo>> _cacheFlowPorts;
         
-        public List<DataAttribute> GetDataPorts(Type type)
+        public List<PortInfo> GetDataPorts(Type type)
         {
             ShouldBuildCache();
-            return _cacheDataPorts.TryGetValue(type, out var output) ? output : new List<DataAttribute>();
+            return _cacheDataPorts.TryGetValue(type, out var output) ? output : new List<PortInfo>();
         }
         
-        public List<FlowAttribute> GetFlowPorts(Type type)
+        public List<PortInfo> GetFlowPorts(Type type)
         {
             ShouldBuildCache();
-            return _cacheFlowPorts.TryGetValue(type, out var output) ? output : new List<FlowAttribute>();
+            return _cacheFlowPorts.TryGetValue(type, out var output) ? output : new List<PortInfo>();
         }
 
         public void ShouldBuildCache()
@@ -75,58 +58,58 @@ namespace RedOwl.Sleipnir.Engine
 
         private void BuildCache()
         {
-            _cacheDataPorts = new Dictionary<Type, List<DataAttribute>>();
-            _cacheFlowPorts = new Dictionary<Type, List<FlowAttribute>>();
+            _cacheDataPorts = new Dictionary<Type, List<PortInfo>>();
+            _cacheFlowPorts = new Dictionary<Type, List<PortInfo>>();
 
-            var inputAttr = typeof(DataInAttribute);
-            var outputAttr = typeof(DataOutAttribute);
-            var inoutAttr = typeof(DataInOutAttribute);
+            var dataIn = typeof(IDataInPort);
+            var dataOut = typeof(IDataOutPort);
+            var flowIn = typeof(IFlowInPort);
+            var flowOut = typeof(IFlowOutPort);
 
             // TODO: Progress Bar?
             foreach (var type in TypeExtensions.GetAllTypes<INode>())
             {
                 if (typeof(GraphReference).IsAssignableFrom(type)) continue;
                 var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                var dataPorts = new List<DataAttribute>(fields.Length);
-                var flowPorts = new List<FlowAttribute>(fields.Length);
+                var dataPorts = new List<PortInfo>(fields.Length);
+                var flowPorts = new List<PortInfo>(fields.Length);
 
                 foreach (var field in fields)
                 {
+                    PortInfo dataPortInfo = null;
                     // Data
-                    if (field.TryGetAttribute(out DataInAttribute dataInAttr, false))
+                    if (dataIn.IsAssignableFrom(field.FieldType))
                     {
-                        dataInAttr.Io = PortIO.In;
-                        dataInAttr.Field = field;
-                        dataPorts.Add(dataInAttr);
+                        dataPortInfo = new PortInfo {Io = PortIO.In, Field = field};
                     }
 
-                    if (field.TryGetAttribute(out DataOutAttribute dataOutAttr, false))
+                    if (dataOut.IsAssignableFrom(field.FieldType))
                     {
-                        dataOutAttr.Io = PortIO.Out;
-                        dataOutAttr.Field = field;
-                        dataPorts.Add(dataOutAttr);
+                        if (dataPortInfo == null)
+                        {
+                            dataPortInfo = new PortInfo {Io = PortIO.Out, Field = field};
+                        }
+                        else
+                        {
+                            dataPortInfo.Io = PortIO.InOut;
+                        }
                     }
 
-                    if (field.TryGetAttribute(out DataInOutAttribute dataInOutAttr, false))
+                    if (dataPortInfo != null)
                     {
-                        dataInOutAttr.Io = PortIO.InOut;
-                        dataInOutAttr.Field = field;
-                        dataPorts.Add(dataInOutAttr);
+                        dataPorts.Add(dataPortInfo);
+                        continue;
+                    }
+
+                    // Flow
+                    if (flowIn.IsAssignableFrom(field.FieldType))
+                    {
+                        flowPorts.Add(new PortInfo {Io = PortIO.In, Field = field});
                     }
                     
-                    // Flow
-                    if (field.TryGetAttribute(out FlowInAttribute flowInAttr, false))
+                    if (flowOut.IsAssignableFrom(field.FieldType))
                     {
-                        flowInAttr.Io = PortIO.In;
-                        flowInAttr.Field = field;
-                        flowPorts.Add(flowInAttr);
-                    }
-
-                    if (field.TryGetAttribute(out FlowOutAttribute flowOutAttr, false))
-                    {
-                        flowOutAttr.Io = PortIO.Out;
-                        flowOutAttr.Field = field;
-                        flowPorts.Add(flowOutAttr);
+                        flowPorts.Add(new PortInfo {Io = PortIO.Out, Field = field});
                     }
                 }
 

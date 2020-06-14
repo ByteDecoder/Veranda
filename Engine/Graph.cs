@@ -17,7 +17,7 @@ namespace RedOwl.Sleipnir.Engine
         IEnumerable<Type> PossibleNodes { get; }
         void Initialize();
 
-        void Execute(MonoBehaviour behaviour, IFlowRootNode node);
+        IEnumerator Execute(IFlowRootNode node);
 
         IEnumerable<TNode> GetNodes<TNode>() where TNode : INode;
         T GetFirstNode<T>() where T : INode;
@@ -25,6 +25,8 @@ namespace RedOwl.Sleipnir.Engine
         
         TNode Add<TNode>() where TNode : INode, new();
         TNode Add<TNode>(TNode node) where TNode : INode;
+        void Link<T>(IFlowInNode inNode) where T : IFlowOutNode;
+        void Link<T>(IFlowOutNode outNode) where T : IFlowInNode;
         void Link(FlowPort outPort, FlowPort inPort);
         void Link<TValue>(DataPort<TValue> outPort, DataPort<TValue> inPort);
         void Link(IFlowOutNode outNode, IFlowInNode inNode);
@@ -76,10 +78,11 @@ namespace RedOwl.Sleipnir.Engine
             //Debug.Log($"GraphType '{GetType().Name}' Initialized!");
         }
 
-        public void Execute(MonoBehaviour behaviour, IFlowRootNode node)
+        public IEnumerator Execute(IFlowRootNode node)
         {
+            // TODO: Don't execute of node isn't connect?
             //Debug.Log($"Beginning Flow on: '{Name}' at RootNode '{node}'");
-            new TFlow().Execute(behaviour, this, node);
+            yield return new TFlow().Execute(this, node);
         }
         
         public IEnumerable<T> GetNodes<T>() where T : INode
@@ -112,6 +115,22 @@ namespace RedOwl.Sleipnir.Engine
             _nodes.Add(node);
             _nodeTable.Add(node.Id, node);
             return node;
+        }
+        
+        public void Link<T>(IFlowInNode inNode) where T : IFlowOutNode
+        {
+            foreach (var node in _nodes)
+            {
+                if (node is T value) Link(value.FlowOut, inNode.FlowIn);
+            }
+        }
+        
+        public void Link<T>(IFlowOutNode outNode) where T : IFlowInNode
+        {
+            foreach (var node in _nodes)
+            {
+                if (node is T value) Link(outNode.FlowOut, value.FlowIn);
+            }
         }
 
         public void Link(FlowPort outPort, FlowPort inPort)

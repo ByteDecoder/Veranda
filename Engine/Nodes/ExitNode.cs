@@ -9,10 +9,9 @@ namespace RedOwl.Sleipnir.Engine
     public class ExitNode : Node, IFlowInNode
     {
         [SerializeField]
-        [FlowIn] 
-        protected FlowPort flowIn;
+        protected FlowIn flowIn;
 
-        public FlowPort FlowIn => flowIn;
+        public FlowIn FlowIn => flowIn;
 
         protected override void Setup()
         {

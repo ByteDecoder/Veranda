@@ -6,12 +6,12 @@ namespace RedOwl.Sleipnir.Engine
 {
     public interface IFlowInNode : INode
     {
-        FlowPort FlowIn { get; }
+        FlowIn FlowIn { get; }
     }
 
     public interface IFlowOutNode : INode
     {
-        FlowPort FlowOut { get; }
+        FlowOut FlowOut { get; }
     }
     
     public interface IFlowNode : IFlowInNode, IFlowOutNode {}
@@ -21,14 +21,12 @@ namespace RedOwl.Sleipnir.Engine
     {
         #region IFlowNode
         [SerializeField]
-        [FlowIn]
-        protected FlowPort flowIn;
-        public FlowPort FlowIn => flowIn;
+        protected FlowIn flowIn;
+        public FlowIn FlowIn => flowIn;
 
         [SerializeField]
-        [FlowOut]
-        protected FlowPort flowOut;
-        public FlowPort FlowOut => flowOut;
+        protected FlowOut flowOut;
+        public FlowOut FlowOut => flowOut;
         #endregion
 
         protected override void Setup()

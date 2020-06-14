@@ -10,7 +10,7 @@ namespace RedOwl.Sleipnir.Engine
 {
     public interface IGraphFlow
     {
-        void Execute(MonoBehaviour behaviour, IGraph graph, IFlowRootNode node);
+        IEnumerator Execute(IGraph graph, IFlowRootNode node);
 
         T Get<T>(DataPort<T> port);
         void Set(IDataPort port);
@@ -20,11 +20,10 @@ namespace RedOwl.Sleipnir.Engine
     {
         private Dictionary<string, object> Data;
         private Dictionary<string, bool> NodeState;
-        private MonoBehaviour _behaviour;
         private int _stack;
         private int _cycles;
 
-        public void Execute(MonoBehaviour behaviour, IGraph graph, IFlowRootNode node)
+        public IEnumerator Execute(IGraph graph, IFlowRootNode node)
         {
             int count = graph.NodeCount;
             Data = new Dictionary<string, object>(count);
@@ -34,32 +33,28 @@ namespace RedOwl.Sleipnir.Engine
                 NodeState[n.Id] = false;
             }
             
-            _behaviour = behaviour;
             _stack = 0;
             _cycles = 0;
             
             // Begin Execution of OutPorts on root node
-            behaviour.StartCoroutine(Run(graph, node));
+            yield return Run(graph, node);
         }
 
         private IEnumerator Run(IGraph graph, IFlowRootNode node)
         {
             // TODO: there is something strange here with a connected flow of nodes > 800 that causes a crash
-            while (true)
-            {
-                Stopwatch stopWatch = new Stopwatch();
-                stopWatch.Start();
+            //Stopwatch stopWatch = new Stopwatch();
+            //stopWatch.Start();
 
-                foreach (var port in node.FlowOutPorts)
-                {
-                    yield return FollowConnections(graph, node, port);
-                }
-            
-                stopWatch.Stop();
-                TimeSpan ts = stopWatch.Elapsed;
-                Debug.Log($"RunTime {ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}");
-                yield return new WaitForSeconds(0.2f);
+            foreach (var port in node.FlowOutPorts)
+            {
+                yield return FollowConnections(graph, node, port);
             }
+        
+            //stopWatch.Stop();
+            //TimeSpan ts = stopWatch.Elapsed;
+            //Debug.Log($"RunTime {ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}");
+            //yield return new WaitForSeconds(0.2f);
         }
 
         private IEnumerator FollowSuccession(IGraph graph, INode node, IFlowPort port)

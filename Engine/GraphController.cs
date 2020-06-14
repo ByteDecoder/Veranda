@@ -20,7 +20,6 @@ namespace RedOwl.Sleipnir.Engine
         private List<LateUpdateNode> _lateUpdateNodes;
         private List<FixedUpdateNode> _fixedUpdateNodes;
 
-        [Button]
         private void Awake()
         {
             _data = Instantiate(data);
@@ -33,41 +32,40 @@ namespace RedOwl.Sleipnir.Engine
             //Debug.Log($"GraphReference '{name}' Initialized!");
         }
 
-        [Button]
         private void Start()
         {
             foreach (var node in _startNodes)
             {
-                _data.graph.Execute(this, node);
+                Debug.Log($"Start: Executing {node.name}");
+                StartCoroutine(_data.graph.Execute(node));
             }
         }
 
-        [Button]
         private void Update()
         {
-            // TODO: Don't run Execute if node isn't connected
-            // foreach (var node in _updateNodes)
-            // {
-            //     StartCoroutine(_data.graph.Execute(node));
-            // }
+            foreach (var node in _updateNodes)
+            {
+                Debug.Log($"Update: Executing {node.name}");
+                StartCoroutine(_data.graph.Execute(node));
+            }
         }
 
-        [Button]
         private void LateUpdate()
         {
-            // foreach (var node in _lateUpdateNodes)
-            // {
-            //     StartCoroutine(_data.graph.Execute(node));
-            // }
+            foreach (var node in _lateUpdateNodes)
+            {
+                Debug.Log($"LateUpdate: Executing {node.name}");
+                StartCoroutine(_data.graph.Execute(node));
+            }
         }
 
-        [Button]
         private void FixedUpdate()
         {
-            // foreach (var node in _fixedUpdateNodes)
-            // {
-            //     StartCoroutine(_data.graph.Execute(node));
-            // }
+            foreach (var node in _fixedUpdateNodes)
+            {
+                Debug.Log($"FixedUpdate: Executing {node.name}");
+                StartCoroutine(_data.graph.Execute(node));
+            }
         }
     }
 }

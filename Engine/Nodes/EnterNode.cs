@@ -9,10 +9,9 @@ namespace RedOwl.Sleipnir.Engine
     public class EnterNode : Node, IFlowOutNode
     {
         [SerializeField]
-        [FlowOut]
-        protected FlowPort flowOut;
+        protected FlowOut flowOut;
 
-        public FlowPort FlowOut => flowOut;
+        public FlowOut FlowOut => flowOut;
 
         protected override void Setup()
         {
