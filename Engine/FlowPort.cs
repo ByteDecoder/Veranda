@@ -6,30 +6,19 @@ using Sirenix.OdinInspector;
 
 namespace RedOwl.Sleipnir.Engine
 {
-    public abstract class FlowAttribute : Attribute
-    {
-        public PortIO Io;
-        public FieldInfo Field;
-    }
-    
-    [IncludeMyAttributes, PropertyOrder(-100)]
-    [AttributeUsage(AttributeTargets.Field)]
-    public class FlowInAttribute : FlowAttribute {}
-    
-    [IncludeMyAttributes, PropertyOrder(100)]
-    [AttributeUsage(AttributeTargets.Field)]
-    public class FlowOutAttribute : FlowAttribute {}
-    
     public interface IFlowPort : IPort
     {
         event Action OnExecute;
-        void Initialize(INode node, FlowAttribute attr);
+        void Initialize(INode node, PortInfo info);
         void Trigger(IGraphFlow flow);
         bool HasSuccession { get;  }
         Func<IGraphFlow, IFlowPort> SerialSuccession { get; }
         bool IsAsync { get; }
         Func<IGraphFlow, IEnumerator> AsyncSuccession { get; }
     }
+    
+    public interface IFlowInPort : IFlowPort {}
+    public interface IFlowOutPort : IFlowPort {}
     
     [Serializable, InlineProperty, HideReferenceObjectPicker]
     public class FlowPort : IFlowPort
@@ -59,11 +48,11 @@ namespace RedOwl.Sleipnir.Engine
 
         public IFlowPort CreateSymmetrical() => new FlowPort(this);
 
-        public void Initialize(INode node, FlowAttribute attr)
+        public void Initialize(INode node, PortInfo info)
         {
             Node = node;
-            Io = attr.Io;
-            Name = attr.Field.Name;
+            Io = info.Io;
+            Name = info.Field.Name;
             Id = RedOwlHash.GetHashId($"{Node.Id}.{Name}.{Io}");
             
         }
@@ -98,11 +87,8 @@ namespace RedOwl.Sleipnir.Engine
         }
     }
 
-    // TODO: Replace attribute usage with these
-    // public class FlowInPort : FlowPort, IFlowInPort {}
-    //
-    // public class FlowOutPort : FlowPort, IFlowOutPort {}
-    //
-    // public class FlowInOutPort : FlowPort, IFlowInPort, IFlowOutPort {}
-    
+    [Serializable]
+    public class FlowIn : FlowPort, IFlowInPort {}
+    [Serializable]
+    public class FlowOut : FlowPort, IFlowOutPort {}
 }

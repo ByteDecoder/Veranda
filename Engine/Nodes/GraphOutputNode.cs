@@ -13,8 +13,7 @@ namespace RedOwl.Sleipnir.Engine
     public abstract class GraphOutputNode<T> : Node, IGraphOutput
     {
         [SerializeField, HideLabel, HideReferenceObjectPicker, InlineProperty]
-        [DataIn]
-        protected DataPort<T> data;
+        protected DataIn<T> data;
 
         public DataPort Data => data;
     }

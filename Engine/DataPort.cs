@@ -7,29 +7,15 @@ using UnityEngine;
 
 namespace RedOwl.Sleipnir.Engine
 {
-    public abstract class DataAttribute : Attribute
-    {
-        public PortIO Io;
-        public FieldInfo Field;
-    }
-    
-    [IncludeMyAttributes, PropertyOrder(-10)]
-    [AttributeUsage(AttributeTargets.Field)]
-    public class DataInAttribute : DataAttribute {}
-    
-    [IncludeMyAttributes, PropertyOrder(10)]
-    [AttributeUsage(AttributeTargets.Field)]
-    public class DataOutAttribute : DataAttribute {}
-    
-    [AttributeUsage(AttributeTargets.Field)]
-    public class DataInOutAttribute : DataAttribute {}
-    
     public interface IDataPort : IPort
     {
         object Data { get; set; }
-        void Initialize(INode node, DataAttribute attr);
+        void Initialize(INode node, PortInfo attr);
     }
     
+    public interface IDataInPort : IDataPort {}
+    public interface IDataOutPort : IDataPort {}
+
     [Serializable]
     public class DataPort : IDataPort
     {
@@ -53,11 +39,11 @@ namespace RedOwl.Sleipnir.Engine
 
         public DataPort CreateSymmetrical() => new DataPort(this);
         
-        public void Initialize(INode node, DataAttribute attr)
+        public void Initialize(INode node, PortInfo info)
         {
             Node = node;
-            Io = attr.Io;
-            Name = attr.Field.Name;
+            Io = info.Io;
+            Name = info.Field.Name;
             Id = RedOwlHash.GetHashId($"{Node.Id}.{Name}.{Io}");
         }
 
@@ -68,7 +54,7 @@ namespace RedOwl.Sleipnir.Engine
     }
     
     [Serializable, InlineProperty, HideReferenceObjectPicker]
-    public class DataPort<T> : DataPort, ISerializationCallbackReceiver
+    public abstract class DataPort<T> : DataPort, ISerializationCallbackReceiver
     {
         [SerializeField, HideInInspector]
         private T _value;
@@ -91,10 +77,10 @@ namespace RedOwl.Sleipnir.Engine
         }
     }
     
-    // TODO: Replace attribute usage with these
-    // public class DataInPort<T> : DataPort<T>, IDataInPort {}
-    //
-    // public class DataOutPort<T> : DataPort<T>, IDataOutPort {}
-    //
-    // public class DataInOutPort<T> : DataPort<T>, IDataInPort, IDataOutPort {}
+    [Serializable]
+    public class DataIn<T> : DataPort<T>, IDataInPort {}
+    [Serializable]
+    public class DataOut<T> : DataPort<T>, IDataOutPort {}
+    [Serializable]
+    public class DataInOut<T> : DataPort<T>, IDataInPort, IDataOutPort {}
 }

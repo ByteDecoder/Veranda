@@ -9,13 +9,11 @@ namespace RedOwl.Sleipnir.Engine
     public class DebugLogNode : Node, IFlowInNode
     {
         [SerializeField]
-        [FlowIn] 
-        protected FlowPort flowIn;
+        protected FlowIn flowIn;
 
-        public FlowPort FlowIn => flowIn;
+        public FlowIn FlowIn => flowIn;
 
-        [DataIn]
-        public DataPort<string> Message;
+        public DataIn<string> Message;
 
         protected override void Setup()
         {
