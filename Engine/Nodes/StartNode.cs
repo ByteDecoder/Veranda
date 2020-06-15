@@ -2,11 +2,11 @@ using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
     [Serializable]
     [HideReferenceObjectPicker, InlineProperty]
-    public class StartNode : FlowRootNode, IFlowOutNode
+    public class StartNode : FlowRootNode
     {
 
     }

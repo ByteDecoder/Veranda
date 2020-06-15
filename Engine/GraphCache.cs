@@ -1,7 +1,7 @@
 using System;
 using RedOwl.Core;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
     public class GraphCache : TypeCache<IGraph>
     {

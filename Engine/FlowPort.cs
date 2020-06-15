@@ -4,7 +4,7 @@ using System.Reflection;
 using RedOwl.Core;
 using Sirenix.OdinInspector;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
     public interface IFlowPort : IPort
     {
@@ -46,7 +46,7 @@ namespace RedOwl.Sleipnir.Engine
             SerialSuccession = (flow) => symmetrical;
         }
 
-        public IFlowPort CreateSymmetrical() => new FlowPort(this);
+        public FlowPort CreateSymmetrical() => new FlowPort(this);
 
         public void Initialize(INode node, PortInfo info)
         {
@@ -54,7 +54,6 @@ namespace RedOwl.Sleipnir.Engine
             Io = info.Io;
             Name = info.Field.Name;
             Id = RedOwlHash.GetHashId($"{Node.Id}.{Name}.{Io}");
-            
         }
 
         public void Trigger(IGraphFlow flow)

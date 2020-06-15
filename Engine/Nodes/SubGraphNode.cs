@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
     public interface ISubGraphNode
     {
@@ -22,8 +22,8 @@ namespace RedOwl.Sleipnir.Engine
         
         protected override void Setup()
         {
-            // TODO: Ensure Graph has Enter & Exit nodes
-            // TODO: Properly Create Succession between Enter & Exit node's ports and the dynamically created symmetrical ports
+            Graph.Ensure<EnterNode>();
+            Graph.Ensure<ExitNode>();
             Graph.Initialize();
         }
 
@@ -31,15 +31,20 @@ namespace RedOwl.Sleipnir.Engine
         {
             foreach (var node in Graph.Nodes)
             {
+                FlowPort symmetrical;
                 switch (node)
                 {
                     case EnterNode enterNode:
                         Debug.Log($"Creating Graph Enter Node Symmetrical Port: '{node}'");
-                        yield return enterNode.FlowOut.CreateSymmetrical();
+                        symmetrical = enterNode.FlowOut.CreateSymmetrical();
+                        symmetrical.Succession(flow => enterNode.FlowOut);
+                        yield return symmetrical;
                         break;
                     case ExitNode exitNode:
                         Debug.Log($"Creating Graph Exit Node Symmetrical Port: '{node}'");
-                        yield return exitNode.FlowIn.CreateSymmetrical();
+                        symmetrical = exitNode.FlowIn.CreateSymmetrical();
+                        exitNode.FlowIn.Succession(flow => symmetrical);
+                        yield return symmetrical;
                         break;
                 }
             }
@@ -51,6 +56,7 @@ namespace RedOwl.Sleipnir.Engine
             {
                 switch (node)
                 {
+                    // TODO: Make connection for subgraph data ports? How is data traversed
                     case IGraphInput graphInput:
                         Debug.Log($"Creating Graph Input Node Symmetrical Port: '{node}'");
                         yield return graphInput.Data.CreateSymmetrical();

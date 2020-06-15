@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
     public interface IDataConnection
     {
