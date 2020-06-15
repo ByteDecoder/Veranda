@@ -5,7 +5,7 @@ using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
     public interface IGraph
     {
@@ -23,8 +23,9 @@ namespace RedOwl.Sleipnir.Engine
         T GetFirstNode<T>() where T : INode;
         INode GetNode(string id);
         
-        TNode Add<TNode>() where TNode : INode, new();
-        TNode Add<TNode>(TNode node) where TNode : INode;
+        T Ensure<T>() where T : INode, new();
+        T Add<T>() where T : INode, new();
+        T Add<T>(T node) where T : INode;
         void Link<T>(IFlowInNode inNode) where T : IFlowOutNode;
         void Link<T>(FlowIn inPort) where T : IFlowOutNode;
         void Link<T>(IFlowOutNode outNode) where T : IFlowInNode;
@@ -33,13 +34,14 @@ namespace RedOwl.Sleipnir.Engine
         void Link<TValue>(DataPort<TValue> outPort, DataPort<TValue> inPort);
         void Link(IFlowOutNode outNode, IFlowInNode inNode);
         void Link(IFlowOutNode startNode, IFlowInNode endNode, params IFlowNode[] flow);
+        
     }
     
     [Serializable]
     public abstract class Graph<TNode, TFlow> : IGraph where TNode : INode where TFlow : IGraphFlow, new()
     {
         [SerializeReference] 
-        private List<INode> _nodes;
+        private List<INode> _nodes = new List<INode>();
         private Dictionary<string, INode> _nodeTable;
 
         #region IGraph
@@ -52,25 +54,13 @@ namespace RedOwl.Sleipnir.Engine
         
         protected Graph()
         {
-            var start = new StartNode();
-            start.Initialize(this);
-            var update = new UpdateNode();
-            update.Initialize(this);
-            _nodes = new List<INode> { start, update };
-            EnsureNodeTable();
-            _nodeTable.Add(start.Id, start);
-            _nodeTable.Add(update.Id, update);
-        }
-
-        private void EnsureNodeTable()
-        {
-            if (_nodeTable != null) return;
-            _nodeTable = new Dictionary<string, INode>(_nodes.Count);
+            Ensure<StartNode>();
+            Ensure<UpdateNode>();
         }
 
         public void Initialize()
         {
-            EnsureNodeTable();
+            _nodeTable = new Dictionary<string, INode>(_nodes.Count);
             foreach (var node in _nodes)
             {
                 //Debug.Log($"Initializing Graph Node: '{node}'");
@@ -106,16 +96,32 @@ namespace RedOwl.Sleipnir.Engine
 
         public INode GetNode(string id)
         {
-            return _nodeTable[id];
+            if (_nodeTable != null)
+            {
+                return _nodeTable[id];
+            }
+
+            foreach (var node in _nodes)
+            {
+                if (node.Id == id) return node;
+            }
+            throw new Exception($"There was no node with id '{id}' found within this graph!");
         }
 
+        public T Ensure<T>() where T : INode, new()
+        {
+            var ensureType = typeof(T);
+            foreach (var node in _nodes)
+            {
+                if (ensureType == node.GetType()) return (T)node;
+            }
+            return Add<T>();
+        }
         public T Add<T>() where T : INode, new() => Add(new T());
         public T Add<T>(T node) where T : INode
         {
-            EnsureNodeTable();
             node.Initialize(this);
             _nodes.Add(node);
-            _nodeTable.Add(node.Id, node);
             return node;
         }
         

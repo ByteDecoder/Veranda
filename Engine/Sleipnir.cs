@@ -2,7 +2,7 @@ using System;
 using RedOwl.Core;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
     public static class Sleipnir
     {

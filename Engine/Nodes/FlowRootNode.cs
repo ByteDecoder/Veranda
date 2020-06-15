@@ -3,17 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
-    public interface IFlowRootNode : INode
-    {
-        //IEnumerator Run(IFlowPort port, GraphFlow graphFlow);
-        //IEnumerator Pull(IDataConnection port, GraphFlow graphFlow);
-        //IEnumerator Pull(IDataPort port, GraphFlow graphFlow);    
-    }
+    public interface IFlowRootNode : INode { }
     
     [Serializable]
-    public class FlowRootNode : Node, IFlowRootNode
+    public abstract class FlowRootNode : Node, IFlowRootNode, IFlowOutNode
     {
         [SerializeField]
         protected FlowOut flowOut;

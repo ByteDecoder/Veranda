@@ -4,7 +4,7 @@ using System.Reflection;
 using RedOwl.Core;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
     [Flags]
     public enum PortIO
@@ -25,6 +25,14 @@ namespace RedOwl.Sleipnir.Engine
         {
             return self.HasFlag(PortIO.Out);
         }
+    }
+    
+    public interface IPort
+    {
+        INode Node { get; }
+        PortIO Io { get; }
+        string Name { get; }
+        string Id { get; }
     }
     
     public class PortInfo

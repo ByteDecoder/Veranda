@@ -1,6 +1,6 @@
 using System;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class NodeSettingsAttribute : Attribute

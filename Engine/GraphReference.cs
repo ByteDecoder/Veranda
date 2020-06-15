@@ -1,7 +1,7 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
     [HideMonoScript]
     [CreateAssetMenu(fileName = "Graph", menuName = "Sleipnir/Graph")]

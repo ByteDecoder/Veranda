@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using RedOwl.Core;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
     public class NodeCache : TypeCache<INode>
     {

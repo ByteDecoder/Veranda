@@ -1,8 +1,9 @@
 using System;
+using System.Collections;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
     public interface IFlowInNode : INode
     {
@@ -21,24 +22,29 @@ namespace RedOwl.Sleipnir.Engine
     {
         #region IFlowNode
         [SerializeField]
-        protected FlowIn flowIn;
+        protected FlowIn flowIn = new FlowIn();
         public FlowIn FlowIn => flowIn;
 
         [SerializeField]
-        protected FlowOut flowOut;
+        protected FlowOut flowOut = new FlowOut();
         public FlowOut FlowOut => flowOut;
         #endregion
 
         protected override void Setup()
         {
             flowIn.SetCallback(OnEnter);
-            flowIn.Succession(flow => flowOut);
+            flowIn.Succession(Succession);
             flowOut.SetCallback(OnExit);
+        }
+        
+        protected virtual IEnumerator Succession(IGraphFlow flow)
+        {
+            yield return flowOut;
         }
 
         #region API
-        public virtual void OnEnter() {}
-        public virtual void OnExit() {}
+        protected virtual void OnEnter() {}
+        protected virtual void OnExit() {}
         #endregion
 
     }

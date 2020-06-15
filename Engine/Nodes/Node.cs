@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir.Engine
+namespace RedOwl.Sleipnir
 {
     public interface INode
     {
@@ -159,7 +159,6 @@ namespace RedOwl.Sleipnir.Engine
 
         public IEnumerable<IFlowConnection> GetFlowConnections(string id)
         {
-            // TODO: Sort flow connections left to right based on Rect Position
             foreach (var connection in _flowConnections)
             {
                 if (connection.Port != id) continue;
@@ -179,6 +178,7 @@ namespace RedOwl.Sleipnir.Engine
         public void Link(FlowPort outPort, FlowPort inPort)
         {
             _flowConnections.Add(new FlowConnection(outPort, inPort));
+            _flowConnections.Sort((x, y) => _graph.GetNode(x.TargetNode).Rect.position.x.CompareTo(_graph.GetNode(y.TargetNode).Rect.position.x));
         }
 
         public void Link<TValue>(DataPort<TValue> outPort, DataPort<TValue> inPort)
