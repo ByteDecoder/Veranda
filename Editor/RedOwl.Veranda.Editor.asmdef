@@ -1,9 +1,13 @@
 {
-    "name": "RedOwl.Sleipnir",
+    "name": "RedOwl.Veranda.Editor",
     "references": [
-        "RedOwl.Core.Unsafe"
+        "RedOwl.Veranda",
+        "RedOwl.Parlour",
+        "RedOwl.Parlour.Editor"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

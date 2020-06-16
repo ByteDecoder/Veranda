@@ -4,8 +4,8 @@ title: Home
 heading: Documentation Topics
 ---
 
-<h1 align="center">Sleipnir</h1>
-<h4 align="center">A graph editor framework for Unity's new UIElements system.</h4>
+<h1 align="center">Veranda</h1>
+<h4 align="center">A graph editor framework for Unity</h4>
 
 ---
 
@@ -17,12 +17,4 @@ heading: Documentation Topics
 ### Key Features
 ---
 
-* Easier to use then Unity's UIElements graph framework
-* Focus on the logic of your graph based tool not the graph editor code that enables it
-* Built on top of Unity's UIElements framework
-* Graph data is available for runtime use (Runtime UI will come when unity makes UIElements work in the runtime - 2020)
-
-### Prerequisites 
----
-
-The following documentation assumes you have a little bit of familiarity with c# and Unity's new UI Elements system - if not go read about it [here](https://docs.unity3d.com/Manual/UIElements.html)
+* 

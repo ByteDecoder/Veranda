@@ -1,6 +1,6 @@
 using System;
 
-namespace RedOwl.Sleipnir
+namespace RedOwl.Veranda
 {
     [Serializable]
     public class GeneralGraph : Graph<Node> { }

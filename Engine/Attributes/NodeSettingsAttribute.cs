@@ -1,6 +1,6 @@
 using System;
 
-namespace RedOwl.Sleipnir
+namespace RedOwl.Veranda
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class NodeSettingsAttribute : Attribute

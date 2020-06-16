@@ -4,7 +4,7 @@ using System.Reflection;
 using RedOwl.Core;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir
+namespace RedOwl.Veranda
 {
     [Flags]
     public enum PortIO
