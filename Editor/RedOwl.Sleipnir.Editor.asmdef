@@ -2,8 +2,8 @@
     "name": "RedOwl.Sleipnir.Editor",
     "references": [
         "RedOwl.Sleipnir.Engine",
-        "RedOwl.UIEX.Engine",
-        "RedOwl.UIEX.Editor"
+        "RedOwl.UIX.Engine",
+        "RedOwl.UIX.Editor"
     ],
     "includePlatforms": [
         "Editor"
