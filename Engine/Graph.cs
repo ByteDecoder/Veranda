@@ -5,7 +5,7 @@ using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace RedOwl.Sleipnir
+namespace RedOwl.Veranda
 {
     public interface IGraph
     {
@@ -49,7 +49,7 @@ namespace RedOwl.Sleipnir
 
         public int NodeCount => _nodes.Count;
         public IEnumerable<INode> Nodes => _nodes;
-        public IEnumerable<Type> PossibleNodes => Sleipnir.Nodes.Find<TNode>();
+        public IEnumerable<Type> PossibleNodes => VerandaUtils.Nodes.Find<TNode>();
         #endregion
         
         protected Graph()

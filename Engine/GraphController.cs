@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace RedOwl.Sleipnir
+namespace RedOwl.Veranda
 {
     [HideMonoScript]
     public class GraphController : MonoBehaviour

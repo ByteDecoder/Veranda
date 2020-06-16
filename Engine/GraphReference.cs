@@ -1,10 +1,10 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir
+namespace RedOwl.Veranda
 {
     [HideMonoScript]
-    [CreateAssetMenu(fileName = "Graph", menuName = "Sleipnir/Graph")]
+    [CreateAssetMenu(fileName = "Graph", menuName = "Veranda/Graph")]
     public class GraphReference : ScriptableObject
     {
         [SerializeReference, HideReferenceObjectPicker, HideLabel, InlineProperty]

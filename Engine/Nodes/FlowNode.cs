@@ -3,7 +3,7 @@ using System.Collections;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir
+namespace RedOwl.Veranda
 {
     public interface IFlowInNode : INode
     {

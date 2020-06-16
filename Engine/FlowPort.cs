@@ -4,7 +4,7 @@ using System.Reflection;
 using RedOwl.Core;
 using Sirenix.OdinInspector;
 
-namespace RedOwl.Sleipnir
+namespace RedOwl.Veranda
 {
     public interface IFlowPort : IPort
     {

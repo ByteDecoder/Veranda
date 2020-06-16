@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using RedOwl.Sleipnir;
+using RedOwl.Veranda;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir
+namespace RedOwl.Veranda
 {
     public interface IStateBehaviour
     {

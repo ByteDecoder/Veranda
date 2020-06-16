@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir
+namespace RedOwl.Veranda
 {
     public interface INode
     {
@@ -61,16 +61,16 @@ namespace RedOwl.Sleipnir
         protected Node()
         {
             name = GetType().Name;
-            id = Sleipnir.GenerateId();
-            rect = Sleipnir.GenerateRect(this);
+            id = VerandaUtils.GenerateId();
+            rect = VerandaUtils.GenerateRect(this);
             var nodeType = GetType();
-            foreach (var attr in Sleipnir.Ports.GetDataPorts(nodeType))
+            foreach (var attr in VerandaUtils.Ports.GetDataPorts(nodeType))
             {
                 var portInstance = (DataPort)Activator.CreateInstance(attr.Field.FieldType);
                 portInstance.Initialize(this, attr);
                 attr.Field.SetValue(this, portInstance);
             }
-            foreach (var attr in Sleipnir.Ports.GetFlowPorts(nodeType))
+            foreach (var attr in VerandaUtils.Ports.GetFlowPorts(nodeType))
             {
                 var portInstance = (FlowPort)Activator.CreateInstance(attr.Field.FieldType);
                 portInstance.Initialize(this, attr);
@@ -92,7 +92,7 @@ namespace RedOwl.Sleipnir
         private void BuildFlowPortList(Type nodeType)
         {
             var flowPorts = new List<IFlowPort>(6);
-            foreach (var attr in Sleipnir.Ports.GetFlowPorts(nodeType))
+            foreach (var attr in VerandaUtils.Ports.GetFlowPorts(nodeType))
             {
                 //Debug.Log($"Initializing FlowPort: {name}.{attr.Field.Name}");
                 var port = (IFlowPort) attr.Field.GetValue(this);
@@ -121,7 +121,7 @@ namespace RedOwl.Sleipnir
         private void BuildDataPortList(Type nodeType)
         {
             var dataPorts = new List<IDataPort>(20);
-            foreach (var attr in Sleipnir.Ports.GetDataPorts(nodeType))
+            foreach (var attr in VerandaUtils.Ports.GetDataPorts(nodeType))
             {
                 //Debug.Log($"Initializing DataPort: {name}.{attr.Field.Name}");
                 var port = (IDataPort) attr.Field.GetValue(this);

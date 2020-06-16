@@ -2,9 +2,9 @@ using System;
 using RedOwl.Core;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir
+namespace RedOwl.Veranda
 {
-    public static class Sleipnir
+    public static class VerandaUtils
     {
         public static GraphCache Graphs = new GraphCache();
         public static NodeCache Nodes = new NodeCache();
@@ -13,7 +13,7 @@ namespace RedOwl.Sleipnir
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Initialize()
         {
-            //Debug.Log("Building Sleipnir Reflection Caches");
+            //Debug.Log("Building Veranda Reflection Caches");
             Graphs = new GraphCache();
             Nodes = new NodeCache();
             Ports = new PortCache();

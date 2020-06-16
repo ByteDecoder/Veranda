@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace RedOwl.Sleipnir
+namespace RedOwl.Veranda
 {
     public interface IGraphFlow
     {

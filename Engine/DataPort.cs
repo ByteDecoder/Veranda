@@ -5,7 +5,7 @@ using RedOwl.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Sleipnir
+namespace RedOwl.Veranda
 {
     public interface IDataPort : IPort
     {
