@@ -1,5 +1,5 @@
 {
-    "name": "RedOwl.Sleipnir.Engine",
+    "name": "RedOwl.Sleipnir",
     "references": [
         "RedOwl.Core.Unsafe"
     ],
