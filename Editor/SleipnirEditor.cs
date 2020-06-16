@@ -1,12 +1,12 @@
-using RedOwl.UIEX.Editor;
-using RedOwl.UIEX.Engine;
+using RedOwl.UIX.Editor;
+using RedOwl.UIX;
 using UnityEditor;
 using UnityEngine;
 
 namespace RedOwl.Sleipnir.Editor
 {
     [UXML, USS]
-    public class SleipnirEditor : UIEXEditorWindow
+    public class SleipnirEditor : UIXEditorWindow
     {
         [MenuItem("Tools/Sleipnir")]
         public static void ShowExample()
