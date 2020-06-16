@@ -1,15 +1,21 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using RedOwl.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace RedOwl.Veranda
 {
     [HideMonoScript]
     public class GraphController : MonoBehaviour
     {
+#if UNITY_EDITOR
+        [UnityEditor.MenuItem("GameObject/Red Owl/Graph Controller", false, 13)]
+        private static void Create(UnityEditor.MenuCommand menuCommand)
+        {
+            RedOwlTools.Create<GraphController>(menuCommand.context as GameObject);
+        }
+#endif
+        
         [HideLabel]
         public GraphReference data;
 

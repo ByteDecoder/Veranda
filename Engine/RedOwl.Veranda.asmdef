@@ -1,6 +1,7 @@
 {
     "name": "RedOwl.Veranda",
     "references": [
+        "RedOwl.Core",
         "RedOwl.Core.Unsafe"
     ],
     "includePlatforms": [],
