@@ -2,8 +2,8 @@
     "name": "RedOwl.Sleipnir.Editor",
     "references": [
         "RedOwl.Sleipnir",
-        "RedOwl.UIX",
-        "RedOwl.UIX.Editor"
+        "RedOwl.Veranda",
+        "RedOwl.Veranda.Editor"
     ],
     "includePlatforms": [
         "Editor"

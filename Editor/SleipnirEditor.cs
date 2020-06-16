@@ -1,14 +1,14 @@
-using RedOwl.UIX.Editor;
-using RedOwl.UIX;
+using RedOwl.Veranda.Editor;
+using RedOwl.Veranda;
 using UnityEditor;
 using UnityEngine;
 
 namespace RedOwl.Sleipnir.Editor
 {
     [UXML, USS]
-    public class SleipnirEditor : UIXEditorWindow
+    public class SleipnirEditor : VerandaEditorWindow
     {
-        [MenuItem("Tools/Sleipnir")]
+        [MenuItem("Tools/Red Owl/Sleipnir")]
         public static void ShowExample()
         {
             SleipnirEditor wnd = GetWindow<SleipnirEditor>();
