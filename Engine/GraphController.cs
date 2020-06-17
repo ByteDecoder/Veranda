@@ -15,6 +15,7 @@ namespace RedOwl.Veranda
             RedOwlTools.Create<GraphController>(menuCommand.context as GameObject);
         }
 #endif
+        public bool Singleton;
         
         [HideLabel]
         public GraphReference data;
@@ -28,6 +29,7 @@ namespace RedOwl.Veranda
 
         private void Awake()
         {
+            if (Singleton) DontDestroyOnLoad(this);
             _data = Instantiate(data);
             _data.graph.Initialize();
 
@@ -42,6 +44,7 @@ namespace RedOwl.Veranda
         {
             foreach (var node in _startNodes)
             {
+                if (!node.IsConnected) continue;
                 Debug.Log($"Start: Executing {node.name}");
                 StartCoroutine(_data.graph.Execute(node));
             }
@@ -51,6 +54,7 @@ namespace RedOwl.Veranda
         {
             foreach (var node in _updateNodes)
             {
+                if (!node.IsConnected) continue;
                 Debug.Log($"Update: Executing {node.name}");
                 StartCoroutine(_data.graph.Execute(node));
             }
@@ -60,6 +64,7 @@ namespace RedOwl.Veranda
         {
             foreach (var node in _lateUpdateNodes)
             {
+                if (!node.IsConnected) continue;
                 Debug.Log($"LateUpdate: Executing {node.name}");
                 StartCoroutine(_data.graph.Execute(node));
             }
@@ -69,6 +74,7 @@ namespace RedOwl.Veranda
         {
             foreach (var node in _fixedUpdateNodes)
             {
+                if (!node.IsConnected) continue;
                 Debug.Log($"FixedUpdate: Executing {node.name}");
                 StartCoroutine(_data.graph.Execute(node));
             }

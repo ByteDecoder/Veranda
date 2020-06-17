@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -52,6 +51,21 @@ namespace RedOwl.Veranda
         private Dictionary<string, IFlowPort> _flowOutPorts;
         private Dictionary<string, IDataPort> _dataInPorts;
         private Dictionary<string, IDataPort> _dataOutPorts;
+
+        public bool IsConnected
+        {
+            get
+            {
+                foreach (var connection in _flowConnections)
+                {
+                    foreach (var outPort in FlowOutPorts)
+                    {
+                        if (outPort.Id == connection.Port) return true;
+                    }
+                }
+                return false;
+            }
+        }
 
         public IEnumerable<IFlowPort> FlowInPorts => _flowInPorts.Values;
         public IEnumerable<IFlowPort> FlowOutPorts => _flowOutPorts.Values;

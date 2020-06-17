@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace RedOwl.Veranda
 {
@@ -72,7 +70,6 @@ namespace RedOwl.Veranda
 
         public IEnumerator Execute(IFlowRootNode node)
         {
-            // TODO: Don't execute of node isn't connect?
             //Debug.Log($"Beginning Flow on: '{Name}' at RootNode '{node}'");
             yield return new TFlow().Execute(this, node);
         }

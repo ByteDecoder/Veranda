@@ -1,35 +1,30 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using RedOwl.Veranda;
+using RedOwl.Core;
 using UnityEngine;
 
 namespace RedOwl.Veranda
 {
+    public class ExitState : CustomYieldInstruction
+    {
+        public override bool keepWaiting => false;
+    }
+    
     public interface IStateBehaviour
     {
-        bool OnEnter();
-        bool OnUpdate();
-        void OnExit();
+        IEnumerator OnEnter();
+        IEnumerator OnUpdate();
+        IEnumerator OnExit();
     }
     
     [Serializable]
     public abstract class StateBehaviour : IStateBehaviour
     {
-        /// <summary>
-        /// Called when the state node is entered - return true to exit the state node immediately
-        /// </summary>
-        public virtual bool OnEnter() { return false; }
+        public virtual IEnumerator OnEnter() { yield break; }
         
-        /// <summary>
-        /// Called when the state node's tick is entered - return true to exit the state node immediately
-        /// </summary>
-        public virtual bool OnUpdate() { return false; }
-        
-        /// <summary>
-        /// Called when the state node is exiting
-        /// </summary>
-        public virtual void OnExit() {}
+        public virtual IEnumerator OnUpdate() { yield break; }
+        public virtual IEnumerator OnExit() { yield break; }
     }
     
     [Serializable]
@@ -42,38 +37,39 @@ namespace RedOwl.Veranda
 
         protected override IEnumerator Succession(IGraphFlow flow)
         {
+            _isActive = true;
+            foreach (var behaviour in behaviours)
+            {
+                yield return HandleTarget(behaviour.OnEnter());
+            }
+
             while (_isActive)
             {
                 foreach (var behaviour in behaviours)
                 {
-                    if (behaviour.OnUpdate())
-                    {
-                        _isActive = false;
-                        break;
-                    }
+                    yield return HandleTarget(behaviour.OnUpdate());
                 }
-                yield return null;
             }
 
+            foreach (var behaviour in behaviours)
+            {
+                yield return HandleTarget(behaviour.OnExit());
+            }
             yield return FlowOut;
         }
 
-        protected override void OnEnter()
+        private IEnumerator HandleTarget(IEnumerator target)
         {
-            foreach (var behaviour in behaviours)
+            while (target.MoveNext())
             {
-                if (behaviour.OnEnter()) return;
+                if (target.Current is ExitState)
+                {
+                    _isActive = false;
+                    yield break;
+                }
+            
+                yield return target.Current;
             }
-            _isActive = true;
-        }
-
-        protected override void OnExit()
-        {
-            foreach (var behaviour in behaviours)
-            {
-                behaviour.OnExit();
-            }
-            _isActive = false;
         }
     }
 }

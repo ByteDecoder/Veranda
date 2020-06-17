@@ -29,5 +29,18 @@ namespace RedOwl.Veranda
             var attr = typeof(T).SafeGetAttribute<NodeSettingsAttribute>(true);
             return new Rect(0, 0, attr.Width, attr.Height);
         }
+        
+        #if UNITY_EDITOR
+        public static void ApplyToGraphRef(IGraph graph)
+        {
+            var selected = UnityEditor.Selection.objects[0] as GraphReference;
+            if (selected != null)
+            {
+                Debug.Log($"Setting graph of '{selected.name}'");
+                selected.graph = graph;
+                UnityEditor.EditorUtility.SetDirty(selected);
+            }
+        }
+        #endif
     }
 }
