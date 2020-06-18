@@ -15,8 +15,6 @@ namespace RedOwl.Veranda
             RedOwlTools.Create<GraphController>(menuCommand.context as GameObject);
         }
 #endif
-        public bool Singleton;
-        
         [HideLabel]
         public GraphReference data;
 
@@ -29,7 +27,6 @@ namespace RedOwl.Veranda
 
         private void Awake()
         {
-            if (Singleton) DontDestroyOnLoad(this);
             _data = Instantiate(data);
             _data.graph.Initialize();
 

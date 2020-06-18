@@ -31,9 +31,19 @@ namespace RedOwl.Veranda
     [NodeSettings(Width = 100, Height = 100)]
     public class StateNode : FlowNode
     {
-        [SerializeReference] public List<IStateBehaviour> behaviours = new List<IStateBehaviour>();
+        [SerializeReference] public List<IStateBehaviour> behaviours;
 
         private bool _isActive;
+
+        public StateNode()
+        {
+            behaviours = new List<IStateBehaviour>();
+        }
+
+        public StateNode(params IStateBehaviour[] initialBehaviours)
+        {
+            behaviours = new List<IStateBehaviour>(initialBehaviours);
+        }
 
         protected override IEnumerator Succession(IGraphFlow flow)
         {
