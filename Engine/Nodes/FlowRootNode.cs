@@ -8,7 +8,7 @@ namespace RedOwl.Veranda
     [Serializable]
     public abstract class FlowRootNode : Node, IFlowRootNode, IFlowOutNode
     {
-        [SerializeField]
+        [SerializeField, HideInInspector]
         protected FlowOut flowOut;
 
         public FlowOut FlowOut => flowOut;

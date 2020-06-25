@@ -21,11 +21,11 @@ namespace RedOwl.Veranda
     public abstract class FlowNode : Node, IFlowNode
     {
         #region IFlowNode
-        [SerializeField]
+        [SerializeField, HideInInspector]
         protected FlowIn flowIn = new FlowIn();
         public FlowIn FlowIn => flowIn;
 
-        [SerializeField]
+        [SerializeField, HideInInspector]
         protected FlowOut flowOut = new FlowOut();
         public FlowOut FlowOut => flowOut;
         #endregion

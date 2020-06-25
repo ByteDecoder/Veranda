@@ -27,6 +27,12 @@ namespace RedOwl.Veranda
 
         private void Awake()
         {
+            if (data == null)
+            {
+                Log.Warn($"GraphController '{name}' has no graph set. Removing Controller Component!");
+                Destroy(this);
+                return;
+            }
             _data = Instantiate(data);
             _data.graph.Initialize();
 
@@ -42,7 +48,7 @@ namespace RedOwl.Veranda
             foreach (var node in _startNodes)
             {
                 if (!node.IsConnected) continue;
-                Debug.Log($"Start: Executing {node.name}");
+                //Debug.Log($"Start: Executing {node.name}");
                 StartCoroutine(_data.graph.Execute(node));
             }
         }
@@ -52,7 +58,7 @@ namespace RedOwl.Veranda
             foreach (var node in _updateNodes)
             {
                 if (!node.IsConnected) continue;
-                Debug.Log($"Update: Executing {node.name}");
+                //Debug.Log($"Update: Executing {node.name}");
                 StartCoroutine(_data.graph.Execute(node));
             }
         }
@@ -62,7 +68,7 @@ namespace RedOwl.Veranda
             foreach (var node in _lateUpdateNodes)
             {
                 if (!node.IsConnected) continue;
-                Debug.Log($"LateUpdate: Executing {node.name}");
+                //Debug.Log($"LateUpdate: Executing {node.name}");
                 StartCoroutine(_data.graph.Execute(node));
             }
         }
@@ -72,7 +78,7 @@ namespace RedOwl.Veranda
             foreach (var node in _fixedUpdateNodes)
             {
                 if (!node.IsConnected) continue;
-                Debug.Log($"FixedUpdate: Executing {node.name}");
+                //Debug.Log($"FixedUpdate: Executing {node.name}");
                 StartCoroutine(_data.graph.Execute(node));
             }
         }

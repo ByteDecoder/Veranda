@@ -5,8 +5,5 @@ namespace RedOwl.Veranda
 {
     [Serializable]
     [HideReferenceObjectPicker, InlineProperty]
-    public class StartNode : FlowRootNode
-    {
-
-    }
+    public class StartNode : FlowRootNode {}
 }

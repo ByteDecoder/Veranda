@@ -8,7 +8,7 @@ namespace RedOwl.Veranda
     [HideReferenceObjectPicker, InlineProperty]
     public class DebugLogNode : Node, IFlowInNode
     {
-        [SerializeField]
+        [SerializeField, HideInInspector]
         protected FlowIn flowIn;
 
         public FlowIn FlowIn => flowIn;

@@ -18,7 +18,7 @@ namespace RedOwl.Veranda
         [SerializeReference, HideInInspector]
         public IGraph data;
         
-        public IGraph Graph => reference == null ? data : reference.graph;
+        public new IGraph Graph => reference == null ? data : reference.graph;
         
         protected override void Setup()
         {

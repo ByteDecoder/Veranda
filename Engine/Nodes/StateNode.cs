@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using RedOwl.Core;
 using UnityEngine;
 
 namespace RedOwl.Veranda
@@ -13,6 +12,7 @@ namespace RedOwl.Veranda
     
     public interface IStateBehaviour
     {
+        void Setup();
         IEnumerator OnEnter();
         IEnumerator OnUpdate();
         IEnumerator OnExit();
@@ -21,6 +21,7 @@ namespace RedOwl.Veranda
     [Serializable]
     public abstract class StateBehaviour : IStateBehaviour
     {
+        public virtual void Setup() {}
         public virtual IEnumerator OnEnter() { yield break; }
         
         public virtual IEnumerator OnUpdate() { yield break; }
@@ -34,6 +35,7 @@ namespace RedOwl.Veranda
         [SerializeReference] public List<IStateBehaviour> behaviours;
 
         private bool _isActive;
+        private bool _noBehaviours;
 
         public StateNode()
         {
@@ -43,6 +45,16 @@ namespace RedOwl.Veranda
         public StateNode(params IStateBehaviour[] initialBehaviours)
         {
             behaviours = new List<IStateBehaviour>(initialBehaviours);
+        }
+
+        protected override void Setup()
+        {
+            base.Setup();
+            _noBehaviours = behaviours.Count == 0;
+            foreach (var behaviour in behaviours)
+            {
+                behaviour.Setup();
+            }
         }
 
         protected override IEnumerator Succession(IGraphFlow flow)
@@ -55,6 +67,7 @@ namespace RedOwl.Veranda
 
             while (_isActive)
             {
+                if (_noBehaviours) yield return new ExitState();
                 foreach (var behaviour in behaviours)
                 {
                     yield return HandleTarget(behaviour.OnUpdate());

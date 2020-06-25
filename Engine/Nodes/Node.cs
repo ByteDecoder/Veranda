@@ -7,6 +7,7 @@ namespace RedOwl.Veranda
 {
     public interface INode
     {
+        void SetTitle(string title);
         string Id { get; }
         Rect Rect { get; }
         IEnumerable<IFlowPort> FlowInPorts { get; }
@@ -29,8 +30,10 @@ namespace RedOwl.Veranda
     {
         [HideLabel, PropertyOrder(-1000)]
         public string name;
+
+        public void SetTitle(string title) => name = title;
         
-        [SerializeField]//, HideInInspector]
+        [SerializeField, HideInInspector]
         private string id;
         
         public string Id => id;
@@ -41,6 +44,7 @@ namespace RedOwl.Veranda
         public Rect Rect => rect;
         
         private IGraph _graph;
+        protected IGraph Graph => _graph;
         
         [SerializeReference, HideInInspector]
         private List<IFlowConnection> _flowConnections;
@@ -93,10 +97,11 @@ namespace RedOwl.Veranda
             _flowConnections = new List<IFlowConnection>();
             _dataConnections = new List<IDataConnection>();
         }
-        
+
         public void Initialize(IGraph graph)
         {
             _graph = graph;
+            // TODO: separate Setup (needed for editor) from Awake (needed for runtime) - so nodes have a clear "runtime" initialize flow
             Setup();
             var nodeType = GetType();
             BuildFlowPortList(nodeType);

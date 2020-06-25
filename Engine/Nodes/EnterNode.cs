@@ -8,7 +8,7 @@ namespace RedOwl.Veranda
     [HideReferenceObjectPicker, InlineProperty]
     public class EnterNode : Node, IFlowOutNode
     {
-        [SerializeField]
+        [SerializeField, HideInInspector]
         protected FlowOut flowOut;
 
         public FlowOut FlowOut => flowOut;

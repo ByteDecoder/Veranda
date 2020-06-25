@@ -70,6 +70,7 @@ namespace RedOwl.Veranda
 
         public IEnumerator Execute(IFlowRootNode node)
         {
+            // TODO: Kill existing running flows?
             //Debug.Log($"Beginning Flow on: '{Name}' at RootNode '{node}'");
             yield return new TFlow().Execute(this, node);
         }
@@ -115,6 +116,13 @@ namespace RedOwl.Veranda
             return Add<T>();
         }
         public T Add<T>() where T : INode, new() => Add(new T());
+        public T Add<T>(string title) where T : INode, new()
+        {
+            var node = Add(new T());
+            node.SetTitle(title);
+            return node;
+        }
+
         public T Add<T>(T node) where T : INode
         {
             node.Initialize(this);
@@ -183,4 +191,7 @@ namespace RedOwl.Veranda
     
     [Serializable]
     public abstract class Graph<TNode> : Graph<TNode, GraphFlow> where TNode : INode {}
+    
+    [Serializable]
+    public class Graph : Graph<Node> { }
 }
